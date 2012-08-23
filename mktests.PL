@@ -4,9 +4,9 @@
 #
 ################################################################################
 #
-#  $Revision: 30 $
+#  $Revision: 32 $
 #  $Author: mhx $
-#  $Date: 2009/01/18 13:10:49 +0000 $
+#  $Date: 2009/06/12 11:46:07 +0100 $
 #
 ################################################################################
 #
@@ -78,7 +78,7 @@ __DATA__
 BEGIN {
   if ($ENV{'PERL_CORE'}) {
     chdir 't' if -d 't';
-    @INC = ('../lib', '../ext/Devel/PPPort/t') if -d '../lib' && -d '../ext';
+    @INC = ('../lib', '../ext/Devel-PPPort/t') if -d '../lib' && -d '../ext';
     require Config; import Config;
     use vars '%Config';
     if (" $Config{'extensions'} " !~ m[ Devel/PPPort ]) {
