@@ -1,3 +1,16 @@
+3.07 - 2006-01-16
+
+    * improve internals documentation in HACKERS
+    * minor internal cleanups
+    * thanks to Steve Peters for adding support for
+      the following API
+        SvMAGIC_set
+        SvPVX_const
+        SvPVX_mutable
+        SvRV_set
+        SvSTASH_set
+        SvUV_set
+
 3.06_04 - 2005-10-30
 
     * add --strip / --unstrip options

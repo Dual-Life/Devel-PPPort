@@ -4,13 +4,13 @@
 #
 ################################################################################
 #
-#  $Revision: 39 $
+#  $Revision: 41 $
 #  $Author: mhx $
-#  $Date: 2005/10/30 10:25:53 +0000 $
+#  $Date: 2006/01/14 17:07:56 +0000 $
 #
 ################################################################################
 #
-#  Version 3.x, Copyright (C) 2004-2005, Marcus Holland-Moritz.
+#  Version 3.x, Copyright (C) 2004-2006, Marcus Holland-Moritz.
 #  Version 2.x, Copyright (C) 2001, Paul Marquess.
 #  Version 1.x, Copyright (C) 1999, Kenneth Albanowski.
 #
@@ -335,13 +335,13 @@ __DATA__
 #
 ################################################################################
 #
-#  $Revision: 39 $
+#  $Revision: 41 $
 #  $Author: mhx $
-#  $Date: 2005/10/30 10:25:53 +0000 $
+#  $Date: 2006/01/14 17:07:56 +0000 $
 #
 ################################################################################
 #
-#  Version 3.x, Copyright (C) 2004-2005, Marcus Holland-Moritz.
+#  Version 3.x, Copyright (C) 2004-2006, Marcus Holland-Moritz.
 #  Version 2.x, Copyright (C) 2001, Paul Marquess.
 #  Version 1.x, Copyright (C) 1999, Kenneth Albanowski.
 #
@@ -478,7 +478,7 @@ Version 3.x was ported back to CPAN by Marcus Holland-Moritz.
 
 =head1 COPYRIGHT
 
-Version 3.x, Copyright (C) 2004-2005, Marcus Holland-Moritz.
+Version 3.x, Copyright (C) 2004-2006, Marcus Holland-Moritz.
 
 Version 2.x, Copyright (C) 2001, Paul Marquess.
 
@@ -499,7 +499,7 @@ require DynaLoader;
 use strict;
 use vars qw($VERSION @ISA $data);
 
-$VERSION = do { my @r = '$Snapshot: /Devel-PPPort/3.06_04 $' =~ /(\d+\.\d+(?:_\d+)?)/; @r ? $r[0] : '9.99' };
+$VERSION = do { my @r = '$Snapshot: /Devel-PPPort/3.07 $' =~ /(\d+\.\d+(?:_\d+)?)/; @r ? $r[0] : '9.99' };
 
 @ISA = qw(DynaLoader);
 
@@ -598,6 +598,8 @@ __DATA__
 %include format
 
 %include SvPV
+
+%include Sv_set
 
 %include sv_xpvf
 

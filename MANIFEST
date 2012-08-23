@@ -61,6 +61,7 @@ parts/inc/newRV
 parts/inc/ppphbin
 parts/inc/ppphdoc
 parts/inc/ppphtest
+parts/inc/Sv_set
 parts/inc/sv_xpvf
 parts/inc/SvPV
 parts/inc/threads
@@ -118,6 +119,7 @@ t/MY_CXT.t
 t/newCONSTSUB.t
 t/newRV.t
 t/ppphtest.t
+t/Sv_set.t
 t/sv_xpvf.t
 t/SvPV.t
 t/testutil.pl
