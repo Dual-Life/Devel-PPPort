@@ -1,3 +1,10 @@
+2.99_07 - 2004-08-13
+
+    * improve/check documentation
+    * add tests for CopFILE and CopSTASHPV
+    * add file headers
+    * some code cleanups
+
 2.99_06 - 2004-08-11
 
     * --compat-version now considers all macros/functions

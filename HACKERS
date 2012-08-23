@@ -7,11 +7,11 @@ HACKERS - Devel::PPPort internals for hackers
 So you probably want to hack C<Devel::PPPort>?
 
 Well, here's some information to get you started with what's
-lying around in this distro.
+lying around in this distribution.
 
 =head1 DESCRIPTION
 
-=head2 How to build 87 versions of perl
+=head2 How to build 87 versions of Perl
 
 C<Devel::PPPort> supports Perl versions between 5.003 and bleadperl.
 To guarantee this support, I need some of these versions on my
@@ -19,9 +19,18 @@ machine. I currently have 87 different Perl version/configuration
 combinations installed on my laptop.
 
 As many of the old Perl distributions need patching to compile
-cleanly on newer systems (and because building 87 perls by hand
+cleanly on newer systems (and because building 87 Perls by hand
 just isn't fun), I wrote a tool to build all the different
 versions and configurations. You can find it in F<devel/buildperl.pl>.
+It can currently build the following Perl releases:
+
+    5.003
+    5.004 - 5.004_05
+    5.005 - 5.005_04
+    5.6.x
+    5.7.x
+    5.8.x
+    5.9.x
 
 =head2 Fully automatic API checks
 
@@ -62,9 +71,71 @@ false positives, so each API call is checked once more afterwards.)
 
 Running C<devel/mktodo> takes a couple of hours.
 
+When running C<devel/mktodo> with the C<--base> option, it will
+generate the I<baseline> todo files by disabling all functionality
+provided by C<Devel::PPPort>. These are required for implementing
+the C<--compat-version> option of the C<ppport.h> script. The
+baseline todo files hold the information about which version of
+Perl lacks a certain part of the API.
+
+However, only the documented public API can be checked this way.
+And since C<Devel::PPPort> provides more macros, these would not be
+affected by C<--compat-version>. It's the job of F<devel/scanprov>
+to figure out the baseline information for all remaining provided
+macros by scanning the include files in the F<CORE> directory of
+various Perl versions.
+
+It's not very often that one has to regenerate the baseline and
+todo files, and the process hasn't been automated yet, but it's
+basically only the following steps:
+
+=over 4
+
+=item *
+
+You need a whole bunch of different Perls. The more, the better.
+You can use F<devel/buildperl.pl> to build them. I keep my perls
+in F</tmp/perl>, so most of the tools take this as a default.
+
+=item *
+
+Remove all existing todo files in the F<parts/base> and
+F<parts/todo> directories.
+
+=item *
+
+Update the API information. Copy the latest F<embed.fnc> file from
+bleadperl to the F<parts> directory and run F<devel/mkapidoc.sh> to
+collect the remaining information in F<parts/apidoc.fnc>.
+
+=item *
+
+Build the new baseline by running
+
+    perl devel/mktodo --base
+
+in the root directory of the distribution. When it's finished,
+move all files from the F<parts/todo> directory to F<parts/base>.
+
+=item *
+
+Build the new todo files by running
+
+    perl devel/mktodo
+
+in the root directory of the distribution.
+
+=item *
+
+Finally, add the remaining baseline information by running
+
+    perl devel/scanprov
+
+=back
+
 =head2 Implementation
 
-Residing in F<parts/inc/> is the "heart" of C<Devel::PPPort>.  Each
+Residing in F<parts/inc/> is the "heart" of C<Devel::PPPort>. Each
 of the files implements a part of the supported API, along with
 hints, dependency information, XS code and tests.
 The files are in a POD-like format that is parsed using the
@@ -125,7 +196,13 @@ You can use C<ok()> to report success or failure.
 It's usually the best approach to just copy an existing file and
 use it as a template.
 
-=head2 Special Makefile targets.
+=head2 Testing
+
+To automatically test C<Devel::PPPort> with lots of different Perl
+versions, you can use the F<soak> script. Just pass it a list of
+all Perl binaries you want to test.
+
+=head2 Special Makefile targets
 
 You can use 
 

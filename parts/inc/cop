@@ -1,3 +1,20 @@
+################################################################################
+##
+##  $Revision: 3 $
+##  $Author: mhx $
+##  $Date: 2004/08/13 11:45:54 +0100 $
+##
+################################################################################
+##
+##  Version 3.x, Copyright (C) 2004, Marcus Holland-Moritz.
+##  Version 2.x, Copyright (C) 2001, Paul Marquess.
+##  Version 1.x, Copyright (C) 1999, Kenneth Albanowski.
+##
+##  This program is free software; you can redistribute it and/or
+##  modify it under the same terms as Perl itself.
+##
+################################################################################
+
 =provides
 
 __UNDEFINED__
@@ -34,4 +51,34 @@ __UNDEFINED__  CopSTASHPV_set(c,pv)	CopSTASH_set((c), gv_stashpv(pv,GV_ADD))
 __UNDEFINED__  CopSTASH_eq(c,hv)	(CopSTASH(c) == (hv))
 
 #endif /* USE_ITHREADS */
+
+=xsubs
+
+char *
+CopSTASHPV()
+	CODE:
+		RETVAL = CopSTASHPV(PL_curcop);
+	OUTPUT:
+		RETVAL
+
+char *
+CopFILE()
+	CODE:
+		RETVAL = CopFILE(PL_curcop);
+	OUTPUT:
+		RETVAL
+
+=tests plan => 2
+
+my $package;
+{
+  package MyPackage;
+  $package = &Devel::PPPort::CopSTASHPV();
+}
+print "# $package\n";
+ok($package, "MyPackage");
+
+my $file = &Devel::PPPort::CopFILE();
+print "# $file\n";
+ok($file =~ /cop/i);
 

@@ -1,3 +1,24 @@
+################################################################################
+#
+#  PPPort_pm.PL -- generate PPPort.pm
+#
+################################################################################
+#
+#  $Revision: 28 $
+#  $Author: mhx $
+#  $Date: 2004/08/13 11:49:22 +0100 $
+#
+################################################################################
+#
+#  Version 3.x, Copyright (C) 2004, Marcus Holland-Moritz.
+#  Version 2.x, Copyright (C) 2001, Paul Marquess.
+#  Version 1.x, Copyright (C) 1999, Kenneth Albanowski.
+#
+#  This program is free software; you can redistribute it and/or
+#  modify it under the same terms as Perl itself.
+#
+################################################################################
+
 use strict;
 $^W = 1;
 require "parts/ppptools.pl";
@@ -287,6 +308,12 @@ __DATA__
 #
 ################################################################################
 #
+#  $Revision: 28 $
+#  $Author: mhx $
+#  $Date: 2004/08/13 11:49:22 +0100 $
+#
+################################################################################
+#
 #  Version 3.x, Copyright (C) 2004, Marcus Holland-Moritz.
 #  Version 2.x, Copyright (C) 2001, Paul Marquess.
 #  Version 1.x, Copyright (C) 1999, Kenneth Albanowski.
@@ -316,7 +343,7 @@ keeping track of old releases, but users can still reap the benefit.
 
 C<Devel::PPPort> contains a single function, called C<WriteFile>. Its
 only purpose is to write the F<ppport.h> C header file. This file
-contains a series of macros and, if explicity requested, functions that
+contains a series of macros and, if explicitly requested, functions that
 allow XS modules to be built using older versions of Perl. Currently,
 Perl versions from __MIN_PERL__ to __MAX_PERL__ are supported.
 
@@ -386,7 +413,7 @@ in older Perl releases:
 =head2 Perl API not supported by ppport.h
 
 There is still a big part of the API not supported by F<ppport.h>.
-Either because it doesn't make sense to backport that part of the API,
+Either because it doesn't make sense to back-port that part of the API,
 or simply because it hasn't been implemented yet. Patches welcome!
 
 Here's a list of the currently unsupported API, and also the version of
@@ -445,7 +472,7 @@ require DynaLoader;
 use strict;
 use vars qw($VERSION @ISA $data);
 
-$VERSION = "2.99_06";
+$VERSION = do { my @r = '$Snapshot: /Devel-PPPort/2.99_07 $' =~ /(\d+\.\d+(?:_\d+)?)/; @r ? $r[0] : '9.99' };
 
 @ISA = qw(DynaLoader);
 

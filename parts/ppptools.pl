@@ -1,3 +1,24 @@
+################################################################################
+#
+#  ppptools.pl -- various utility functions
+#
+################################################################################
+#
+#  $Revision: 11 $
+#  $Author: mhx $
+#  $Date: 2004/08/13 11:50:05 +0100 $
+#
+################################################################################
+#
+#  Version 3.x, Copyright (C) 2004, Marcus Holland-Moritz.
+#  Version 2.x, Copyright (C) 2001, Paul Marquess.
+#  Version 1.x, Copyright (C) 1999, Kenneth Albanowski.
+#
+#  This program is free software; you can redistribute it and/or
+#  modify it under the same terms as Perl itself.
+#
+################################################################################
+
 sub parse_todo
 {
   my $dir = shift || 'parts/todo';
@@ -68,7 +89,7 @@ sub parse_partspec
   my @prov;
   my %proto;
 
-  if (exists $data{tests} && !exists $data{implementation}) {
+  if (exists $data{tests} && (!exists $data{implementation} || $data{implementation} !~ /\S/)) {
     $data{implementation} = '';
   }
   else {

@@ -1,4 +1,25 @@
 #!/usr/bin/perl -w
+################################################################################
+#
+#  buildperl.pl -- build various versions of perl automatically
+#
+################################################################################
+#
+#  $Revision: 3 $
+#  $Author: mhx $
+#  $Date: 2004/08/13 11:50:19 +0100 $
+#
+################################################################################
+#
+#  Version 3.x, Copyright (C) 2004, Marcus Holland-Moritz.
+#  Version 2.x, Copyright (C) 2001, Paul Marquess.
+#  Version 1.x, Copyright (C) 1999, Kenneth Albanowski.
+#
+#  This program is free software; you can redistribute it and/or
+#  modify it under the same terms as Perl itself.
+#
+################################################################################
+
 use strict;
 use Getopt::Long;
 use Pod::Usage;

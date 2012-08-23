@@ -1,7 +1,5 @@
 These would be nice for 3.00:
 
-* Update the HACKERS doc (and probably other docs as well)
-
 * Well, no bugz would be nice ;-)
 
 
@@ -9,12 +7,5 @@ These would always be nice:
 
 * more documentation, more tests
 
-* more examples in parts/inc/pod
-
 * Resolve dependencies in Makefile.PL and remind of running 'make regen'
-
-
-Mmmhhh, don't know what to do about these:
-
-* pad_findmy??
 

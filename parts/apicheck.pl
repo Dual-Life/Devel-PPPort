@@ -1,4 +1,25 @@
 #!/usr/bin/perl -w
+################################################################################
+#
+#  apicheck.pl -- generate C source for automated API check
+#
+################################################################################
+#
+#  $Revision: 9 $
+#  $Author: mhx $
+#  $Date: 2004/08/13 11:49:50 +0100 $
+#
+################################################################################
+#
+#  Version 3.x, Copyright (C) 2004, Marcus Holland-Moritz.
+#  Version 2.x, Copyright (C) 2001, Paul Marquess.
+#  Version 1.x, Copyright (C) 1999, Kenneth Albanowski.
+#
+#  This program is free software; you can redistribute it and/or
+#  modify it under the same terms as Perl itself.
+#
+################################################################################
+
 use strict;
 require 'parts/ppptools.pl';
 
@@ -10,37 +31,6 @@ else {
 }
 
 my @f = parse_embed(qw( parts/embed.fnc parts/apidoc.fnc ));
-
-# use Data::Dumper;
-# print Dumper(\@f);
-
-# my %flags;
-# for my $f (@f) {
-#   #push @{$flags{$_}}, $f->{name} for keys %{$f->{flags}};
-#   $flags{$_}++ for keys %{$f->{flags}};
-# }
-# print STDERR Dumper(\%flags);
-# exit;
-
-# my $d = Dumper( \@f );
-# $d =~ s!^!//!gm;
-# print $d;
-
-# my %t;
-# 
-# for my $e ( @f ) {
-#   next if $e->{flags}{s};
-#   for( $e->{ret}, @{$e->{args}} ) {
-#     $t{$_}++;
-#   }
-# }
-# 
-# my $i = 1;
-# for my $k ( sort keys %t ) {
-#   print "[$i]  $k ($t{$k})\n";
-#   $i++;
-# }
-# 
 
 my %todo = %{&parse_todo};
 

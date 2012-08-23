@@ -1,4 +1,25 @@
 #!/bin/bash
+################################################################################
+#
+#  mkapidoc.sh -- generate apidoc.fnc from scanning the Perl source
+#
+################################################################################
+#
+#  $Revision: 4 $
+#  $Author: mhx $
+#  $Date: 2004/08/13 11:50:22 +0100 $
+#
+################################################################################
+#
+#  Version 3.x, Copyright (C) 2004, Marcus Holland-Moritz.
+#  Version 2.x, Copyright (C) 2001, Paul Marquess.
+#  Version 1.x, Copyright (C) 1999, Kenneth Albanowski.
+#
+#  This program is free software; you can redistribute it and/or
+#  modify it under the same terms as Perl itself.
+#
+################################################################################
+
 function isperlroot
 {
   [ -f "$1/embed.fnc" ] && [ -f "$1/perl.h" ]
