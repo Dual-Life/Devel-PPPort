@@ -13,3 +13,4 @@ save_aelem_flags               # U
 save_hdelete                   # U
 save_helem_flags               # U
 sv_utf8_upgrade_flags_grow     # U
+get_cvs                        # added by devel/scanprov

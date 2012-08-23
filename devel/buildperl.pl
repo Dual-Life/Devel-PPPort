@@ -5,13 +5,13 @@
 #
 ################################################################################
 #
-#  $Revision: 17 $
+#  $Revision: 18 $
 #  $Author: mhx $
-#  $Date: 2010/02/13 08:02:17 +0000 $
+#  $Date: 2010/03/07 12:15:42 +0000 $
 #
 ################################################################################
 #
-#  Version 3.x, Copyright (C) 2004-2009, Marcus Holland-Moritz.
+#  Version 3.x, Copyright (C) 2004-2010, Marcus Holland-Moritz.
 #  Version 2.x, Copyright (C) 2001, Paul Marquess.
 #  Version 1.x, Copyright (C) 1999, Kenneth Albanowski.
 #
@@ -595,7 +595,7 @@ options, use:
 
 =head1 COPYRIGHT
 
-Copyright (c) 2004-2009, Marcus Holland-Moritz.
+Copyright (c) 2004-2010, Marcus Holland-Moritz.
 
 This program is free software; you can redistribute it and/or
 modify it under the same terms as Perl itself.

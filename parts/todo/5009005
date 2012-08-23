@@ -5,7 +5,6 @@ SvRX                           # U
 SvRXOK                         # U
 av_create_and_push             # U
 av_create_and_unshift_one      # U
-get_cvn_flags                  # U
 gv_fetchfile_flags             # U
 mro_get_linear_isa             # U
 mro_method_changed_in          # U
