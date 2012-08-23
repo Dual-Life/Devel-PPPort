@@ -19,5 +19,5 @@
 : ships with the Perl source code.
 :
 
-Am	|void	|sv_magic_portable|NN SV* sv|NULLOK SV* obj|int how|NULLOK const char* name \
-				|I32 namlen
+Am      |void   |sv_magic_portable|NN SV* sv|NULLOK SV* obj|int how|NULLOK const char* name \
+                                |I32 namlen

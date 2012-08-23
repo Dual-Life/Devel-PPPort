@@ -43,4 +43,3 @@ for (@pods) {
     pod_file_ok($_);
   }
 }
-

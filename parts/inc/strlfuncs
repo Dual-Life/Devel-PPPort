@@ -65,29 +65,29 @@ my_strlcpy(char *dst, const char *src, Size_t size)
 
 void
 my_strlfunc()
-	PREINIT:
-		char buf[8];
-		int len;
-	PPCODE:
+        PREINIT:
+                char buf[8];
+                int len;
+        PPCODE:
                 len = my_strlcpy(buf, "foo", sizeof(buf));
-		mXPUSHi(len);
-		mXPUSHs(newSVpv(buf, 0));
-		len = my_strlcat(buf, "bar", sizeof(buf));
-		mXPUSHi(len);
-		mXPUSHs(newSVpv(buf, 0));
-		len = my_strlcat(buf, "baz", sizeof(buf));
-		mXPUSHi(len);
-		mXPUSHs(newSVpv(buf, 0));
-		len = my_strlcpy(buf, "1234567890", sizeof(buf));
-		mXPUSHi(len);
-		mXPUSHs(newSVpv(buf, 0));
-		len = my_strlcpy(buf, "1234", sizeof(buf));
-		mXPUSHi(len);
-		mXPUSHs(newSVpv(buf, 0));
-		len = my_strlcat(buf, "567890123456", sizeof(buf));
-		mXPUSHi(len);
-		mXPUSHs(newSVpv(buf, 0));
-		XSRETURN(12);
+                mXPUSHi(len);
+                mXPUSHs(newSVpv(buf, 0));
+                len = my_strlcat(buf, "bar", sizeof(buf));
+                mXPUSHi(len);
+                mXPUSHs(newSVpv(buf, 0));
+                len = my_strlcat(buf, "baz", sizeof(buf));
+                mXPUSHi(len);
+                mXPUSHs(newSVpv(buf, 0));
+                len = my_strlcpy(buf, "1234567890", sizeof(buf));
+                mXPUSHi(len);
+                mXPUSHs(newSVpv(buf, 0));
+                len = my_strlcpy(buf, "1234", sizeof(buf));
+                mXPUSHi(len);
+                mXPUSHs(newSVpv(buf, 0));
+                len = my_strlcat(buf, "567890123456", sizeof(buf));
+                mXPUSHi(len);
+                mXPUSHs(newSVpv(buf, 0));
+                XSRETURN(12);
 
 =tests plan => 13
 
@@ -105,4 +105,3 @@ ok(@e == @r);
 for (0 .. $#e) {
   ok($r[$_], $e[$_]);
 }
-

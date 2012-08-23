@@ -89,16 +89,16 @@ __UNDEFINED__  sv_2pvbyte_nolen(sv)  sv_2pv_nolen(sv)
  */
 
 /* If these are undefined, they're not handled by the core anyway */
-__UNDEFINED__  SV_IMMEDIATE_UNREF	0
-__UNDEFINED__  SV_GMAGIC		0
-__UNDEFINED__  SV_COW_DROP_PV		0
-__UNDEFINED__  SV_UTF8_NO_ENCODING	0
-__UNDEFINED__  SV_NOSTEAL		0
-__UNDEFINED__  SV_CONST_RETURN		0
-__UNDEFINED__  SV_MUTABLE_RETURN	0
-__UNDEFINED__  SV_SMAGIC		0
-__UNDEFINED__  SV_HAS_TRAILING_NUL	0
-__UNDEFINED__  SV_COW_SHARED_HASH_KEYS	0
+__UNDEFINED__  SV_IMMEDIATE_UNREF       0
+__UNDEFINED__  SV_GMAGIC                0
+__UNDEFINED__  SV_COW_DROP_PV           0
+__UNDEFINED__  SV_UTF8_NO_ENCODING      0
+__UNDEFINED__  SV_NOSTEAL               0
+__UNDEFINED__  SV_CONST_RETURN          0
+__UNDEFINED__  SV_MUTABLE_RETURN        0
+__UNDEFINED__  SV_SMAGIC                0
+__UNDEFINED__  SV_HAS_TRAILING_NUL      0
+__UNDEFINED__  SV_COW_SHARED_HASH_KEYS  0
 
 #if { VERSION < 5.7.2 }
 
@@ -200,253 +200,253 @@ __UNDEFINED__  SvPV_renew(sv,n) STMT_START { SvLEN_set(sv, n); \
 
 IV
 SvPVbyte(sv)
-	SV *sv
-	PREINIT:
-		char *str;
-		STRLEN len;
-	CODE:
-		str = SvPVbyte(sv, len);
-		RETVAL = strEQ(str, "mhx") ? (IV) len : (IV) -1;
-	OUTPUT:
-		RETVAL
+        SV *sv
+        PREINIT:
+                char *str;
+                STRLEN len;
+        CODE:
+                str = SvPVbyte(sv, len);
+                RETVAL = strEQ(str, "mhx") ? (IV) len : (IV) -1;
+        OUTPUT:
+                RETVAL
 
 IV
 SvPV_nolen(sv)
-	SV *sv
-	PREINIT:
-		char *str;
-	CODE:
-		str = SvPV_nolen(sv);
-		RETVAL = strEQ(str, "mhx") ? 42 : 0;
-	OUTPUT:
-		RETVAL
+        SV *sv
+        PREINIT:
+                char *str;
+        CODE:
+                str = SvPV_nolen(sv);
+                RETVAL = strEQ(str, "mhx") ? 42 : 0;
+        OUTPUT:
+                RETVAL
 
 IV
 SvPV_const(sv)
-	SV *sv
-	PREINIT:
-		const char *str;
-		STRLEN len;
-	CODE:
-		str = SvPV_const(sv, len);
-		RETVAL = len + (strEQ(str, "mhx") ? 40 : 0);
-	OUTPUT:
-		RETVAL
+        SV *sv
+        PREINIT:
+                const char *str;
+                STRLEN len;
+        CODE:
+                str = SvPV_const(sv, len);
+                RETVAL = len + (strEQ(str, "mhx") ? 40 : 0);
+        OUTPUT:
+                RETVAL
 
 IV
 SvPV_mutable(sv)
-	SV *sv
-	PREINIT:
-		char *str;
-		STRLEN len;
-	CODE:
-		str = SvPV_mutable(sv, len);
-		RETVAL = len + (strEQ(str, "mhx") ? 41 : 0);
-	OUTPUT:
-		RETVAL
+        SV *sv
+        PREINIT:
+                char *str;
+                STRLEN len;
+        CODE:
+                str = SvPV_mutable(sv, len);
+                RETVAL = len + (strEQ(str, "mhx") ? 41 : 0);
+        OUTPUT:
+                RETVAL
 
 IV
 SvPV_flags(sv)
-	SV *sv
-	PREINIT:
-		char *str;
-		STRLEN len;
-	CODE:
-		str = SvPV_flags(sv, len, SV_GMAGIC);
-		RETVAL = len + (strEQ(str, "mhx") ? 42 : 0);
-	OUTPUT:
-		RETVAL
+        SV *sv
+        PREINIT:
+                char *str;
+                STRLEN len;
+        CODE:
+                str = SvPV_flags(sv, len, SV_GMAGIC);
+                RETVAL = len + (strEQ(str, "mhx") ? 42 : 0);
+        OUTPUT:
+                RETVAL
 
 IV
 SvPV_flags_const(sv)
-	SV *sv
-	PREINIT:
-		const char *str;
-		STRLEN len;
-	CODE:
-		str = SvPV_flags_const(sv, len, SV_GMAGIC);
-		RETVAL = len + (strEQ(str, "mhx") ? 43 : 0);
-	OUTPUT:
-		RETVAL
+        SV *sv
+        PREINIT:
+                const char *str;
+                STRLEN len;
+        CODE:
+                str = SvPV_flags_const(sv, len, SV_GMAGIC);
+                RETVAL = len + (strEQ(str, "mhx") ? 43 : 0);
+        OUTPUT:
+                RETVAL
 
 IV
 SvPV_flags_const_nolen(sv)
-	SV *sv
-	PREINIT:
-		const char *str;
-	CODE:
-		str = SvPV_flags_const_nolen(sv, SV_GMAGIC);
-		RETVAL = strEQ(str, "mhx") ? 47 : 0;
-	OUTPUT:
-		RETVAL
+        SV *sv
+        PREINIT:
+                const char *str;
+        CODE:
+                str = SvPV_flags_const_nolen(sv, SV_GMAGIC);
+                RETVAL = strEQ(str, "mhx") ? 47 : 0;
+        OUTPUT:
+                RETVAL
 
 IV
 SvPV_flags_mutable(sv)
-	SV *sv
-	PREINIT:
-		char *str;
-		STRLEN len;
-	CODE:
-		str = SvPV_flags_mutable(sv, len, SV_GMAGIC);
-		RETVAL = len + (strEQ(str, "mhx") ? 45 : 0);
-	OUTPUT:
-		RETVAL
+        SV *sv
+        PREINIT:
+                char *str;
+                STRLEN len;
+        CODE:
+                str = SvPV_flags_mutable(sv, len, SV_GMAGIC);
+                RETVAL = len + (strEQ(str, "mhx") ? 45 : 0);
+        OUTPUT:
+                RETVAL
 
 IV
 SvPV_force(sv)
-	SV *sv
-	PREINIT:
-		char *str;
-		STRLEN len;
-	CODE:
-		str = SvPV_force(sv, len);
-		RETVAL = len + (strEQ(str, "mhx") ? 46 : 0);
-	OUTPUT:
-		RETVAL
+        SV *sv
+        PREINIT:
+                char *str;
+                STRLEN len;
+        CODE:
+                str = SvPV_force(sv, len);
+                RETVAL = len + (strEQ(str, "mhx") ? 46 : 0);
+        OUTPUT:
+                RETVAL
 
 IV
 SvPV_force_nolen(sv)
-	SV *sv
-	PREINIT:
-		char *str;
-	CODE:
-		str = SvPV_force_nolen(sv);
-		RETVAL = strEQ(str, "mhx") ? 50 : 0;
-	OUTPUT:
-		RETVAL
+        SV *sv
+        PREINIT:
+                char *str;
+        CODE:
+                str = SvPV_force_nolen(sv);
+                RETVAL = strEQ(str, "mhx") ? 50 : 0;
+        OUTPUT:
+                RETVAL
 
 IV
 SvPV_force_mutable(sv)
-	SV *sv
-	PREINIT:
-		char *str;
-		STRLEN len;
-	CODE:
-		str = SvPV_force_mutable(sv, len);
-		RETVAL = len + (strEQ(str, "mhx") ? 48 : 0);
-	OUTPUT:
-		RETVAL
+        SV *sv
+        PREINIT:
+                char *str;
+                STRLEN len;
+        CODE:
+                str = SvPV_force_mutable(sv, len);
+                RETVAL = len + (strEQ(str, "mhx") ? 48 : 0);
+        OUTPUT:
+                RETVAL
 
 IV
 SvPV_force_nomg(sv)
-	SV *sv
-	PREINIT:
-		char *str;
-		STRLEN len;
-	CODE:
-		str = SvPV_force_nomg(sv, len);
-		RETVAL = len + (strEQ(str, "mhx") ? 49 : 0);
-	OUTPUT:
-		RETVAL
+        SV *sv
+        PREINIT:
+                char *str;
+                STRLEN len;
+        CODE:
+                str = SvPV_force_nomg(sv, len);
+                RETVAL = len + (strEQ(str, "mhx") ? 49 : 0);
+        OUTPUT:
+                RETVAL
 
 IV
 SvPV_force_nomg_nolen(sv)
-	SV *sv
-	PREINIT:
-		char *str;
-	CODE:
-		str = SvPV_force_nomg_nolen(sv);
-		RETVAL = strEQ(str, "mhx") ? 53 : 0;
-	OUTPUT:
-		RETVAL
+        SV *sv
+        PREINIT:
+                char *str;
+        CODE:
+                str = SvPV_force_nomg_nolen(sv);
+                RETVAL = strEQ(str, "mhx") ? 53 : 0;
+        OUTPUT:
+                RETVAL
 
 IV
 SvPV_force_flags(sv)
-	SV *sv
-	PREINIT:
-		char *str;
-		STRLEN len;
-	CODE:
-		str = SvPV_force_flags(sv, len, SV_GMAGIC);
-		RETVAL = len + (strEQ(str, "mhx") ? 51 : 0);
-	OUTPUT:
-		RETVAL
+        SV *sv
+        PREINIT:
+                char *str;
+                STRLEN len;
+        CODE:
+                str = SvPV_force_flags(sv, len, SV_GMAGIC);
+                RETVAL = len + (strEQ(str, "mhx") ? 51 : 0);
+        OUTPUT:
+                RETVAL
 
 IV
 SvPV_force_flags_nolen(sv)
-	SV *sv
-	PREINIT:
-		char *str;
-	CODE:
-		str = SvPV_force_flags_nolen(sv, SV_GMAGIC);
-		RETVAL = strEQ(str, "mhx") ? 55 : 0;
-	OUTPUT:
-		RETVAL
+        SV *sv
+        PREINIT:
+                char *str;
+        CODE:
+                str = SvPV_force_flags_nolen(sv, SV_GMAGIC);
+                RETVAL = strEQ(str, "mhx") ? 55 : 0;
+        OUTPUT:
+                RETVAL
 
 IV
 SvPV_force_flags_mutable(sv)
-	SV *sv
-	PREINIT:
-		char *str;
-		STRLEN len;
-	CODE:
-		str = SvPV_force_flags_mutable(sv, len, SV_GMAGIC);
-		RETVAL = len + (strEQ(str, "mhx") ? 53 : 0);
-	OUTPUT:
-		RETVAL
+        SV *sv
+        PREINIT:
+                char *str;
+                STRLEN len;
+        CODE:
+                str = SvPV_force_flags_mutable(sv, len, SV_GMAGIC);
+                RETVAL = len + (strEQ(str, "mhx") ? 53 : 0);
+        OUTPUT:
+                RETVAL
 
 IV
 SvPV_nolen_const(sv)
-	SV *sv
-	PREINIT:
-		const char *str;
-	CODE:
-		str = SvPV_nolen_const(sv);
-		RETVAL = strEQ(str, "mhx") ? 57 : 0;
-	OUTPUT:
-		RETVAL
+        SV *sv
+        PREINIT:
+                const char *str;
+        CODE:
+                str = SvPV_nolen_const(sv);
+                RETVAL = strEQ(str, "mhx") ? 57 : 0;
+        OUTPUT:
+                RETVAL
 
 IV
 SvPV_nomg(sv)
-	SV *sv
-	PREINIT:
-		char *str;
-		STRLEN len;
-	CODE:
-		str = SvPV_nomg(sv, len);
-		RETVAL = len + (strEQ(str, "mhx") ? 55 : 0);
-	OUTPUT:
-		RETVAL
+        SV *sv
+        PREINIT:
+                char *str;
+                STRLEN len;
+        CODE:
+                str = SvPV_nomg(sv, len);
+                RETVAL = len + (strEQ(str, "mhx") ? 55 : 0);
+        OUTPUT:
+                RETVAL
 
 IV
 SvPV_nomg_const(sv)
-	SV *sv
-	PREINIT:
-		const char *str;
-		STRLEN len;
-	CODE:
-		str = SvPV_nomg_const(sv, len);
-		RETVAL = len + (strEQ(str, "mhx") ? 56 : 0);
-	OUTPUT:
-		RETVAL
+        SV *sv
+        PREINIT:
+                const char *str;
+                STRLEN len;
+        CODE:
+                str = SvPV_nomg_const(sv, len);
+                RETVAL = len + (strEQ(str, "mhx") ? 56 : 0);
+        OUTPUT:
+                RETVAL
 
 IV
 SvPV_nomg_const_nolen(sv)
-	SV *sv
-	PREINIT:
-		const char *str;
-	CODE:
-		str = SvPV_nomg_const_nolen(sv);
-		RETVAL = strEQ(str, "mhx") ? 60 : 0;
-	OUTPUT:
-		RETVAL
+        SV *sv
+        PREINIT:
+                const char *str;
+        CODE:
+                str = SvPV_nomg_const_nolen(sv);
+                RETVAL = strEQ(str, "mhx") ? 60 : 0;
+        OUTPUT:
+                RETVAL
 
 void
 SvPV_renew(sv, nlen, insv)
-	SV *sv
-	IV nlen
-	SV *insv
-	PREINIT:
-		STRLEN slen;
-		const char *str;
-	PPCODE:
-		str = SvPV_const(insv, slen);
-		XPUSHs(sv);
-		mXPUSHi(SvLEN(sv));
-		SvPV_renew(sv, nlen);
-		Copy(str, SvPVX(sv), slen + 1, char);
-		SvCUR_set(sv, slen);
-		mXPUSHi(SvLEN(sv));
+        SV *sv
+        IV nlen
+        SV *insv
+        PREINIT:
+                STRLEN slen;
+                const char *str;
+        PPCODE:
+                str = SvPV_const(insv, slen);
+                XPUSHs(sv);
+                mXPUSHi(SvLEN(sv));
+                SvPV_renew(sv, nlen);
+                Copy(str, SvPVX(sv), slen + 1, char);
+                SvCUR_set(sv, slen);
+                mXPUSHi(SvLEN(sv));
 
 
 =tests plan => 47

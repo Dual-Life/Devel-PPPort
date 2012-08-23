@@ -20,4 +20,3 @@ my @api = map { /^--api=(\w+)$/ ? ($1) : () } @ARGV;
 print "creating $out", (@api ? " (@api)" : ''), "\n";
 system $^X, 'parts/apicheck.pl', @api, $out
     and die "couldn't create $out\n";
-

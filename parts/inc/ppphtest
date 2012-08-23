@@ -892,4 +892,3 @@ Perl_warner_nocontext("foo");
 Perl_warner(aTHX_ "foo");
 warner_nocontext("foo");
 warner("foo");
-

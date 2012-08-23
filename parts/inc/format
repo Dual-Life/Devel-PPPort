@@ -17,18 +17,18 @@
 
 #ifndef IVdf
 #  if IVSIZE == LONGSIZE
-#    define	IVdf      "ld"
-#    define	UVuf      "lu"
-#    define	UVof      "lo"
-#    define	UVxf      "lx"
-#    define	UVXf      "lX"
+#    define     IVdf      "ld"
+#    define     UVuf      "lu"
+#    define     UVof      "lo"
+#    define     UVxf      "lx"
+#    define     UVXf      "lX"
 #  else
 #    if IVSIZE == INTSIZE
-#      define	IVdf      "d"
-#      define	UVuf      "u"
-#      define	UVof      "o"
-#      define	UVxf      "x"
-#      define	UVXf      "X"
+#      define   IVdf      "d"
+#      define   UVuf      "u"
+#      define   UVof      "o"
+#      define   UVxf      "x"
+#      define   UVXf      "X"
 #    endif
 #  endif
 #endif
@@ -51,9 +51,9 @@
 
 void
 croak_NVgf(num)
-	NV num
-	PPCODE:
-		Perl_croak(aTHX_ "%.20" NVgf "\n", num);
+        NV num
+        PPCODE:
+                Perl_croak(aTHX_ "%.20" NVgf "\n", num);
 
 =tests plan => 1
 
@@ -61,4 +61,3 @@ my $num = 1.12345678901234567890;
 
 eval { Devel::PPPort::croak_NVgf($num) };
 ok($@ =~ /^1.1234567890/);
-

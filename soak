@@ -459,13 +459,13 @@ sub vsay
 sub warn
 {
   my $self = shift;
-  $self->say($self->colored(join('', @_), 'red')); 
+  $self->say($self->colored(join('', @_), 'red'));
 }
 
 sub die
 {
   my $self = shift;
-  $self->say($self->colored(join('', 'FATAL: ', @_), 'bold red')); 
+  $self->say($self->colored(join('', 'FATAL: ', @_), 'bold red'));
   exit -1;
 }
 
@@ -597,4 +597,3 @@ modify it under the same terms as Perl itself.
 See L<Devel::PPPort>.
 
 =cut
-

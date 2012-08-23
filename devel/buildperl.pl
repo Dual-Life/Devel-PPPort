@@ -45,18 +45,18 @@ my %opt = (
 
 my %config = (
   default     => {
-	           config_args => '-des',
+                   config_args => '-des',
                  },
   thread      => {
-	           config_args     => '-des -Dusethreads',
-	           masked_versions => [ qr/^5\.00[01234]/ ],
+                   config_args     => '-des -Dusethreads',
+                   masked_versions => [ qr/^5\.00[01234]/ ],
                  },
   thread5005  => {
-	           config_args     => '-des -Duse5005threads',
-	           masked_versions => [ qr/^5\.00[012345]|^5.(9|\d\d)/ ],
+                   config_args     => '-des -Duse5005threads',
+                   masked_versions => [ qr/^5\.00[012345]|^5.(9|\d\d)/ ],
                  },
   debug       => {
-	           config_args => '-des -Doptimize=-g',
+                   config_args => '-des -Doptimize=-g',
                  },
 );
 
@@ -77,7 +77,7 @@ my @patch = (
   },
   {
     perl => [
-     	      qw/
+              qw/
                 5.6.0
                 5.6.1
                 5.7.0
@@ -85,7 +85,7 @@ my @patch = (
                 5.7.2
                 5.7.3
                 5.8.0
-     	      /,
+              /,
             ],
     subs => [
               [ \&patch_db, 3 ],
@@ -597,4 +597,3 @@ modify it under the same terms as Perl itself.
 =head1 SEE ALSO
 
 See L<Devel::PPPort> and L<HACKERS>.
-

@@ -256,7 +256,7 @@ form C<5.00x_yy>. Both are translated into the correct preprocessor
 statements. It is also possible to combine this with other statements:
 
   #if { VERSION >= 5.004 } && !defined(sv_vcatpvf)
-    /* a */ 
+    /* a */
   #elif { VERSION < 5.004_63 } && { VERSION != 5.004_05 }
     /* b */
   #endif
@@ -323,4 +323,3 @@ modify it under the same terms as Perl itself.
 See L<ppport.h> and L<devel/regenerate>.
 
 =cut
-

@@ -56,4 +56,3 @@ for (@perls) {
   push @args, '--nocheck' unless $opt{check};
   runperl('devel/mktodo.pl', @args) or die "error running mktodo.pl [$!] [$?]\n";
 }
-

@@ -83,4 +83,3 @@ checkmem()
 =tests plan => 1
 
 ok(Devel::PPPort::checkmem(), 6);
-

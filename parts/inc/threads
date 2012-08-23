@@ -49,21 +49,20 @@ __UNDEFINED__  dTHXoa(x)  dTHXa(x)
 
 IV
 no_THX_arg(sv)
-	SV *sv
-	CODE:
-		RETVAL = 1 + sv_2iv(sv);
-	OUTPUT:
-		RETVAL
+        SV *sv
+        CODE:
+                RETVAL = 1 + sv_2iv(sv);
+        OUTPUT:
+                RETVAL
 
 void
 with_THX_arg(error)
-	char *error
-	PPCODE:
-		Perl_croak(aTHX_ "%s", error);
+        char *error
+        PPCODE:
+                Perl_croak(aTHX_ "%s", error);
 
 =tests plan => 2
 
 ok(&Devel::PPPort::no_THX_arg("42"), 43);
 eval { &Devel::PPPort::with_THX_arg("yes\n"); };
 ok($@ =~ /^yes/);
-

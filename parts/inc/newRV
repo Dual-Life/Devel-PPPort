@@ -38,31 +38,30 @@ newRV_noinc(SV *sv)
 
 U32
 newRV_inc_REFCNT()
-	PREINIT:
-		SV *sv, *rv;
-	CODE:
-		sv = newSViv(42);
-		rv = newRV_inc(sv);
-		SvREFCNT_dec(sv);
-		RETVAL = SvREFCNT(sv);
-		sv_2mortal(rv);
-	OUTPUT:
-		RETVAL
+        PREINIT:
+                SV *sv, *rv;
+        CODE:
+                sv = newSViv(42);
+                rv = newRV_inc(sv);
+                SvREFCNT_dec(sv);
+                RETVAL = SvREFCNT(sv);
+                sv_2mortal(rv);
+        OUTPUT:
+                RETVAL
 
 U32
 newRV_noinc_REFCNT()
-	PREINIT:
-		SV *sv, *rv;
-	CODE:
-		sv = newSViv(42);
-		rv = newRV_noinc(sv);
-		RETVAL = SvREFCNT(sv);
-		sv_2mortal(rv);
-	OUTPUT:
-		RETVAL
+        PREINIT:
+                SV *sv, *rv;
+        CODE:
+                sv = newSViv(42);
+                rv = newRV_noinc(sv);
+                RETVAL = SvREFCNT(sv);
+                sv_2mortal(rv);
+        OUTPUT:
+                RETVAL
 
 =tests plan => 2
 
 ok(&Devel::PPPort::newRV_inc_REFCNT, 1);
 ok(&Devel::PPPort::newRV_noinc_REFCNT, 1);
-

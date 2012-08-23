@@ -290,31 +290,31 @@ __UNDEFINED__ UVSIZE IVSIZE
 
 IV
 iv_size()
-	CODE:
-		RETVAL = IVSIZE == sizeof(IV);
-	OUTPUT:
-		RETVAL
+        CODE:
+                RETVAL = IVSIZE == sizeof(IV);
+        OUTPUT:
+                RETVAL
 
 IV
 uv_size()
-	CODE:
-		RETVAL = UVSIZE == sizeof(UV);
-	OUTPUT:
-		RETVAL
+        CODE:
+                RETVAL = UVSIZE == sizeof(UV);
+        OUTPUT:
+                RETVAL
 
 IV
 iv_type()
-	CODE:
-		RETVAL = sizeof(IVTYPE) == sizeof(IV);
-	OUTPUT:
-		RETVAL
+        CODE:
+                RETVAL = sizeof(IVTYPE) == sizeof(IV);
+        OUTPUT:
+                RETVAL
 
 IV
 uv_type()
-	CODE:
-		RETVAL = sizeof(UVTYPE) == sizeof(UV);
-	OUTPUT:
-		RETVAL
+        CODE:
+                RETVAL = sizeof(UVTYPE) == sizeof(UV);
+        OUTPUT:
+                RETVAL
 
 =tests plan => 4
 
@@ -322,4 +322,3 @@ ok(&Devel::PPPort::iv_size());
 ok(&Devel::PPPort::uv_size());
 ok(&Devel::PPPort::iv_type());
 ok(&Devel::PPPort::uv_type());
-

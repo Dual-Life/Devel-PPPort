@@ -148,35 +148,35 @@ retry:
 if ($opt{check}) {
   my $ifmt = '%' . length(scalar @recheck) . 'd';
   my $t0 = [gettimeofday];
-  
+
   RECHECK: for my $i (0 .. $#recheck) {
     my $sym = $recheck[$i];
     my $cur = delete $all{$sym};
-  
+
     sym('chk', $sym, $cur, sprintf(" [$ifmt/$ifmt, ETA %s]",
                $i + 1, scalar @recheck, eta($t0, $i, scalar @recheck)));
-  
+
     write_todo($opt{todo}, $opt{version}, \%all);
-  
+
     if ($cur eq "E (Perl_$sym)") {
       # we can try a shortcut here
       regen_apicheck($sym);
-  
+
       my $r = run(qw(make test));
-  
+
       if (!$r->{didnotrun} && $r->{status} == 0) {
         sym('del', $sym, $cur);
         next RECHECK;
       }
     }
-  
+
     # run the full test
     regen_all();
-  
+
     my $r = run(qw(make test));
-  
+
     $r->{didnotrun} and die "couldn't run make test: $!\n";
-  
+
     if ($r->{status} == 0) {
       sym('del', $sym, $cur);
     }

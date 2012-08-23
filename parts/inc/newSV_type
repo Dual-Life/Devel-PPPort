@@ -39,42 +39,41 @@ newSV_type(pTHX_ svtype const t)
 
 int
 newSV_type()
-	PREINIT:
-		SV* sv;
-	CODE:
-		RETVAL = 0;
-		sv = newSV_type(SVt_NULL);
-		if (SvTYPE(sv) == SVt_NULL)
-		{
-		  RETVAL++;
-		}
-		SvREFCNT_dec(sv);
+        PREINIT:
+                SV* sv;
+        CODE:
+                RETVAL = 0;
+                sv = newSV_type(SVt_NULL);
+                if (SvTYPE(sv) == SVt_NULL)
+                {
+                  RETVAL++;
+                }
+                SvREFCNT_dec(sv);
 
-		sv = newSV_type(SVt_PVIV);
-		if (SvTYPE(sv) == SVt_PVIV)
-		{
-		  RETVAL++;
-		}
-		SvREFCNT_dec(sv);
+                sv = newSV_type(SVt_PVIV);
+                if (SvTYPE(sv) == SVt_PVIV)
+                {
+                  RETVAL++;
+                }
+                SvREFCNT_dec(sv);
 
-		sv = newSV_type(SVt_PVHV);
-		if (SvTYPE(sv) == SVt_PVHV)
-		{
-		  RETVAL++;
-		}
-		SvREFCNT_dec(sv);
+                sv = newSV_type(SVt_PVHV);
+                if (SvTYPE(sv) == SVt_PVHV)
+                {
+                  RETVAL++;
+                }
+                SvREFCNT_dec(sv);
 
-		sv = newSV_type(SVt_PVAV);
-		if (SvTYPE(sv) == SVt_PVAV)
-		{
-		  RETVAL++;
-		}
-		SvREFCNT_dec(sv);
-	OUTPUT:
-		RETVAL
+                sv = newSV_type(SVt_PVAV);
+                if (SvTYPE(sv) == SVt_PVAV)
+                {
+                  RETVAL++;
+                }
+                SvREFCNT_dec(sv);
+        OUTPUT:
+                RETVAL
 
 
 =tests plan => 1
 
 ok(Devel::PPPort::newSV_type(), 4);
-

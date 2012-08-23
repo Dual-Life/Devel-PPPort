@@ -61,13 +61,13 @@ __UNDEFINED__ SvUV_set(sv, val) \
 
 IV
 TestSvUV_set(sv, val)
-	SV *sv
-	UV val
-	CODE:
-		SvUV_set(sv, val);
-		RETVAL = SvUVX(sv) == val ? 42 : -1;
-	OUTPUT:
-		RETVAL
+        SV *sv
+        UV val
+        CODE:
+                SvUV_set(sv, val);
+                RETVAL = SvUVX(sv) == val ? 42 : -1;
+        OUTPUT:
+                RETVAL
 
 IV
 TestSvPVX_const(sv)
@@ -88,10 +88,10 @@ TestSvPVX_mutable(sv)
 void
 TestSvSTASH_set(sv, name)
         SV *sv
-	char *name
+        char *name
         CODE:
-		sv = SvRV(sv);
-		SvREFCNT_dec(SvSTASH(sv));
+                sv = SvRV(sv);
+                SvREFCNT_dec(SvSTASH(sv));
                 SvSTASH_set(sv, (HV*) SvREFCNT_inc(gv_stashpv(name, 0)));
 
 =tests plan => 5

@@ -29,30 +29,30 @@ sub generate_tests
   for $file (all_files_in_dir('parts/inc')) {
     my($testfile) = $file =~ /(\w+)\.?$/;  # VMS has a trailing dot
     $testfile = "t/$testfile.t";
-  
+
     my $spec = parse_partspec($file);
     my $plan = 0;
-  
+
     if (exists $spec->{tests}) {
       exists $spec->{OPTIONS}{tests} &&
       exists $spec->{OPTIONS}{tests}{plan}
           or die "No plan for tests in $file\n";
-  
+
       print "generating $testfile\n";
-  
+
       my $tmpl = $template;
       $tmpl =~ s/__SOURCE__/$file/mg;
       $tmpl =~ s/__PLAN__/$spec->{OPTIONS}{tests}{plan}/mg;
       $tmpl =~ s/^__TESTS__$/$spec->{tests}/mg;
-  
+
       open FH, ">$testfile" or die "$testfile: $!\n";
       print FH $tmpl;
       close FH;
-  
+
       push @tests, $testfile;
     }
   }
-  
+
   return @tests;
 }
 

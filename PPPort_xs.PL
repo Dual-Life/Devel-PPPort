@@ -120,7 +120,7 @@ __XSMISC__
 
 /* =========== END XSMISC =================================================== */
 
-MODULE = Devel::PPPort		PACKAGE = Devel::PPPort
+MODULE = Devel::PPPort          PACKAGE = Devel::PPPort
 
 BOOT:
 __XSBOOT__

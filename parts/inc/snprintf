@@ -32,7 +32,7 @@ my_snprintf(char *buffer, const Size_t len, const char *format, ...)
 #endif
     va_end(ap);
     if (retval < 0 || (len > 0 && (Size_t)retval >= len))
-	Perl_croak(aTHX_ "panic: my_snprintf buffer overflow");
+        Perl_croak(aTHX_ "panic: my_snprintf buffer overflow");
     return retval;
 }
 
@@ -47,18 +47,17 @@ my_snprintf(char *buffer, const Size_t len, const char *format, ...)
 
 void
 my_snprintf()
-	PREINIT:
-		char buf[128];
-		int len;
-	PPCODE:
-		len = my_snprintf(buf, sizeof buf, "foo%s%d", "bar", 42);
-		mXPUSHi(len);
-		mXPUSHs(newSVpv(buf, 0));
-		XSRETURN(2);
+        PREINIT:
+                char buf[128];
+                int len;
+        PPCODE:
+                len = my_snprintf(buf, sizeof buf, "foo%s%d", "bar", 42);
+                mXPUSHi(len);
+                mXPUSHs(newSVpv(buf, 0));
+                XSRETURN(2);
 
 =tests plan => 2
 
 my($l, $s) = Devel::PPPort::my_snprintf();
 ok($l, 8);
 ok($s, "foobar42");
-

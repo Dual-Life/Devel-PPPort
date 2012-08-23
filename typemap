@@ -13,23 +13,23 @@
 #
 ################################################################################
 
-UV			T_UV
+UV                      T_UV
 NV                      T_NV
-HV *			T_HVREF
+HV *                    T_HVREF
 
 INPUT
 T_UV
-	$var = ($type)SvUV($arg)
+        $var = ($type)SvUV($arg)
 T_NV
-	$var = ($type)SvNV($arg)
+        $var = ($type)SvNV($arg)
 T_HVREF
-	if (SvROK($arg) && SvTYPE(SvRV($arg))==SVt_PVHV)
-	    $var = (HV*)SvRV($arg);
-	else
-	    Perl_croak(aTHX_ \"$var is not a hash reference\")
+        if (SvROK($arg) && SvTYPE(SvRV($arg))==SVt_PVHV)
+            $var = (HV*)SvRV($arg);
+        else
+            Perl_croak(aTHX_ \"$var is not a hash reference\")
 
 OUTPUT
 T_UV
-	sv_setuv($arg, (UV)$var);
+        sv_setuv($arg, (UV)$var);
 T_NV
-	sv_setnv($arg, (NV)$var);
+        sv_setnv($arg, (NV)$var);

@@ -23,11 +23,11 @@ __UNDEFINED__ HvNAMELEN_get(hv) (HvNAME_get(hv) ? (I32)strlen(HvNAME_get(hv)) : 
 
 char*
 HvNAME_get(hv)
-	HV *hv
+        HV *hv
 
 int
 HvNAMELEN_get(hv)
-	HV *hv
+        HV *hv
 
 =tests plan => 4
 
@@ -36,4 +36,3 @@ ok(Devel::PPPort::HvNAME_get({}), undef);
 
 ok(Devel::PPPort::HvNAMELEN_get(\%Devel::PPPort::), length('Devel::PPPort'));
 ok(Devel::PPPort::HvNAMELEN_get({}), 0);
-
