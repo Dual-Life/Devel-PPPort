@@ -23,3 +23,5 @@ utf8n_to_uvchr                 # U
 utf8n_to_uvuni                 # U
 uvchr_to_utf8                  # E
 uvuni_to_utf8                  # E
+PTR2ul                         # added by devel/scanprov
+UVXf                           # added by devel/scanprov

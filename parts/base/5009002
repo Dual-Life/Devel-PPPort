@@ -17,3 +17,4 @@ mXPUSHn                        # U
 mXPUSHp                        # U
 mXPUSHu                        # U
 vnormal                        # E
+PERL_BCDVERSION                # added by devel/scanprov

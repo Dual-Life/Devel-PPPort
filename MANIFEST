@@ -4,6 +4,7 @@ devel/buildperl.pl
 devel/mkapidoc.sh
 devel/mktodo
 devel/mktodo.pl
+devel/scanprov
 HACKERS
 Makefile.PL
 MANIFEST

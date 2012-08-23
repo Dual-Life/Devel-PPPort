@@ -28,7 +28,7 @@ PTR2ul
 #  define PL_na	             na
 #  define PL_perldb          perldb
 #  define PL_rsfp_filters    rsfp_filters
-#  define PL_rsfpv           rsfp
+#  define PL_rsfp            rsfp
 #  define PL_stdingv         stdingv
 #  define PL_sv_no           sv_no
 #  define PL_sv_undef        sv_undef

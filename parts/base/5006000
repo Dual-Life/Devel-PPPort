@@ -463,3 +463,40 @@ vwarner                        # E
 warn                           # E (Perl_warn)
 warner                         # E
 whichsig                       # E (Perl_whichsig)
+CopFILE                        # added by devel/scanprov
+CopFILEAV                      # added by devel/scanprov
+CopFILEGV                      # added by devel/scanprov
+CopFILEGV_set                  # added by devel/scanprov
+CopFILESV                      # added by devel/scanprov
+CopFILE_set                    # added by devel/scanprov
+CopSTASH                       # added by devel/scanprov
+CopSTASHPV                     # added by devel/scanprov
+CopSTASHPV_set                 # added by devel/scanprov
+CopSTASH_eq                    # added by devel/scanprov
+CopSTASH_set                   # added by devel/scanprov
+INT2PTR                        # added by devel/scanprov
+IVSIZE                         # added by devel/scanprov
+IVTYPE                         # added by devel/scanprov
+IVdf                           # added by devel/scanprov
+NUM2PTR                        # added by devel/scanprov
+NVTYPE                         # added by devel/scanprov
+PERL_REVISION                  # added by devel/scanprov
+PERL_SUBVERSION                # added by devel/scanprov
+PERL_VERSION                   # added by devel/scanprov
+PTR2IV                         # added by devel/scanprov
+PTR2NV                         # added by devel/scanprov
+PTR2UV                         # added by devel/scanprov
+PTRV                           # added by devel/scanprov
+UVSIZE                         # added by devel/scanprov
+UVTYPE                         # added by devel/scanprov
+UVof                           # added by devel/scanprov
+UVuf                           # added by devel/scanprov
+UVxf                           # added by devel/scanprov
+aTHX                           # added by devel/scanprov
+aTHX_                          # added by devel/scanprov
+dNOOP                          # added by devel/scanprov
+dTHX                           # added by devel/scanprov
+dTHXa                          # added by devel/scanprov
+dTHXoa                         # added by devel/scanprov
+pTHX                           # added by devel/scanprov
+pTHX_                          # added by devel/scanprov

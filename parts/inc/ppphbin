@@ -4,7 +4,6 @@
 
 =cut
 
-#!/usr/bin/perl -w
 use strict;
 
 my %opt = (
@@ -192,7 +191,7 @@ for $filename (@files) {
     my $match = $func;
     $match .= "|$revreplace{$func}" if exists $revreplace{$func};
     if ($c =~ /\b(?:Perl_)?($match)\b/) {
-      $file{uses_replace}{$1}++ if $1 eq $revreplace{$func};
+      $file{uses_replace}{$1}++ if exists $revreplace{$func} && $1 eq $revreplace{$func};
       $file{uses_Perl}{$func}++ if $c =~ /\bPerl_$func\b/;
       if (exists $API{$func}{provided}) {
         if (!exists $API{$func}{base} || $API{$func}{base} > $opt{'compat-version'}) {

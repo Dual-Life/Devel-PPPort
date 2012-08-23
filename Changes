@@ -1,3 +1,11 @@
+2.99_06 - 2004-08-11
+
+    * --compat-version now considers all macros/functions
+      provided by Devel::PPPort, not only the documented API
+    * fixed: PL_rsfp was PL_rsfpv
+    * turn __PPPORT_NAME__ back to ppport.h, because the former
+      looks ugly on search.cpan.org
+
 2.99_05 - 2004-08-10
 
     * --compat-version now also hides compatibility warnings for

@@ -12,11 +12,11 @@ DPPP_NAMESPACE
 
 =head1 NAME
 
-__PPPORT_NAME__ - Perl/Pollution/Portability version __VERSION__
+ppport.h - Perl/Pollution/Portability version __VERSION__
 
 =head1 SYNOPSIS
 
-  perl __PPPORT_NAME__ [options] [files]
+  perl ppport.h [options] [files]
 
   --help                      show short help
 
@@ -37,7 +37,7 @@ __PPPORT_NAME__ - Perl/Pollution/Portability version __VERSION__
 
 =head1 COMPATIBILITY
 
-This version of F<__PPPORT_NAME__> is designed to support operation with Perl
+This version of F<ppport.h> is designed to support operation with Perl
 installations back to __MIN_PERL__, and has been tested up to __MAX_PERL__.
 
 =head1 OPTIONS
@@ -68,17 +68,17 @@ Manually set the diff program and options to use.
 
 =head2 --compat-version=I<version>
 
-Tell F<__PPPORT_NAME__> to check for compatibility with the given
+Tell F<ppport.h> to check for compatibility with the given
 Perl version. The default is to check for compatibility with Perl
 version __MIN_PERL__. You can use this option to reduce the output
-of F<__PPPORT_NAME__> if you intend to be backward compatible only
+of F<ppport.h> if you intend to be backward compatible only
 up to a certain Perl version.
 
 =head2 --cplusplus
 
-Usually, F<__PPPORT_NAME__> will detect C++ style comments and
+Usually, F<ppport.h> will detect C++ style comments and
 replace them with C style comments for portability reasons.
-Using this option instructs F<__PPPORT_NAME__> to leave C++
+Using this option instructs F<ppport.h> to leave C++
 comments untouched.
 
 =head2 --quiet
@@ -103,13 +103,13 @@ unless these are also deactivated.
 =head2 --list-provided
 
 Lists the API elements for which compatibility is provided by
-F<__PPPORT_NAME__>. Also lists if it must be explicitly requested,
+F<ppport.h>. Also lists if it must be explicitly requested,
 if it has dependencies, and if there are hints for it.
 
 =head2 --list-unsupported
 
 Lists the API elements that are known not to be supported by
-F<__PPPORT_NAME__> and below which version of Perl they probably
+F<ppport.h> and below which version of Perl they probably
 won't be available or work.
 
 =head1 DESCRIPTION
@@ -125,16 +125,16 @@ Including this header is the first major one. This alone will give you
 access to a large part of the Perl API that hasn't been available in
 earlier Perl releases. Use
 
-    perl __PPPORT_NAME__ --list-provided
+    perl ppport.h --list-provided
 
-to see which API elements are provided by __PPPORT_NAME__.
+to see which API elements are provided by ppport.h.
 
 =item *
 
 You should avoid using deprecated parts of the API. For example, using
 global Perl variables without the C<PL_> prefix is deprecated. Also,
 some API functions used to have a C<perl_> prefix. Using this form is
-also deprecated. You can safely use the supported API, as F<__PPPORT_NAME__>
+also deprecated. You can safely use the supported API, as F<ppport.h>
 will provide wrappers for older Perl versions.
 
 =item *
@@ -142,7 +142,7 @@ will provide wrappers for older Perl versions.
 If you use one of a few functions that were not present in earlier
 versions of Perl, and that can't be provided using a macro, you have
 to explicitly request support for these functions by adding one or
-more C<#define>s in your source code before the inclusion of F<__PPPORT_NAME__>.
+more C<#define>s in your source code before the inclusion of F<ppport.h>.
 
 These functions will be marked C<explicit> in the list shown by
 C<--list-provided>.
@@ -165,27 +165,27 @@ function in your project.
 
 To avoid namespace conflicts, you can change the namespace of the
 explicitly exported functions using the C<DPPP_NAMESPACE> macro.
-Just C<#define> the macro before including C<__PPPORT_NAME__>:
+Just C<#define> the macro before including C<ppport.h>:
 
     #define DPPP_NAMESPACE MyOwnNamespace_
-    #include "__PPPORT_NAME__"
+    #include "ppport.h"
 
 The default namespace is C<DPPP_>.
 
 =back
 
 The good thing is that most of the above can be checked by running
-F<__PPPORT_NAME__> on your source code. See the next section for
+F<ppport.h> on your source code. See the next section for
 details.
 
 =head1 EXAMPLES
 
-To verify whether F<__PPPORT_NAME__> is needed for your module,
+To verify whether F<ppport.h> is needed for your module,
 whether you should make any changes to your code, and whether any
-special defines should be used,  F<__PPPORT_NAME__> can be run as
+special defines should be used,  F<ppport.h> can be run as
 as Perl script to check your source code. Simply say:
 
-    perl __PPPORT_NAME__
+    perl ppport.h
 
 The result will usually be a list of patches suggesting changes
 that should at least be acceptable, if not necessarily the most
@@ -193,12 +193,12 @@ efficient solution, or a fix for all possible problems.
 
 =head1 BUGS
 
-If this version of F<__PPPORT_NAME__> is causing failure during
+If this version of F<ppport.h> is causing failure during
 the compilation of this module, please check if newer versions
 of either this module or C<Devel::PPPort> are available on CPAN
 before sending a bug report.
 
-If F<__PPPORT_NAME__> was generated using the latest version of
+If F<ppport.h> was generated using the latest version of
 C<Devel::PPPort> and is causing failure of this module, please
 file a bug report using the CPAN Request Tracker at L<http://rt.cpan.org/>.
 

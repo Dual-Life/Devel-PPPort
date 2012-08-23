@@ -66,3 +66,21 @@ unpack_str                     # E
 uvchr_to_utf8_flags            # E
 uvuni_to_utf8_flags            # E
 vdeb                           # U
+IS_NUMBER_NAN                  # added by devel/scanprov
+MY_CXT                         # added by devel/scanprov
+MY_CXT_INIT                    # added by devel/scanprov
+PERL_MAGIC_shared              # added by devel/scanprov
+PERL_MAGIC_shared_scalar       # added by devel/scanprov
+PERL_MAGIC_uvar_elem           # added by devel/scanprov
+PERL_SCAN_ALLOW_UNDERSCORES    # added by devel/scanprov
+PERL_SCAN_DISALLOW_PREFIX      # added by devel/scanprov
+PERL_SCAN_GREATER_THAN_UV_MAX  # added by devel/scanprov
+START_MY_CXT                   # added by devel/scanprov
+_aMY_CXT                       # added by devel/scanprov
+_pMY_CXT                       # added by devel/scanprov
+aMY_CXT                        # added by devel/scanprov
+aMY_CXT_                       # added by devel/scanprov
+dMY_CXT                        # added by devel/scanprov
+dMY_CXT_SV                     # added by devel/scanprov
+pMY_CXT                        # added by devel/scanprov
+pMY_CXT_                       # added by devel/scanprov
