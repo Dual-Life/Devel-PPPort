@@ -4,9 +4,9 @@
 #
 ################################################################################
 #
-#  $Revision: 19 $
+#  $Revision: 20 $
 #  $Author: mhx $
-#  $Date: 2005/01/31 07:10:50 +0000 $
+#  $Date: 2005/03/10 17:45:54 +0000 $
 #
 ################################################################################
 #
@@ -44,7 +44,7 @@ for $file (glob 'parts/inc/*') {
     $tmpl =~ s/__SOURCE__/$file/mg;
     $tmpl =~ s/__PLAN__/$spec->{OPTIONS}{tests}{plan}/mg;
     $tmpl =~ s/^__TESTS__$/$spec->{tests}/mg;
-    
+
     open FH, ">$testfile" or die "$testfile: $!\n";
     print FH $tmpl;
     close FH;

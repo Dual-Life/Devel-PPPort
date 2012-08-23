@@ -1,8 +1,8 @@
 ################################################################################
 ##
-##  $Revision: 20 $
+##  $Revision: 22 $
 ##  $Author: mhx $
-##  $Date: 2005/02/02 18:17:33 +0000 $
+##  $Date: 2005/06/11 08:37:31 +0100 $
 ##
 ################################################################################
 ##
@@ -73,14 +73,16 @@ STMT_END
 /* Replace: 0 */
 #endif
 
-#ifdef HASATTRIBUTE
-#  if (defined(__GNUC__) && defined(__cplusplus)) || defined(__INTEL_COMPILER)
-#    define PERL_UNUSED_DECL
+#ifndef PERL_UNUSED_DECL
+#  ifdef HASATTRIBUTE
+#    if (defined(__GNUC__) && defined(__cplusplus)) || defined(__INTEL_COMPILER)
+#      define PERL_UNUSED_DECL
+#    else
+#      define PERL_UNUSED_DECL __attribute__((unused))
+#    endif
 #  else
-#    define PERL_UNUSED_DECL __attribute__((unused))
+#    define PERL_UNUSED_DECL
 #  endif
-#else
-#  define PERL_UNUSED_DECL
 #endif
 
 __UNDEFINED__  NOOP          (void)0
@@ -117,7 +119,7 @@ typedef NVTYPE NV;
 #  if PTRSIZE == LONGSIZE
 #    define PTR2ul(p)     (unsigned long)(p)
 #  else
-#    define PTR2ul(p)     INT2PTR(unsigned long,p)        
+#    define PTR2ul(p)     INT2PTR(unsigned long,p)
 #  endif
 
 #endif /* !INT2PTR */
