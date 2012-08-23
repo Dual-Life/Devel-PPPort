@@ -5,9 +5,9 @@
 #
 ################################################################################
 #
-#  $Revision: 29 $
+#  $Revision: 32 $
 #  $Author: mhx $
-#  $Date: 2008/01/04 11:02:22 +0000 $
+#  $Date: 2008/10/12 19:50:38 +0100 $
 #
 ################################################################################
 #
@@ -142,6 +142,7 @@ print OUT <<HEAD;
 #else
 
 #define NEED_PL_signals
+#define NEED_PL_parser
 #define NEED_eval_pv
 #define NEED_grok_bin
 #define NEED_grok_hex
@@ -150,6 +151,7 @@ print OUT <<HEAD;
 #define NEED_grok_oct
 #define NEED_load_module
 #define NEED_my_snprintf
+#define NEED_my_sprintf
 #define NEED_my_strlcat
 #define NEED_my_strlcpy
 #define NEED_newCONSTSUB

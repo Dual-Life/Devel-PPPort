@@ -73,6 +73,7 @@ parts/inc/ppphtest
 parts/inc/pvs
 parts/inc/shared_pv
 parts/inc/snprintf
+parts/inc/sprintf
 parts/inc/strlfuncs
 parts/inc/Sv_set
 parts/inc/sv_xpvf
@@ -146,6 +147,7 @@ t/ppphtest.t
 t/pvs.t
 t/shared_pv.t
 t/snprintf.t
+t/sprintf.t
 t/strlfuncs.t
 t/Sv_set.t
 t/sv_xpvf.t
