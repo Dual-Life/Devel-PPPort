@@ -130,6 +130,7 @@ soak
 t/call.t
 t/cop.t
 t/exception.t
+t/format.t
 t/grok.t
 t/limits.t
 t/magic.t
