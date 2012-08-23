@@ -68,6 +68,7 @@ parts/inc/ppphdoc
 parts/inc/ppphtest
 parts/inc/pvs
 parts/inc/snprintf
+parts/inc/strlfuncs
 parts/inc/Sv_set
 parts/inc/sv_xpvf
 parts/inc/SvPV
@@ -133,6 +134,7 @@ t/podtest.t
 t/ppphtest.t
 t/pvs.t
 t/snprintf.t
+t/strlfuncs.t
 t/Sv_set.t
 t/sv_xpvf.t
 t/SvPV.t

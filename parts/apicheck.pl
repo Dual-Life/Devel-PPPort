@@ -5,9 +5,9 @@
 #
 ################################################################################
 #
-#  $Revision: 20 $
+#  $Revision: 21 $
 #  $Author: mhx $
-#  $Date: 2006/05/28 18:35:39 +0100 $
+#  $Date: 2006/07/25 18:14:07 +0100 $
 #
 ################################################################################
 #
@@ -148,6 +148,8 @@ print OUT <<HEAD;
 #define NEED_grok_numeric_radix
 #define NEED_grok_oct
 #define NEED_my_snprintf
+#define NEED_my_strlcat
+#define NEED_my_strlcpy
 #define NEED_newCONSTSUB
 #define NEED_newRV_noinc
 #define NEED_sv_2pv_nolen
