@@ -1,9 +1,11 @@
 apicheck_c.PL
 Changes
 devel/buildperl.pl
+devel/devtools.pl
 devel/mkapidoc.sh
 devel/mktodo
 devel/mktodo.pl
+devel/regenerate
 devel/scanprov
 HACKERS
 Makefile.PL
