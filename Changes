@@ -1,3 +1,17 @@
+2.99_03 - 2004-08-09
+
+    * remove useless dependency from Makefile.PL (spotted by
+      Craig A. Berry)
+    * added checking for and replacement of C++ comments as
+      well as --cplusplus option to suppress it to ppport.h
+      script
+    * added more diagnostic output to ppport.h script
+    * added a hint for gv_stashpvn
+    * fixed the thread tests (spotted by Craig A. Berry)
+    * added more tests
+    * renamed and documented DPPP_NAMESPACE
+    * renamed some files
+
 2.99_02 - 2004-08-08
 
     * second beta

@@ -440,7 +440,7 @@ require DynaLoader;
 use strict;
 use vars qw($VERSION @ISA $data);
 
-$VERSION = "2.99_02";
+$VERSION = "2.99_03";
 
 @ISA = qw(DynaLoader);
 
@@ -493,9 +493,9 @@ __DATA__
 
 SKIP
 
-%include pod { indent => 'POD ' }
+%include ppphdoc { indent => 'POD ' }
 
-%include pppcheck
+%include ppphbin
 
 __DATA__
 */
@@ -503,12 +503,12 @@ __DATA__
 #ifndef _P_P_PORTABILITY_H_
 #define _P_P_PORTABILITY_H_
 
-#ifndef DPPP_FUNCTION_PREFIX
-#  define DPPP_FUNCTION_PREFIX DPPP_
+#ifndef DPPP_NAMESPACE
+#  define DPPP_NAMESPACE DPPP_
 #endif
 
 #define DPPP_CAT2(x,y) CAT2(x,y)
-#define DPPP_(name) DPPP_CAT2(DPPP_FUNCTION_PREFIX, name)
+#define DPPP_(name) DPPP_CAT2(DPPP_NAMESPACE, name)
 
 %include version
 

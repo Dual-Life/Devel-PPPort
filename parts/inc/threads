@@ -26,16 +26,15 @@ no_THX_arg(sv)
 	OUTPUT:
 		RETVAL
 
-IV
-with_THX_arg(sv)
-	SV *sv
-	CODE:
-		RETVAL = 1 + Perl_sv_2iv(aTHX_ sv);
-	OUTPUT:
-		RETVAL
+void
+with_THX_arg(error)
+	char *error
+	PPCODE:
+		Perl_croak(aTHX_ "%s", error);
 
 =tests plan => 2
 
 ok(&Devel::PPPort::no_THX_arg("42"), 43);
-ok(&Devel::PPPort::with_THX_arg("4711"), 4712);
+eval { &Devel::PPPort::with_THX_arg("yes\n"); };
+ok($@ =~ /^yes/);
 

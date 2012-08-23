@@ -26,9 +26,9 @@ parts/inc/mPUSH
 parts/inc/MY_CXT
 parts/inc/newCONSTSUB
 parts/inc/newRV
-parts/inc/pod
-parts/inc/pppcheck
-parts/inc/ppporth
+parts/inc/ppphbin
+parts/inc/ppphdoc
+parts/inc/ppphtest
 parts/inc/SvPV
 parts/inc/threads
 parts/inc/uv
@@ -77,7 +77,7 @@ t/mPUSH.t
 t/MY_CXT.t
 t/newCONSTSUB.t
 t/newRV.t
-t/ppporth.t
+t/ppphtest.t
 t/SvPV.t
 t/testutil.pl
 t/threads.t

@@ -23,6 +23,8 @@ __PPPORT_NAME__ - Perl/Pollution/Portability version __VERSION__
   --copy=suffix        write changed copies with suffix
   --diff=program       use diff program and options
 
+  --cplusplus          accept C++ comments
+
   --quiet              don't output anything except fatal errors
   --nodiag             don't show diagnostics
   --nohints            don't show hints
@@ -60,7 +62,14 @@ Text::Diff or a diff program to be installed.
 
 =head2 --diff=I<program>
 
-Manually set the diff program to use.
+Manually set the diff program and options to use.
+
+=head2 --cplusplus
+
+Usually, F<__PPPORT_NAME__> will detect C++ style comments and
+replace them with C style comments for portability reasons.
+Using this option instructs F<__PPPORT_NAME__> to leave C++
+comments untouched.
 
 =head2 --quiet
 
@@ -143,6 +152,15 @@ Note that you mustn't have more than one global request for one
 function in your project.
 
     __EXPLICIT_API__
+
+To avoid namespace conflicts, you can change the namespace of the
+explicitly exported functions using the C<DPPP_NAMESPACE> macro.
+Just C<#define> the macro before including C<__PPPORT_NAME__>:
+
+    #define DPPP_NAMESPACE MyOwnNamespace_
+    #include "__PPPORT_NAME__"
+
+The default namespace is C<DPPP_>.
 
 =back
 

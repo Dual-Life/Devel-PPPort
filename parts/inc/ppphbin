@@ -8,10 +8,11 @@
 use strict;
 
 my %opt = (
-  quiet   => 0,
-  diag    => 1,
-  hints   => 1,
-  changes => 1,
+  quiet     => 0,
+  diag      => 1,
+  hints     => 1,
+  changes   => 1,
+  cplusplus => 0,
 );
 
 my($ppport) = $0 =~ /([\w.]+)$/;
@@ -21,7 +22,7 @@ my $HS = "[ \t]";             # horizontal whitespace
 eval {
   require Getopt::Long;
   Getopt::Long::GetOptions(\%opt, qw(
-    help quiet diag! hints! changes!
+    help quiet diag! hints! changes! cplusplus
     patch=s copy=s diff=s
     list-provided list-unsupported
   )) or usage();
@@ -160,7 +161,7 @@ for $filename (@files) {
     (/ (?:
         \*[^*]*\*+(?:[^$ccs][^*]*\*+)* /
         |
-        /[^\n]*
+        /[^\r\n]*
       ))
   }{
     defined $2 and push @ccom, $2;
@@ -231,7 +232,7 @@ for $need (keys %{$global{needs}}) {
     my $target = shift @targets;
     $files{$target}{needs}{$need} = 'global';
     for (@{$global{needs}{$need}}) {
-      $files{$_}{needs}{$need} = '' if $_ ne $target;
+      $files{$_}{needs}{$need} = 'extern' if $_ ne $target;
     }
   }
 }
@@ -306,7 +307,7 @@ for $filename (@files) {
       $message = "No need to define NEED_${func}_GLOBAL if $func is never used";
     }
     elsif (exists $file{needs}{$func}) {
-      if ($file{needs}{$func} eq '') {
+      if ($file{needs}{$func} eq 'extern') {
         $message = "No need to define NEED_${func}_GLOBAL when already needed globally";
       }
       elsif ($file{needs}{$func} eq 'static') {
@@ -326,9 +327,17 @@ for $filename (@files) {
 
     for $func (sort keys %{$file{needs}}) {
       my $type = $file{needs}{$func};
-      next if $type eq '';
+      next if $type eq 'extern';
       my $suffix = $type eq 'global' ? '_GLOBAL' : '';
-      $pp .= "#define NEED_$func$suffix\n" unless exists $file{"needed_$type"}{$func};
+      unless (exists $file{"needed_$type"}{$func}) {
+        if ($type eq 'global') {
+          diag("Files [@{$global{needs}{$func}}] need $func, adding global request");
+        }
+        else {
+          diag("File needs $func, adding static request");
+        }
+        $pp .= "#define NEED_$func$suffix\n";
+      }
     }
 
     if ($pp && ($c =~ s/^(?=$HS*#$HS*define$HS+NEED_\w+)/$pp/m)) {
@@ -357,9 +366,21 @@ for $filename (@files) {
 
   # put back in our C comments
   my $ix;
+  my $cppc = 0;
   my @ccom = @{$file{ccom}};
   for $ix (0 .. $#ccom) {
-    $c =~ s/$rccs$ix$rcce/$ccom[$ix]/;
+    if (!$opt{cplusplus} && $ccom[$ix] =~ s!^//!!) {
+      $cppc++;
+      $file{changes} += $c =~ s/$rccs$ix$rcce/$ccs$ccom[$ix] $cce/;
+    }
+    else {
+      $c =~ s/$rccs$ix$rcce/$ccom[$ix]/;
+    }
+  }
+
+  if ($cppc) {
+    my $s = $cppc != 1 ? 's' : '';
+    warning("Uses $cppc C++ style comment$s, which is not portable");
   }
 
   if ($file{changes}) {

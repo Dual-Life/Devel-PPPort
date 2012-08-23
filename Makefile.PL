@@ -39,10 +39,7 @@ WriteMakefile(
   OBJECT        => '$(BASEEXT)$(OBJ_EXT) $(O_FILES)',
   XSPROTOARG    => '-noprototypes',
   clean         => { FILES => "@clean" },
-  depend        => {
-                     '$(OBJECT)'   => '$(H_FILES)',
-                     'ppport_h.PL' => 'PPPort.pm',
-                   },
+  depend        => { '$(OBJECT)' => '$(H_FILES)' },
   @coreopts,
 );
 

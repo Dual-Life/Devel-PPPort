@@ -101,6 +101,13 @@ __UNDEFINED__  newSVpvn(data,len)  ((data)                                      
                                     ? ((len) ? newSVpv((data), (len)) : newSVpv("", 0)) \
                                     : newSV(0))
 
+/* Hint: gv_stashpvn
+ * This function's backport doesn't support the length parameter, but
+ * rather ignores it. Portability can only be ensured if the length
+ * parameter is used for speed reasons, but the length can always be
+ * correctly computed from the string argument.
+ */
+
 __UNDEFINED__  gv_stashpvn(str,len,create)  gv_stashpv(str,create)
 
 /* Replace: 1 */
