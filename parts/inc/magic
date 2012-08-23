@@ -1,8 +1,8 @@
 ################################################################################
 ##
-##  $Revision: 17 $
+##  $Revision: 19 $
 ##  $Author: mhx $
-##  $Date: 2009/01/18 13:10:55 +0000 $
+##  $Date: 2010/02/20 11:01:50 +0000 $
 ##
 ################################################################################
 ##
@@ -358,9 +358,9 @@ ok($h{sv}, 4711);
 &Devel::PPPort::sv_usepvn_mg($h{sv}, 'Perl');
 ok($h{sv}, 'Perl');
 
-my $ver = eval qq[qv("v1.2.0")];
-ok($[ < 5.009 || $@ eq '');
-ok($@ || Devel::PPPort::SvVSTRING_mg($ver));
+my $ver = eval qq[v1.2.0];
+ok($] < 5.009 || $@ eq '');
+ok($] < 5.009 || Devel::PPPort::SvVSTRING_mg($ver));
 ok(!Devel::PPPort::SvVSTRING_mg(4711));
 
 my $foo = 'bar';

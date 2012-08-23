@@ -1,4 +1,5 @@
 5.009005
+PL_parser                      # E
 Perl_signbit                   # U
 SvRX                           # U
 SvRXOK                         # U

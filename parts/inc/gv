@@ -1,8 +1,8 @@
 ################################################################################
 ##
-##  $Revision: 1 $
+##  $Revision: 2 $
 ##  $Author: mhx $
-##  $Date: 2009/06/12 11:29:56 +0100 $
+##  $Date: 2010/02/20 10:58:41 +0000 $
 ##
 ################################################################################
 ##
@@ -23,6 +23,8 @@ __UNDEFINED__
 
 __UNDEFINED__ GvSVn(gv)        GvSV(gv)
 __UNDEFINED__ isGV_with_GP(gv) isGV(gv)
+__UNDEFINED__ gv_fetchpvn_flags(name, len, flags, svt) gv_fetchpv(name, flags, svt)
+__UNDEFINED__ gv_fetchsv(name, flags, svt) gv_fetchpv(SvPV_nolen_const(name), flags, svt)
 
 =xsubs
 
@@ -58,9 +60,28 @@ isGV_with_GP()
 	OUTPUT:
 		RETVAL
 
+SV*
+gv_fetchpvn_flags()
+	CODE:
+		RETVAL = newRV_inc((SV*)gv_fetchpvn_flags("Devel::PPPort::VERSION", sizeof("Devel::PPPort::VERSION")-1, 0, SVt_PV));
+	OUTPUT:
+		RETVAL
 
-=tests plan => 2
+SV*
+gv_fetchsv(name)
+	SV *name
+	CODE:
+		RETVAL = newRV_inc((SV*)gv_fetchsv(name, 0, SVt_PV));
+	OUTPUT:
+		RETVAL
+
+
+=tests plan => 4
 
 ok(Devel::PPPort::GvSVn(), 1);
 
-ok(Devel::PPPort::isGV_with_GP(), 2)
+ok(Devel::PPPort::isGV_with_GP(), 2);
+
+ok(Devel::PPPort::gv_fetchpvn_flags(), \*Devel::PPPort::VERSION);
+
+ok(Devel::PPPort::gv_fetchsv("Devel::PPPort::VERSION"), \*Devel::PPPort::VERSION);

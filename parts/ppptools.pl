@@ -4,9 +4,9 @@
 #
 ################################################################################
 #
-#  $Revision: 27 $
+#  $Revision: 28 $
 #  $Author: mhx $
-#  $Date: 2009/01/18 13:10:51 +0000 $
+#  $Date: 2010/02/20 16:21:14 +0000 $
 #
 ################################################################################
 #
@@ -312,17 +312,22 @@ sub parse_embed
         my @e = split /\s*\|\s*/, $line;
         if( @e >= 3 ) {
           my($flags, $ret, $name, @args) = @e;
-          for (@args) {
-            $_ = [trim_arg($_)];
+          if ($name =~ /^[^\W\d]\w*$/) {
+            for (@args) {
+              $_ = [trim_arg($_)];
+            }
+            ($ret) = trim_arg($ret);
+            push @func, {
+              name  => $name,
+              flags => { map { $_, 1 } $flags =~ /./g },
+              ret   => $ret,
+              args  => \@args,
+              cond  => ppcond(\@pps),
+            };
           }
-          ($ret) = trim_arg($ret);
-          push @func, {
-            name  => $name,
-            flags => { map { $_, 1 } $flags =~ /./g },
-            ret   => $ret,
-            args  => \@args,
-            cond  => ppcond(\@pps),
-          };
+          else {
+            warn "mysterious name [$name] in $file, line $.\n";
+          }
         }
       }
     }

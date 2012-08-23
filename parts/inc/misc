@@ -1,8 +1,8 @@
 ################################################################################
 ##
-##  $Revision: 53 $
+##  $Revision: 54 $
 ##  $Author: mhx $
-##  $Date: 2009/03/31 22:05:55 +0100 $
+##  $Date: 2010/02/13 08:09:21 +0000 $
 ##
 ################################################################################
 ##
@@ -475,7 +475,6 @@ Perl_ppaddr_t(string)
 		Perl_ppaddr_t lower;
 	PPCODE:
 		lower = PL_ppaddr[OP_LC];
-		PUSHMARK(SP);
 		mXPUSHs(newSVpv(string, 0));
 		PUTBACK;
 		ENTER;
