@@ -5,13 +5,13 @@
 #
 ################################################################################
 #
-#  $Revision: 27 $
+#  $Revision: 29 $
 #  $Author: mhx $
-#  $Date: 2007/08/19 18:41:03 +0100 $
+#  $Date: 2008/01/04 11:02:22 +0000 $
 #
 ################################################################################
 #
-#  Version 3.x, Copyright (C) 2004-2007, Marcus Holland-Moritz.
+#  Version 3.x, Copyright (C) 2004-2008, Marcus Holland-Moritz.
 #  Version 2.x, Copyright (C) 2001, Paul Marquess.
 #  Version 1.x, Copyright (C) 1999, Kenneth Albanowski.
 #
@@ -165,6 +165,7 @@ print OUT <<HEAD;
 #define NEED_vload_module
 #define NEED_vnewSVpvf
 #define NEED_warner
+#define NEED_newSVpvn_flags
 
 #include "ppport.h"
 
