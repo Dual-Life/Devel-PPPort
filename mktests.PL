@@ -4,9 +4,9 @@
 #
 ################################################################################
 #
-#  $Revision: 17 $
+#  $Revision: 18 $
 #  $Author: mhx $
-#  $Date: 2004/08/16 10:31:29 +0100 $
+#  $Date: 2004/08/30 19:49:12 +0100 $
 #
 ################################################################################
 #
@@ -68,7 +68,7 @@ BEGIN {
     @INC = ('../lib', '../ext/Devel/PPPort/t') if -d '../lib' && -d '../ext';
     require Config; import Config;
     use vars '%Config';
-    if (" $Config{'extensions'} " !~ m[ Devel/PPPort ] ) {
+    if (" $Config{'extensions'} " !~ m[ Devel/PPPort ]) {
       print "1..0 # Skip -- Perl configured without Devel::PPPort module\n";
       exit 0;
     }
