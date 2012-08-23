@@ -1,0 +1,15 @@
+Perl/Pollution/Portability Version 3
+
+THIS IS A BETA RELEASE
+
+There's still quite a lot to do until 3.00. See TODO for
+details. See also perldoc PPPort.pm and perldoc ppport.h
+after you've built the module.
+
+
+Version 3.x, Copyright (C) 2003, Marcus Holland-Moritz.
+Version 2.x, Copyright (C) 2001, Paul Marquess.
+Version 1.x, Copyright (C) 1999, Kenneth Albanowski.
+
+This program is free software; you can redistribute it and/or
+modify it under the same terms as Perl itself.

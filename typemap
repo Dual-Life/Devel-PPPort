@@ -1,0 +1,14 @@
+UV			T_UV
+NV                      T_NV
+
+INPUT
+T_UV
+	$var = ($type)SvUV($arg)
+T_NV
+	$var = ($type)SvNV($arg)
+
+OUTPUT
+T_UV
+	sv_setuv($arg, (UV)$var);
+T_NV
+	sv_setnv($arg, (NV)$var);

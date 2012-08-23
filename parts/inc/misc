@@ -1,0 +1,214 @@
+=provides
+
+__UNDEFINED__
+PERL_UNUSED_DECL
+NVTYPE
+INT2PTR
+PTRV
+NUM2PTR
+PTR2IV
+PTR2UV
+PTR2NV
+PTR2ul
+/PL_\w+/
+
+=implementation
+
+#if (PERL_VERSION < 4) || ((PERL_VERSION == 4) && (PERL_SUBVERSION <= 5))
+/* Replace: 1 */
+#  define PL_Sv              Sv
+#  define PL_compiling       compiling
+#  define PL_copline         copline
+#  define PL_curcop          curcop
+#  define PL_curstash        curstash
+#  define PL_defgv           defgv
+#  define PL_dirty           dirty
+#  define PL_dowarn          dowarn
+#  define PL_hints           hints
+#  define PL_na	             na
+#  define PL_perldb          perldb
+#  define PL_rsfp_filters    rsfp_filters
+#  define PL_rsfpv           rsfp
+#  define PL_stdingv         stdingv
+#  define PL_sv_no           sv_no
+#  define PL_sv_undef        sv_undef
+#  define PL_sv_yes          sv_yes
+#  define PL_hexdigit        hexdigit
+/* Replace: 0 */
+#endif
+
+#ifdef HASATTRIBUTE
+#  if (defined(__GNUC__) && defined(__cplusplus)) || defined(__INTEL_COMPILER)
+#    define PERL_UNUSED_DECL
+#  else
+#    define PERL_UNUSED_DECL __attribute__((unused))
+#  endif
+#else
+#  define PERL_UNUSED_DECL
+#endif
+
+__UNDEFINED__  NOOP          (void)0
+__UNDEFINED__  dNOOP         extern int Perl___notused PERL_UNUSED_DECL
+
+#ifndef NVTYPE
+#  if defined(USE_LONG_DOUBLE) && defined(HAS_LONG_DOUBLE)
+#    define NVTYPE long double
+#  else
+#    define NVTYPE double
+#  endif
+typedef NVTYPE NV;
+#endif
+
+#ifndef INT2PTR
+
+#  if (IVSIZE == PTRSIZE) && (UVSIZE == PTRSIZE)
+#    define PTRV                  UV
+#    define INT2PTR(any,d)        (any)(d)
+#  else
+#    if PTRSIZE == LONGSIZE
+#      define PTRV                unsigned long
+#    else
+#      define PTRV                unsigned
+#    endif
+#    define INT2PTR(any,d)        (any)(PTRV)(d)
+#  endif
+
+#  define NUM2PTR(any,d)  (any)(PTRV)(d)
+#  define PTR2IV(p)       INT2PTR(IV,p)
+#  define PTR2UV(p)       INT2PTR(UV,p)
+#  define PTR2NV(p)       NUM2PTR(NV,p)
+
+#  if PTRSIZE == LONGSIZE
+#    define PTR2ul(p)     (unsigned long)(p)
+#  else
+#    define PTR2ul(p)     INT2PTR(unsigned long,p)        
+#  endif
+
+#endif /* !INT2PTR */
+
+__UNDEFINED__  boolSV(b)    ((b) ? &PL_sv_yes : &PL_sv_no)
+
+/* DEFSV appears first in 5.004_56 */
+__UNDEFINED__  DEFSV	    GvSV(PL_defgv)
+__UNDEFINED__  SAVE_DEFSV   SAVESPTR(GvSV(PL_defgv))
+
+/* Older perls (<=5.003) lack AvFILLp */
+__UNDEFINED__  AvFILLp      AvFILL
+
+__UNDEFINED__  ERRSV        get_sv("@",FALSE)
+
+__UNDEFINED__  newSVpvn(data,len)  ((data)                                              \
+                                    ? ((len) ? newSVpv((data), (len)) : newSVpv("", 0)) \
+                                    : newSV(0))
+
+__UNDEFINED__  gv_stashpvn(str,len,flags)  gv_stashpv(str,flags)
+
+__UNDEFINED__  get_cv        perl_get_cv
+__UNDEFINED__  get_sv        perl_get_sv
+__UNDEFINED__  get_av        perl_get_av
+__UNDEFINED__  get_hv        perl_get_hv
+
+__UNDEFINED__  call_argv     perl_call_argv
+__UNDEFINED__  call_method   perl_call_method
+__UNDEFINED__  call_pv       perl_call_pv
+__UNDEFINED__  call_sv       perl_call_sv
+__UNDEFINED__  eval_sv       perl_eval_sv
+
+#ifdef HAS_MEMCMP
+__UNDEFINED__ memNE(s1,s2,l) (memcmp(s1,s2,l))
+__UNDEFINED__ memEQ(s1,s2,l) (!memcmp(s1,s2,l))
+#else
+__UNDEFINED__ memNE(s1,s2,l) (bcmp(s1,s2,l))
+__UNDEFINED__ memEQ(s1,s2,l) (!bcmp(s1,s2,l))
+#endif
+
+=xsubs
+
+void
+newSVpvn()
+	PPCODE:
+		XPUSHs(newSVpvn("test", 4));
+		XPUSHs(newSVpvn("test", 2));
+		XPUSHs(newSVpvn("test", 0));
+		XPUSHs(newSVpvn(NULL, 2));
+		XPUSHs(newSVpvn(NULL, 0));
+		XSRETURN(5);
+
+SV *
+PL_sv_undef()
+	CODE:
+		RETVAL = newSVsv(&PL_sv_undef);
+	OUTPUT:
+		RETVAL
+
+SV *
+PL_sv_yes()
+	CODE:
+		RETVAL = newSVsv(&PL_sv_yes);
+	OUTPUT:
+		RETVAL
+
+SV *
+PL_sv_no()
+	CODE:
+		RETVAL = newSVsv(&PL_sv_no);
+	OUTPUT:
+		RETVAL
+
+int
+PL_na(string)
+	char *string
+	CODE:
+		PL_na = strlen(string);
+		RETVAL = PL_na;
+	OUTPUT:
+		RETVAL
+
+SV*
+boolSV(value)
+	int value
+	CODE:
+		RETVAL = newSVsv(boolSV(value));
+	OUTPUT:
+		RETVAL
+
+SV*
+DEFSV()
+	CODE:
+		RETVAL = newSVsv(DEFSV);
+	OUTPUT:
+		RETVAL
+
+int
+ERRSV()
+	CODE:
+		RETVAL = SvTRUE(ERRSV);
+	OUTPUT:
+		RETVAL
+
+=tests plan => 15
+
+my @s = &Devel::PPPort::newSVpvn();
+ok(@s == 5);
+ok($s[0], "test");
+ok($s[1], "te");
+ok($s[2], "");
+ok(!defined($s[3]));
+ok(!defined($s[4]));
+
+ok(!defined(&Devel::PPPort::PL_sv_undef()));
+ok(&Devel::PPPort::PL_sv_yes());
+ok(!&Devel::PPPort::PL_sv_no());
+ok(&Devel::PPPort::PL_na("abcd"), 4);
+
+ok(&Devel::PPPort::boolSV(1));
+ok(!&Devel::PPPort::boolSV(0));
+
+$_ = "Fred";
+ok(&Devel::PPPort::DEFSV(), "Fred");
+
+eval { 1 };
+ok(!&Devel::PPPort::ERRSV());
+eval { cannot_call_this_one() };
+ok(&Devel::PPPort::ERRSV());
+

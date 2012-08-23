@@ -1,0 +1,402 @@
+=provides
+
+=implementation
+
+=cut
+
+#!/usr/bin/perl -w
+use strict;
+
+my %opt = (
+  quiet   => 0,
+  diag    => 1,
+  hints   => 1,
+  changes => 1,
+);
+
+eval {
+  require Getopt::Long;
+  Getopt::Long::GetOptions(\%opt, qw(
+    help quiet diag! hints! changes!
+    patch=s copy=s diff=s
+  )) or usage();
+};
+
+if ($@ and grep /^-/, @ARGV) {
+  usage() if "@ARGV" =~ /^--?h(?:elp)?$/;
+  die "Getopt::Long not found. Please don't use any options.\n";
+}
+
+usage() if $opt{help};
+
+# Never use C comments in this file!!!!!
+my $ccs  = '/'.'*';
+my $cce  = '*'.'/';
+my $rccs = quotemeta $ccs;
+my $rcce = quotemeta $cce;
+
+my @files;
+
+if (@ARGV) {
+  @files = map { glob $_ } @ARGV;
+}
+else {
+  eval {
+    require File::Find;
+    File::Find::find(sub {
+      $File::Find::name =~ /\.(xs|c|h|cc)$/i
+          and push @files, $File::Find::name;
+    }, '.');
+  };
+  if ($@) {
+    @files = map { glob $_ } qw(*.xs *.c *.h *.cc);
+  }
+  my %filter = map { /(.*)\.xs$/ ? ("$1.c" => 1) : () } @files;
+  @files = grep { !/\bppport\.h$/i && !exists $filter{$_} } @files;
+}
+
+unless (@files) {
+  die "No input files given!\n";
+}
+
+my %API = map { /^(\w+)\|([^|]*)\|(\w*)$/
+                ? ( $1 => { 
+                      ($2                  ? ( todo     => $2 ) : ()),
+                      (index($3, 'v') >= 0 ? ( varargs  => 1  ) : ()),
+                      (index($3, 'p') >= 0 ? ( provided => 1  ) : ()),
+                      (index($3, 'n') >= 0 ? ( nothxarg => 1  ) : ()),
+                    } )
+                : die "invalid spec: $_" } qw(
+__PERL_API__
+);
+
+# TODO: remove
+# use Data::Dumper; print Dumper(\%API);
+
+# Scan for possible replacement candidates
+
+my(%replace, %need, %hints, %depends);
+my $replace = 0;
+my $hint = '';
+
+while (<DATA>) {
+  if ($hint) {
+    if (m{^\s*\*\s(.*?)\s*$}) {
+      $hints{$hint} ||= '';  # suppress warning with older perls
+      $hints{$hint} .= "$1\n";
+    }
+    else {
+      $hint = '';
+    }
+  }
+  $hint = $1 if m{^\s*$rccs\sHint:\s+(\w+)\s*$};
+
+  $replace     = $1 if m{^\s*$rccs\s+Replace:\s+(\d+)\s+$rcce\s*$};
+  $replace{$2} = $1 if $replace and m{^\s*#\s*define\s+(\w+)(?:\([^)]*\))?\s+(\w+)};
+  $replace{$2} = $1 if m{^\s*#\s*define\s+(\w+)(?:\([^)]*\))?\s+(\w+).*$rccs\s+Replace\s+$rcce};
+  $replace{$1} = $2 if m{^\s*$rccs\s+Replace (\w+) with (\w+)\s+$rcce\s*$};
+
+  if (m{^\s*$rccs\s+(\w+)\s+depends\s+on\s+(\w+(\s*,\s*\w+)*)\s+$rcce\s*$}) {
+    push @{$depends{$1}}, map { s/\s+//g; $_ } split /,/, $2;
+  }
+
+  $need{$1} = 1 if m{^#if\s+defined\(NEED_(\w+)(?:_GLOBAL)?\)};
+}
+
+# TODO: remove
+# use Data::Dumper; print Dumper(\%replace, \%need, \%hints, \%depends);
+
+my(%files, %global);
+my $filename;
+
+# TODO: perform global checks
+
+for $filename (@files) {
+  unless (open IN, "<$filename") {
+    warn "Unable to read from $filename: $!\n";
+    next;
+  }
+
+  info("Scanning $filename ...");
+
+  my $c = do { local $/; <IN> };
+  close IN;
+
+  my %file = (orig => $c, changes => 0);
+
+  # temporarily remove C comments from the code
+  my @ccom;
+  $c =~ s{
+    (
+        [^"'/]+
+      |
+        (?:"[^"\\]*(?:\\.[^"\\]*)*" [^"'/]*)+
+      |
+        (?:'[^'\\]*(?:\\.[^'\\]*)*' [^"'/]*)+
+    )
+  |
+    (/ (?:
+        \*[^*]*\*+(?:[^$ccs][^*]*\*+)* /
+        |
+        /[^\n]*
+      ))
+  }{
+    defined $2 and push @ccom, $2;
+    defined $1 ? $1 : "$ccs$#ccom$cce";
+  }egsx;
+
+  $file{ccom} = \@ccom;
+  $file{code} = $c;
+  $file{has_inc_ppport} = ($c =~ /#.*include.*ppport\.h/);
+
+  my $func;
+
+  for $func (keys %API) {
+    if ($c =~ /\b(?:[Pp]erl_)?$func\b/) {
+      $file{uses_Perl}{$func}++ if $c =~ /\bPerl_$func\b/;
+      if (exists $API{$func}{provided}) {
+        $file{uses}{$func}++;
+        push @{$global{uses}{$func}}, $filename;
+        my @deps = rec_depend($func);
+        if (@deps) {
+          $file{uses_deps}{$func} = \@deps;
+          for (@deps) {
+            $file{uses}{$_} = 0 unless exists $file{uses}{$_};
+            push @{$global{uses}{$_}}, $filename;
+          }
+        }
+        for ($func, @deps) {
+          if (exists $need{$_}) {
+            $file{needs}{$_}++;
+            push @{$global{needs}{$_}}, $filename;
+          }
+        }
+      }
+      if (exists $API{$func}{todo}) {
+        if ($c =~ /\b$func\b/) {
+          $file{uses_todo}{$func}++;
+          push @{$global{uses_todo}{$func}}, $filename;
+        }
+      }
+    }
+  }
+
+  while ($c =~ /^\s*#\s*define\s+(NEED_(\w+?)(_GLOBAL)?)\b/mg) {
+    if (exists $need{$2}) {
+      $file{defined $3 ? 'needed_global' : 'needed_static'}{$2}++;
+      push @{$global{defined $3 ? 'needed_global' : 'needed_static'}{$2}}, $filename;
+    }
+    else {
+      warning("Possibly wrong #define $1 in $filename");
+    }
+  }
+
+  $files{$filename} = \%file;
+}
+
+# TODO: remove
+# use Data::Dumper; print Dumper(\%files, \%global);
+
+for $filename (@files) {
+  exists $files{$filename} or next;
+
+  info("=== Analyzing $filename ===");
+
+  my %file = %{$files{$filename}};
+  my $func;
+  my $c = $file{code};
+
+  for $func (keys %{$file{uses_Perl}}) {
+    if ($API{$func}{varargs}) {
+      # TODO: check if aTHX needs to be passed
+    }
+    else {
+      warning("Uses Perl_$func instead of $func");
+      $file{changes} += ($c =~ s{\bPerl_$func(\s*)\((\s*aTHX_?)?\s*}
+                                {$func$1(}g);
+    }
+  }
+
+  for $func (keys %{$file{uses}}) {
+    next unless $file{uses}{$func};   # if it's only a dependency
+    if (exists $file{uses_deps}{$func}) {
+      diag("Uses $func, which depends on ", join(', ', @{$file{uses_deps}{$func}}));
+    }
+    elsif (exists $replace{$func}) {
+      warning("Uses $func instead of $replace{$func}");
+      $file{changes} += ($c =~ s/\b$func\b/$replace{$func}/g);
+    }
+    elsif (exists $hints{$func}) {
+      diag("Uses $func");
+    }
+    hint($func);
+  }
+
+  for $func (keys %{$file{uses_todo}}) {
+    warning("Uses $func, which may not be portable below perl ",
+            format_version($API{$func}{todo}));
+  }
+
+  for $func (keys %{$file{needed_static}}) {
+    if (not exists $file{uses}{$func}) {
+      diag("No need to define NEED_$func if $func is never used");
+      $file{changes} += ($c =~ s/^\s*#\s*define\s+NEED_$func\b.*\r?\n?//mg);
+    }
+  }
+
+  for $func (keys %{$file{needed_global}}) {
+    if (not exists $global{uses}{$func}) {
+      diag("No need to define NEED_${func}_GLOBAL if $func is never used");
+      $file{changes} += ($c =~ s/^\s*#\s*define\s+NEED_${func}_GLOBAL\b.*\r?\n?//mg);
+    }
+  }
+
+  $file{needs_inc_ppport} = keys %{$file{uses}};
+
+  if ($file{needs_inc_ppport}) {
+    my $pp = '';
+
+    for $func (keys %{$file{needs}}) {
+      $pp .= "#define NEED_$func\n"
+        unless exists $file{needed_global}{$func} || exists $file{needed_static}{$func};
+    }
+
+    if ($pp && ($c =~ s/^(?=[^\S\r\n]*#\s*define\s+NEED_\w+)/$pp/m)) {
+      $pp = '';
+      $file{changes}++;
+    }
+
+    $pp .= qq(#include "ppport.h"\n) unless $file{has_inc_ppport};
+
+    if ($pp) {
+      $file{changes} += ($c =~ s/(.*^\s*#\s*define\s+NEED_\w+.*?)^/$1$pp/ms)
+                     || ($c =~ s/^(?=[^\S\r\n]*#\s*include.*ppport\.h)/$pp/m)
+                     || ($c =~ s/^(\s*#\s*include.*XSUB.*\s*?)^/$1$pp/m)
+                     || ($c =~ s/^/$pp/);
+    }
+  }
+  else {
+    if ($file{has_inc_ppport}) {
+      diag("No need to include 'ppport.h'");
+      $file{changes} += ($c =~ s/^\s*#\s*include.*ppport\.h.*\s*?^//m);
+    }
+  }
+
+  # put back in our C comments
+  my $ix;
+  my @ccom = @{$file{ccom}};
+  for $ix (0 .. $#ccom) {
+    $c =~ s/$rccs$ix$rcce/$ccom[$ix]/;
+  }
+
+  # TODO: remove
+  # use Data::Dumper; print Dumper(\%file);
+
+  if ($file{changes}) {
+    if ($opt{changes}) {
+      # TODO: make more flexible (use Text::Diff, File::Temp, if available)
+      info("Suggested changes:");
+
+      open OUT, ">/tmp/ppport.h.$$";
+      print OUT $c;
+      close OUT;
+
+      open DIFF, "diff -u $filename /tmp/ppport.h.$$|" ;
+      while (<DIFF>) {
+        s!/tmp/ppport\.h\.$$!$filename.patched!;
+        print STDOUT;
+      }
+      close DIFF;
+
+      unlink("/tmp/ppport.h.$$");
+    }
+  }
+  else {
+    info("Looks good");
+  }
+}
+
+exit 0;
+
+#######################################################################
+
+sub rec_depend
+{
+  my $func = shift;
+  return () unless exists $depends{$func};
+  map { ($_, rec_depend($_)) } @{$depends{$func}};
+}
+
+sub format_version
+{
+  my $ver = shift;
+
+  $ver =~ s/$/000000/;
+  my($r,$v,$s) = $ver =~ /(\d+)\.(\d{3})(\d{3})/;
+
+  $v = int $v;
+  $s = int $s;
+
+  if ($r < 5 || ($r == 5 && $v < 6)) {
+    if ($s % 10) {
+      die "invalid version '$ver'\n";
+    }
+    $s /= 10;
+
+    $ver = sprintf "%d.%03d", $r, $v;
+    $s > 0 and $ver .= sprintf "_%02d", $s;
+
+    return $ver;
+  }
+
+  return sprintf "%d.%d.%d", $r, $v, $s;
+}
+
+sub info
+{
+  $opt{quiet} and return;
+  print @_, "\n";
+}
+
+sub diag
+{
+  $opt{quiet} and return;
+  $opt{diag} and print @_, "\n";
+}
+
+sub warning
+{
+  $opt{quiet} and return;
+  print "*** ", @_, "\n";
+}
+
+my %given_hints;
+sub hint
+{
+  $opt{quiet} and return;
+  $opt{hints} or return;
+  my $func = shift;
+  exists $hints{$func} or return;
+  $given_hints{$func}++ and return;
+  my $hint = $hints{$func};
+  $hint =~ s/^/   /mg;
+  print "   --- hint for $func ---\n", $hint;
+}
+
+sub usage
+{
+  my($usage) = do { local(@ARGV,$/)=($0); <> } =~ /^=head\d\s+SYNOPSIS\s*^(.*?)\s*^=/ms;
+  my %M = ( 'I' => '*' );
+  $usage =~ s/^\s*perl/$^X/;
+  $usage =~ s/([A-Z])<([^>]+)>/$M{$1}$2$M{$1}/g;
+
+  print <<ENDUSAGE;
+
+Usage: $usage
+
+See perldoc $0 for details.
+
+ENDUSAGE
+
+  exit 2;
+}

@@ -1,0 +1,25 @@
+#!/usr/bin/perl -w
+use strict;
+
+# for (glob 'parts/todo/*') {
+#   unlink or die "$_: $!\n";
+# }
+
+my $install = '/tmp/perl/install/default';
+# my $install = '/tmp/perl/install/thread';
+
+my @perls = sort { $b->{version} <=> $a->{version} }
+            map { { version => `$_ -e 'printf "%.6f", \$]'`, path => $_ } }
+            ('bleadperl', glob "$install/*/bin/perl5.*");
+
+for (1 .. $#perls) {
+  $perls[$_]{todo} = $perls[$_-1]{version};
+}
+
+shift @perls;
+
+for (@perls) {
+  my $todo = do { my $v = $_->{todo}; $v =~ s/\D+//g; $v };
+  -e "parts/todo/$todo" and next;
+  system "devel/mktodo.pl --perl $_->{path} --todo parts/todo/$todo --version $_->{todo}" and die;
+}

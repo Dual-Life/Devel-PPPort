@@ -1,0 +1,66 @@
+These would be nice for 3.00:
+
+* make sure functions that are dependencies don't trigger hints (TEST)
+
+* Replace all Perl_ that _don't_ have ... non-Perl_ macro (TEST)
+
+* add more hints
+
+* update documentation in ppport.h
+
+* check for TODO's
+
+* use Text::Diff and File::Temp ?
+
+* README
+
+* DOCs
+
+* document devel/ tools
+
+* More tests (as always)
+
+* more documentation
+
+
+Mmmhhh, don't know what to do about these:
+
+* pad_findmy??
+
+* Don't need to install the harness files - fix Makefile.PL
+
+
+These things should also have tests:
+
+PERL_VERSION
+PERL_BCDVERSION
+
+PL_stdingv
+PL_hints
+PL_curcop
+PL_curstash
+PL_copline
+PL_Sv
+PL_compiling
+PL_dirty
+
+PTR2IV
+INT2PTR
+
+dTHR
+gv_stashpvn
+NOOP
+SAVE_DEFSV
+PERL_UNUSED_DECL
+dNOOP
+
+call_argv
+call_method
+call_pv
+call_sv
+
+get_cv
+get_av
+get_hv
+get_sv
+

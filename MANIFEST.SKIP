@@ -1,0 +1,12 @@
+^Makefile$
+~$
+\.old(?:\..*)?$
+\.swp$
+\.bak$
+\.orig$
+\.cache\.cm$
+^blib
+^backup
+^parts/todo-
+^PPPort.pm$
+Devel-PPPort.*\.tar\.gz$

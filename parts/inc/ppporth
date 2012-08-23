@@ -1,0 +1,71 @@
+=tests plan => 3
+
+use File::Path qw/rmtree mkpath/;
+
+my $tmp = 'ppptmp';
+
+rmtree($tmp) if -d $tmp;
+mkpath($tmp) or die "mkdir $tmp: $!\n";
+chdir($tmp) or die "chdir $tmp: $!\n";
+
+my $inc = '';
+if ($ENV{'PERL_CORE'}) {
+  $inc = '-I../../lib' if -d '../../lib';
+}
+
+END {
+  chdir("..") if !-d $tmp && -d "../$tmp";
+  rmtree($tmp);
+}
+
+ok(&Devel::PPPort::WriteFile("ppport.h"));
+
+sub ppport
+{
+  my @args = shift;
+  join '', `$^X $inc ppport.h @args`;
+}
+
+my @tests;
+
+for (split /\s*={70,}\s*/, do { local $/; <DATA> }) {
+  s/^\s+//; s/\s+$//;
+  my($c, %f);
+  ($c, @f{m/-{20,}\s+(\S+)\s+-{20,}/g}) = split /\s*-{20,}\s+\S+\s+-{20,}\s*/;
+  push @tests, { code => $c, files => \%f };
+}
+
+my $t;
+for $t (@tests) {
+  my $f;
+  for $f (keys %{$t->{files}}) {
+    local *F;
+    open F, ">$f" or die "open $f: $!\n";
+    print F $t->{files}{$f} . "\n";
+    close F;
+  }
+
+  eval $t->{code};
+
+  unlink keys %{$t->{files}} or die "unlink: $!\n";
+}
+
+__DATA__
+
+my $o = ppport('--help');
+ok($o =~ /^Usage:/m);
+
+---------------------------- test.xs ------------------------------------------
+
+Perl_newSViv();
+
+===============================================================================
+
+ok(1);
+
+---------------------------- test.xs ------------------------------------------
+
+#include "ppport.h"
+
+grok_bin();
+

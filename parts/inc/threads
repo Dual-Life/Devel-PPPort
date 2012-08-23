@@ -1,0 +1,41 @@
+=provides
+
+__UNDEFINED__
+
+=implementation
+
+__UNDEFINED__  dTHR       dNOOP
+
+__UNDEFINED__  dTHX       dNOOP
+__UNDEFINED__  dTHXa(x)   dNOOP
+
+__UNDEFINED__  pTHX       void
+__UNDEFINED__  pTHX_
+__UNDEFINED__  aTHX
+__UNDEFINED__  aTHX_
+
+__UNDEFINED__  dTHXoa(x)  dTHXa(x)
+
+=xsubs
+
+IV
+no_THX_arg(sv)
+	SV *sv
+	CODE:
+		RETVAL = 1 + sv_2iv(sv);
+	OUTPUT:
+		RETVAL
+
+IV
+with_THX_arg(sv)
+	SV *sv
+	CODE:
+		RETVAL = 1 + Perl_sv_2iv(aTHX_ sv);
+	OUTPUT:
+		RETVAL
+
+=tests plan => 2
+
+ok(&Devel::PPPort::no_THX_arg("42"), 43);
+ok(&Devel::PPPort::with_THX_arg("4711"), 4712);
+
