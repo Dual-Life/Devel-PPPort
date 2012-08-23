@@ -70,6 +70,7 @@ parts/inc/podtest
 parts/inc/ppphbin
 parts/inc/ppphdoc
 parts/inc/ppphtest
+parts/inc/pv_tools
 parts/inc/pvs
 parts/inc/shared_pv
 parts/inc/snprintf
@@ -144,6 +145,7 @@ t/newRV.t
 t/newSVpv.t
 t/podtest.t
 t/ppphtest.t
+t/pv_tools.t
 t/pvs.t
 t/shared_pv.t
 t/snprintf.t
