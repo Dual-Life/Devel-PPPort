@@ -1,8 +1,8 @@
 ################################################################################
 ##
-##  $Revision: 14 $
+##  $Revision: 15 $
 ##  $Author: mhx $
-##  $Date: 2004/08/13 11:45:55 +0100 $
+##  $Date: 2004/08/16 08:17:53 +0100 $
 ##
 ################################################################################
 ##
@@ -154,6 +154,9 @@ __UNDEFINED__  Poison(d,n,t)   (void)memset((char*)(d), 0xAB, (n) * sizeof(t))
 
 __UNDEFINED__  dUNDERBAR       dNOOP
 __UNDEFINED__  UNDERBAR        DEFSV
+
+__UNDEFINED__  dAX             I32 ax = MARK - PL_stack_base + 1
+__UNDEFINED__  dITEMS          I32 items = SP - MARK
 
 =xsubs
 

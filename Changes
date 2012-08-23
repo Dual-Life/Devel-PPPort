@@ -1,3 +1,8 @@
+3.00 - 2004-08-16
+
+    * added support for dAX and dITEMS, which got lost while
+      working on the 3.00 internals
+
 2.99_07 - 2004-08-13
 
     * improve/check documentation
@@ -74,6 +79,98 @@
       - now uses File::Find when available
     * tested with multi-threaded (ithreads and 5.005-threads) perls
       from 5.005 and single-threaded perls from 5.003 up to 5.9.x
+    * added support for the following API:
+        CopFILE
+        CopFILEAV
+        CopFILEGV
+        CopFILEGV_set
+        CopFILE_set
+        CopFILESV
+        CopSTASH
+        CopSTASH_eq
+        CopSTASHPV
+        CopSTASHPV_set
+        CopSTASH_set
+        CopyD
+        dUNDERBAR
+        IN_PERL_COMPILETIME
+        IV_MAX
+        IV_MIN
+        IVTYPE
+        memEQ
+        memNE
+        MoveD
+        mPUSHi
+        mPUSHn
+        mPUSHp
+        mPUSHu
+        mXPUSHi
+        mXPUSHn
+        mXPUSHp
+        mXPUSHu
+        newCONSTSUB
+        newSVuv
+        PERL_INT_MAX
+        PERL_INT_MIN
+        PERL_LONG_MAX
+        PERL_LONG_MIN
+        PERL_QUAD_MAX
+        PERL_QUAD_MIN
+        PERL_SHORT_MAX
+        PERL_SHORT_MIN
+        PERL_UCHAR_MAX
+        PERL_UCHAR_MIN
+        PERL_UINT_MAX
+        PERL_UINT_MIN
+        PERL_ULONG_MAX
+        PERL_ULONG_MIN
+        PERL_UQUAD_MAX
+        PERL_UQUAD_MIN
+        PERL_USHORT_MAX
+        PERL_USHORT_MIN
+        PL_hexdigit
+        PL_rsfp
+        Poison
+        PUSHmortal
+        sv_2pvbyte
+        sv_2pvbyte_nolen
+        sv_2pv_nolen
+        sv_2uv
+        sv_catpv_mg
+        sv_catpvn_mg
+        sv_catpvn_nomg
+        sv_catsv_mg
+        sv_catsv_nomg
+        SvGETMAGIC
+        SvIV_nomg
+        SvPV_force_nomg
+        sv_pvn
+        sv_pvn_force
+        sv_pvn_nomg
+        SvPV_nomg
+        sv_setiv_mg
+        sv_setnv_mg
+        sv_setpv_mg
+        sv_setpvn_mg
+        sv_setsv_mg
+        sv_setsv_nomg
+        sv_setuv
+        sv_setuv_mg
+        sv_usepvn_mg
+        sv_uv
+        SvUV
+        SvUV_nomg
+        SvUVx
+        SvUVX
+        SvUVXx
+        UNDERBAR
+        UV_MAX
+        UV_MIN
+        UVTYPE
+        XPUSHmortal
+        XSRETURN_UV
+        XST_mUV
+        ZeroD
 
 2.008 - 20th October 2003
 

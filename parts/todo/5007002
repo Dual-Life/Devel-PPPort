@@ -1,7 +1,5 @@
 5.007002
 calloc                         # E
-dAX                            # E
-dITEMS                         # E
 getcwd_sv                      # U
 init_tm                        # U
 malloc                         # E

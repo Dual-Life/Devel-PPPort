@@ -1,11 +1,9 @@
-These would be nice for 3.00:
+TODO:
 
-* Well, no bugz would be nice ;-)
-
-
-These would always be nice:
+* add support for sv_vcatpvf / sv_vsetpvf / ...
 
 * more documentation, more tests
 
-* Resolve dependencies in Makefile.PL and remind of running 'make regen'
+* Resolve dependencies in Makefile.PL and remind of
+  running 'make regen'
 
