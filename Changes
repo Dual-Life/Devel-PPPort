@@ -1,3 +1,23 @@
+2.99_02 - 2004-08-08
+
+    * second beta
+    * feature complete for 3.00
+    * implemented missing functionality for ppport.h script:
+      - can now perform global (i.e. multi-file) NEED_ checks
+      - checks source for missing aTHX arguments
+      - checks source for unsupported API calls
+      - can now lists provided and unsupported API
+      - can use Text::Diff on platforms without diff utility
+      - can use custom diff utility / options
+      - can write one patch against the module
+      - can write single copies with changes applied
+    * updated the documentation for Devel::PPPort and ppport.h
+    * added lots of tests for the ppport.h script
+    * merged tests for call_* eval_* from XS::APItest
+    * added HACKERS file to document internals
+    * now includes PPPort.pm, so you can read the full docs
+      using search.cpan.org
+
 2.99_01 - 2004-08-07
 
     * first beta towards 3.00

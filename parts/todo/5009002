@@ -1,9 +1,4 @@
 5.009002
-CopyD                          # E
-MoveD                          # E
 SvPVbyte_force                 # E
-UNDERBAR                       # E
-ZeroD                          # E
-dUNDERBAR                      # E
 find_rundefsvoffset            # U
 vnormal                        # E

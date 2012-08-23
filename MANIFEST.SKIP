@@ -2,11 +2,15 @@
 ~$
 \.old(?:\..*)?$
 \.swp$
+\.o$
+\.bs$
 \.bak$
 \.orig$
 \.cache\.cm$
 ^blib
+^pm_to_blib
 ^backup
 ^parts/todo-
-^PPPort.pm$
+^ppport\.h$
+^PPPort\.c$
 Devel-PPPort.*\.tar\.gz$

@@ -8,7 +8,7 @@ my $DPPP = 'DPPP_';
 my %embed = map { ( $_->{name} => $_ ) }
             parse_embed(qw(parts/embed.fnc parts/apidoc.fnc));
 
-my(%provides, %prototypes);
+my(%provides, %prototypes, %explicit);
 
 my $data = do { local $/; <DATA> };
 $data =~ s{^\%(include)\s+(\w+)((?:[^\S\r\n]+.*?)?)\s*$}
@@ -18,8 +18,24 @@ $data = expand($data);
 
 my @api = sort { lc $a cmp lc $b } keys %provides;
 
-$data =~ s{^([\t ]*)__PROVIDED_API__(\s*?)^}
+$data =~ s{^(.*)__PROVIDED_API__(\s*?)^}
           {join '', map "$1$_\n", @api}gem;
+
+{
+  my $len = 0;
+  for (keys %explicit) {
+    length > $len and $len = length;
+  }
+  my $format = sprintf "%%-%ds  %%-%ds  %%-%ds", $len+2, $len+5, $len+12;
+  $len = 3*$len + 23;
+
+$data =~ s/^(.*)__EXPLICIT_API__(\s*?)^/
+           sprintf("$1$format\n", 'Function', 'Static Request', 'Global Request') .
+           $1 . '-'x$len . "\n" .
+           join('', map { sprintf "$1$format\n", "$_()", "NEED_$_", "NEED_${_}_GLOBAL" }
+                    sort keys %explicit)
+          /gem;
+}
 
 my %t = %{&parse_todo};
 
@@ -194,6 +210,8 @@ sub expand_pp_expr
       warn "found no prototype for $func\n";;
     }
 
+    $explicit{$func} = 1;
+
     $proto =~ s/\b$func(?=\s*\()/$DPPP($func)/;
     my $embed = make_embed($e);
 
@@ -264,7 +282,7 @@ __DATA__
 #
 ################################################################################
 #
-#  Version 3.x, Copyright (C) 2003, Marcus Holland-Moritz.
+#  Version 3.x, Copyright (C) 2004, Marcus Holland-Moritz.
 #  Version 2.x, Copyright (C) 2001, Paul Marquess.
 #  Version 1.x, Copyright (C) 1999, Kenneth Albanowski.
 #
@@ -279,71 +297,95 @@ Devel::PPPort - Perl/Pollution/Portability
 
 =head1 SYNOPSIS
 
-    Devel::PPPort::WriteFile() ; # defaults to ./ppport.h
-    Devel::PPPort::WriteFile('someheader.h') ;
+    Devel::PPPort::WriteFile();   # defaults to ./ppport.h
+    Devel::PPPort::WriteFile('someheader.h');
 
 =head1 DESCRIPTION
 
-Perl has changed over time, gaining new features, new functions,
+Perl's API has changed over time, gaining new features, new functions,
 increasing its flexibility, and reducing the impact on the C namespace
-environment (reduced pollution). The header file, typicaly C<ppport.h>,
-written by this module attempts to bring some of the newer Perl
+environment (reduced pollution). The header file written by this module,
+typically F<ppport.h>, attempts to bring some of the newer Perl API
 features to older versions of Perl, so that you can worry less about
 keeping track of old releases, but users can still reap the benefit.
+
+C<Devel::PPPort> contains a single function, called C<WriteFile>. Its
+only purpose is to write the F<ppport.h> C header file. This file
+contains a series of macros and, if explicity requested, functions that
+allow XS modules to be built using older versions of Perl. Currently,
+Perl versions from __MIN_PERL__ to __MAX_PERL__ are supported.
+
+This module is used by C<h2xs> to write the file F<ppport.h>. 
+
+=head2 Why use ppport.h?
  
-Why you should use C<ppport.h> in modern code: so that your code will work
+You should use F<ppport.h> in modern code so that your code will work
 with the widest range of Perl interpreters possible, without significant
 additional work.
 
-Why you should attempt older code to fully use C<ppport.h>: because
-the reduced pollution of newer Perl versions is an important thing, so
+You should attempt older code to fully use F<ppport.h>, because the
+reduced pollution of newer Perl versions is an important thing. It's so
 important that the old polluting ways of original Perl modules will not be
 supported very far into the future, and your module will almost certainly
 break! By adapting to it now, you'll gain compatibility and a sense of
 having done the electronic ecology some good.
 
-How to use ppport.h: Don't direct the user to download C<Devel::PPPort>,
-and don't make C<ppport.h> optional. Rather, just take the most recent
-copy of C<ppport.h> that you can find (probably in C<Devel::PPPort>
-on CPAN), copy it into your project, adjust your project to use it,
-and distribute the header along with your module.
+=head2 How to use ppport.h
 
-C<Devel::PPPort> contains a single function, called C<WriteFile>. It's
-purpose is to write a 'C' header file that is used when writing XS
-modules. The file contains a series of macros that allow XS modules to
-be built using older versions of Perl.
+Don't direct the users of your module to download C<Devel::PPPort>.
+They are most probably no XS writers. Also, don't make F<ppport.h>
+optional. Rather, just take the most recent copy of F<ppport.h> that
+you can find (e.g. by generating it with the latest C<Devel::PPPort>
+release from CPAN), copy it into your project, adjust your project to
+use it, and distribute the header along with your module. 
 
-Not only macros, but also static/global functions, if requested.             !!!TODO!!!
+=head2 Running ppport.h
 
-This module is used by h2xs to write the file F<ppport.h>. 
+But F<ppport.h> is more than just a C header. It's also a Perl script
+that can check your source code. It will suggest hints and portability
+notes, and can even make suggestions on how to change your code. You
+can run it like any other Perl program:
+
+    perl ppport.h
+
+It also has embedded documentation, so you can use
+
+    perldoc ppport.h
+
+to find out more about how to use it.
+
+=head1 FUNCTIONS
 
 =head2 WriteFile
 
-C<WriteFile> takes a zero or one parameters. When called with one
-parameter it expects to be passed a filename. When called with no
-parameters, it defaults to the filename C<./pport.h>.
+C<WriteFile> takes one optional argument. When called with one
+argument, it expects to be passed a filename. When called with
+no arguments, it defaults to the filename F<ppport.h>.
 
-The function returns TRUE if the file was written successfully. Otherwise
-it returns FALSE.
+The function returns a true value if the file was written successfully.
+Otherwise it returns a false value.
 
-=head1 ppport.h
+=head1 COMPATIBILITY
+
+F<ppport.h> supports Perl versions from __MIN_PERL__ to __MAX_PERL__
+in threaded and non-threaded configurations.
 
 =head2 Provided Perl compatibility API
 
-The file written by this module, typically C<ppport.h>, provides access
-to the following Perl API if not already available (and in some cases [*]     !!!TODO!!!
-even if available, access to a fixed interface):
+The header file written by this module, typically F<ppport.h>, provides
+access to the following elements of the Perl API that is not available
+in older Perl releases:
 
     __PROVIDED_API__
 
 =head2 Perl API not supported by ppport.h
 
-There is still a big part of the API not supported by ppport.h. Either
-because it doesn't make sense to backport that part of the API, or
-simply because it hasn't been implemented yet. Patches welcome!
+There is still a big part of the API not supported by F<ppport.h>.
+Either because it doesn't make sense to backport that part of the API,
+or simply because it hasn't been implemented yet. Patches welcome!
 
-Here's a list of the currently unsupported API, and also which version
-of Perl introduced it:
+Here's a list of the currently unsupported API, and also the version of
+Perl below which it is unsupported:
 
 =over 4
 
@@ -351,17 +393,44 @@ __UNSUPPORTED_API__
 
 =back
 
-=head1 AUTHOR
+=head1 BUGS
+
+If you find any bugs, C<Devel::PPPort> doesn't seem to build on your
+system or any of its tests fail, please use the CPAN Request Tracker
+at L<http://rt.cpan.org/> to create a ticket for the module.
+
+=head1 AUTHORS
+
+=over 2
+
+=item *
 
 Version 1.x of Devel::PPPort was written by Kenneth Albanowski.
 
+=item *
+
 Version 2.x was ported to the Perl core by Paul Marquess.
+
+=item *
 
 Version 3.x was ported back to CPAN by Marcus Holland-Moritz.
 
+=back
+
+=head1 COPYRIGHT
+
+Version 3.x, Copyright (C) 2004, Marcus Holland-Moritz.
+
+Version 2.x, Copyright (C) 2001, Paul Marquess.
+
+Version 1.x, Copyright (C) 1999, Kenneth Albanowski.
+
+This program is free software; you can redistribute it and/or
+modify it under the same terms as Perl itself.
+
 =head1 SEE ALSO
 
-See L<h2xs>.
+See L<h2xs>, L<ppport.h>.
 
 =cut
 
@@ -371,7 +440,7 @@ require DynaLoader;
 use strict;
 use vars qw($VERSION @ISA $data);
 
-$VERSION = "2.99_01";
+$VERSION = "2.99_02";
 
 @ISA = qw(DynaLoader);
 
@@ -391,9 +460,11 @@ bootstrap Devel::PPPort;
 sub WriteFile
 {
   my $file = shift || 'ppport.h';
+  my $copy = $data;
+  $copy =~ s/__PPPORT_NAME__/$file/g;
 
   open F, ">$file" or return undef;
-  print F $data;
+  print F $copy;
   close F;
 
   return 1;
@@ -408,7 +479,7 @@ __DATA__
 /*
 ----------------------------------------------------------------------
 
-    ppport.h -- Perl/Pollution/Portability Version __VERSION__ 
+    __PPPORT_NAME__ -- Perl/Pollution/Portability Version __VERSION__ 
    
     Automatically created by __PKG__ running under
     perl __PERL_VERSION__ on __DATE__.
@@ -416,7 +487,7 @@ __DATA__
     Do NOT edit this file directly! -- Edit PPPort_pm.PL and the
     includes in parts/inc/ instead.
  
-    Use 'perldoc ppport.h' to view the documentation below.
+    Use 'perldoc __PPPORT_NAME__' to view the documentation below.
 
 ----------------------------------------------------------------------
 
@@ -451,7 +522,7 @@ __DATA__
 
 %include mPUSH
 
-%include eval_pv
+%include call
 
 %include newRV
 
@@ -471,4 +542,4 @@ __DATA__
 
 #endif /* _P_P_PORTABILITY_H_ */
 
-/* End of File ppport.h */
+/* End of File __PPPORT_NAME__ */

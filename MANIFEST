@@ -4,6 +4,7 @@ devel/buildperl.pl
 devel/mkapidoc.sh
 devel/mktodo
 devel/mktodo.pl
+HACKERS
 Makefile.PL
 MANIFEST
 MANIFEST.SKIP
@@ -14,8 +15,8 @@ module3.c
 parts/apicheck.pl
 parts/apidoc.fnc
 parts/embed.fnc
+parts/inc/call
 parts/inc/cop
-parts/inc/eval_pv
 parts/inc/format
 parts/inc/grok
 parts/inc/limits
@@ -60,12 +61,14 @@ parts/todo/5008005
 parts/todo/5009000
 parts/todo/5009001
 parts/todo/5009002
+PPPort.pm
 PPPort.xs
 ppport_h.PL
 PPPort_pm.PL
 PPPort_xs.PL
 README
 soak
+t/call.t
 t/grok.t
 t/limits.t
 t/magic.t

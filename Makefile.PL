@@ -21,7 +21,7 @@ else {
 
 @C_FILES  = qw{ module2.c module3.c };
 
-@clean    = qw{ $(H_FILES) PPPort.pm PPPort.c };
+@clean    = qw{ $(H_FILES) PPPort.c };
 
 if ($opt{'apicheck'}) {
   $PL_FILES{'apicheck_c.PL'} = 'apicheck.c';
@@ -58,6 +58,7 @@ regen:
 	$(PERL) -I$(INST_ARCHLIB) -I$(INST_LIB) -I$(PERL_ARCHLIB) -I$(PERL_LIB) PPPort_pm.PL
 	$(PERL) -I$(INST_ARCHLIB) -I$(INST_LIB) -I$(PERL_ARCHLIB) -I$(PERL_LIB) PPPort_xs.PL
 	$(PERL) -I$(INST_ARCHLIB) -I$(INST_LIB) -I$(PERL_ARCHLIB) -I$(PERL_LIB) mktests.PL
+	$(PERL) -I$(INST_ARCHLIB) -I$(INST_LIB) -I$(PERL_ARCHLIB) -I$(PERL_LIB) ppport_h.PL
 
 POSTAMBLE
   return $post;

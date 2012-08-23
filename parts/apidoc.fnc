@@ -1,9 +1,3 @@
-A|bool|is_utf8_string_loc|U8 *s|STRLEN len|U8 **p
-A|bool|is_utf8_string|U8 *s|STRLEN len
-A|char *|pv_uni_display|SV *dsv|U8 *spv|STRLEN len|STRLEN pvlim|UV flags
-A|char *|sv_uni_display|SV *dsv|SV *ssv|STRLEN pvlim|UV flags
-A|I32|ibcmp_utf8|const char *s1|char **pe1|register UV l1|bool u1|const char *s2|char **pe2|register UV l2|bool u2
-A|IV|utf8_distance|U8 *a|U8 *b
 Am|bool|isALNUM|char ch
 Am|bool|isALPHA|char ch
 Am|bool|isDIGIT|char ch
@@ -239,23 +233,6 @@ Am|void|XST_mUNDEF|int pos
 Am|void|XST_mYES|int pos
 Am|void *|ZeroD|void* dest|int nitems|type
 Am|void|Zero|void* dest|int nitems|type
-A|STRLEN|is_utf8_char|U8 *s
-A|STRLEN|utf8_length|U8 *s|U8 *e
-A|U8 *|bytes_from_utf8|U8 *s|STRLEN *len|bool *is_utf8
-A|U8 *|bytes_to_utf8|U8 *s|STRLEN *len
-A|U8 *|utf8_hop|U8 *s|I32 off
-A|U8 *|utf8_to_bytes|U8 *s|STRLEN *len
-A|U8 *|uvchr_to_utf8|U8 *d|UV uv
-A|U8 *|uvuni_to_utf8_flags|U8 *d|UV uv|UV flags
-A|UV|to_utf8_case|U8 *p|U8* ustrp|STRLEN *lenp|SV **swash|char *normal|char *special
-A|UV|to_utf8_fold|U8 *p|U8 *ustrp|STRLEN *lenp
-A|UV|to_utf8_lower|U8 *p|U8 *ustrp|STRLEN *lenp
-A|UV|to_utf8_title|U8 *p|U8 *ustrp|STRLEN *lenp
-A|UV|to_utf8_upper|U8 *p|U8 *ustrp|STRLEN *lenp
-A|UV|utf8n_to_uvchr|U8 *s|STRLEN curlen|STRLEN *retlen|U32 flags
-A|UV|utf8n_to_uvuni|U8 *s|STRLEN curlen|STRLEN *retlen|U32 flags
-A|UV|utf8_to_uvchr|U8 *s|STRLEN *retlen
-A|UV|utf8_to_uvuni|U8 *s|STRLEN *retlen
 m|AV *|CvPADLIST|CV *cv
 m|bool|CvWEAKOUTSIDE|CV *cv
 m|char *|PAD_COMPNAME_PV|PADOFFSET po
@@ -288,15 +265,3 @@ m|void|PAD_SV	|PADOFFSET po
 m|void|SAVECLEARSV	|SV **svp
 m|void|SAVECOMPPAD
 m|void|SAVEPADSV	|PADOFFSET po
-p||call_argv
-p||call_method
-p||call_pv
-p||call_sv
-p||eval_pv
-p||eval_sv
-p||get_av
-p||get_cv
-p||get_hv
-p||get_sv
-p||require_pv
-U||newXS

@@ -101,28 +101,82 @@ __UNDEFINED__  newSVpvn(data,len)  ((data)                                      
                                     ? ((len) ? newSVpv((data), (len)) : newSVpv("", 0)) \
                                     : newSV(0))
 
-__UNDEFINED__  gv_stashpvn(str,len,flags)  gv_stashpv(str,flags)
+__UNDEFINED__  gv_stashpvn(str,len,create)  gv_stashpv(str,create)
 
-__UNDEFINED__  get_cv        perl_get_cv
-__UNDEFINED__  get_sv        perl_get_sv
-__UNDEFINED__  get_av        perl_get_av
-__UNDEFINED__  get_hv        perl_get_hv
-
-__UNDEFINED__  call_argv     perl_call_argv
-__UNDEFINED__  call_method   perl_call_method
-__UNDEFINED__  call_pv       perl_call_pv
-__UNDEFINED__  call_sv       perl_call_sv
-__UNDEFINED__  eval_sv       perl_eval_sv
+/* Replace: 1 */
+__UNDEFINED__  get_cv          perl_get_cv
+__UNDEFINED__  get_sv          perl_get_sv
+__UNDEFINED__  get_av          perl_get_av
+__UNDEFINED__  get_hv          perl_get_hv
+/* Replace: 0 */
 
 #ifdef HAS_MEMCMP
-__UNDEFINED__ memNE(s1,s2,l) (memcmp(s1,s2,l))
-__UNDEFINED__ memEQ(s1,s2,l) (!memcmp(s1,s2,l))
+__UNDEFINED__  memNE(s1,s2,l)  (memcmp(s1,s2,l))
+__UNDEFINED__  memEQ(s1,s2,l)  (!memcmp(s1,s2,l))
 #else
-__UNDEFINED__ memNE(s1,s2,l) (bcmp(s1,s2,l))
-__UNDEFINED__ memEQ(s1,s2,l) (!bcmp(s1,s2,l))
+__UNDEFINED__  memNE(s1,s2,l)  (bcmp(s1,s2,l))
+__UNDEFINED__  memEQ(s1,s2,l)  (!bcmp(s1,s2,l))
 #endif
 
+__UNDEFINED__  MoveD(s,d,n,t)  memmove((char*)(d),(char*)(s), (n) * sizeof(t))
+__UNDEFINED__  CopyD(s,d,n,t)  memcpy((char*)(d),(char*)(s), (n) * sizeof(t))
+#ifdef HAS_MEMSET
+__UNDEFINED__  ZeroD(d,n,t)    memzero((char*)(d), (n) * sizeof(t))
+#else
+__UNDEFINED__  ZeroD(d,n,t)    ((void)memzero((char*)(d), (n) * sizeof(t)),d)
+#endif
+
+__UNDEFINED__  Poison(d,n,t)   (void)memset((char*)(d), 0xAB, (n) * sizeof(t))
+
+__UNDEFINED__  dUNDERBAR       dNOOP
+__UNDEFINED__  UNDERBAR        DEFSV
+
 =xsubs
+
+int
+gv_stashpvn(name, create)
+	char *name
+	I32 create
+	CODE:
+		RETVAL = gv_stashpvn(name, strlen(name), create) != NULL;
+	OUTPUT:
+		RETVAL
+
+int
+get_sv(name, create)
+	char *name
+	I32 create
+	CODE:
+		RETVAL = get_sv(name, create) != NULL;
+	OUTPUT:
+		RETVAL
+
+int
+get_av(name, create)
+	char *name
+	I32 create
+	CODE:
+		RETVAL = get_av(name, create) != NULL;
+	OUTPUT:
+		RETVAL
+
+int
+get_hv(name, create)
+	char *name
+	I32 create
+	CODE:
+		RETVAL = get_hv(name, create) != NULL;
+	OUTPUT:
+		RETVAL
+
+int
+get_cv(name, create)
+	char *name
+	I32 create
+	CODE:
+		RETVAL = get_cv(name, create) != NULL;
+	OUTPUT:
+		RETVAL
 
 void
 newSVpvn()
@@ -186,7 +240,19 @@ ERRSV()
 	OUTPUT:
 		RETVAL
 
-=tests plan => 15
+SV*
+UNDERBAR()
+	CODE:
+		{
+		  dUNDERBAR;
+		  RETVAL = newSVsv(UNDERBAR);
+		}
+	OUTPUT:
+		RETVAL
+
+=tests plan => 31
+
+use vars qw($my_sv @my_av %my_hv);
 
 my @s = &Devel::PPPort::newSVpvn();
 ok(@s == 5);
@@ -206,9 +272,34 @@ ok(!&Devel::PPPort::boolSV(0));
 
 $_ = "Fred";
 ok(&Devel::PPPort::DEFSV(), "Fred");
+ok(&Devel::PPPort::UNDERBAR(), "Fred");
 
 eval { 1 };
 ok(!&Devel::PPPort::ERRSV());
 eval { cannot_call_this_one() };
 ok(&Devel::PPPort::ERRSV());
+
+ok(&Devel::PPPort::gv_stashpvn('Devel::PPPort', 0));
+ok(!&Devel::PPPort::gv_stashpvn('does::not::exist', 0));
+ok(&Devel::PPPort::gv_stashpvn('does::not::exist', 1));
+
+$my_sv = 1;
+ok(&Devel::PPPort::get_sv('my_sv', 0));
+ok(!&Devel::PPPort::get_sv('not_my_sv', 0));
+ok(&Devel::PPPort::get_sv('not_my_sv', 1));
+
+@my_av = (1);
+ok(&Devel::PPPort::get_av('my_av', 0));
+ok(!&Devel::PPPort::get_av('not_my_av', 0));
+ok(&Devel::PPPort::get_av('not_my_av', 1));
+
+%my_hv = (a=>1);
+ok(&Devel::PPPort::get_hv('my_hv', 0));
+ok(!&Devel::PPPort::get_hv('not_my_hv', 0));
+ok(&Devel::PPPort::get_hv('not_my_hv', 1));
+
+sub my_cv { 1 };
+ok(&Devel::PPPort::get_cv('my_cv', 0));
+ok(!&Devel::PPPort::get_cv('not_my_cv', 0));
+ok(&Devel::PPPort::get_cv('not_my_cv', 1));
 

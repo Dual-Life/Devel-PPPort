@@ -6,7 +6,7 @@ function isperlroot
 
 function usage
 {
-  echo "USAGE: $0 [perlroot] [output-file]"
+  echo "USAGE: $0 [perlroot] [output-file] [embed.fnc]"
   exit 0
 }
 
@@ -30,8 +30,20 @@ else
   OUTPUT=$2
 fi
 
+if [ -z "$3" ]; then
+  if [ -f "parts/embed.fnc" ]; then
+    EMBED="parts/embed.fnc"
+  else
+    usage
+  fi
+else
+  EMBED=$3
+fi
+
 if isperlroot $PERLROOT; then
-  grep -hr '=for apidoc' $PERLROOT | sed -e 's/=for apidoc //' | sort | uniq | grep '|' >$OUTPUT
+  grep -hr '=for apidoc' $PERLROOT | sed -e 's/=for apidoc //' | grep '|' | sort | uniq \
+     | perl -e'$f=pop;open(F,$f)||die"$f:$!";while(<F>){(split/\|/)[2]=~/(\w+)/;$h{$1}++}
+               while(<>){(split/\|/)[2]=~/(\w+)/;$h{$1}||print}' $EMBED >$OUTPUT
 else
   usage
 fi
