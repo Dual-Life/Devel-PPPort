@@ -1,3 +1,10 @@
+3.20 - 2011-09-10
+
+    * fix CPAN #56749: isASCII and isCNTRL macros are buggy
+      (thanks to Karl Williamson for providing a patch and patiently
+       waiting almost two years for me to integrate it)
+    * fix CPAN #70427: RealPPPort.xs:1587: error: lvalue required as unary ‘&’ operand
+
 3.19_03 - 2011-04-13
 
     * keep up with latest core changes

@@ -1,8 +1,8 @@
 ################################################################################
 ##
-##  $Revision: 55 $
+##  $Revision: 56 $
 ##  $Author: mhx $
-##  $Date: 2010/03/07 12:15:48 +0000 $
+##  $Date: 2011/09/10 19:38:10 +0100 $
 ##
 ################################################################################
 ##
@@ -275,8 +275,8 @@ __UNDEFINED__ isXDIGIT(c)	isxdigit(c)
 #  undef isPRINT
 # endif
 __UNDEFINED__ isALNUMC(c)	(isALPHA(c) || isDIGIT(c))
-__UNDEFINED__ isASCII(c)	((c) <= 127)
-__UNDEFINED__ isCNTRL(c)	((c) < ' ' || (c) == 127)
+__UNDEFINED__ isASCII(c)	((U8) (c) <= 127)
+__UNDEFINED__ isCNTRL(c)	((U8) (c) < ' ' || (c) == 127)
 __UNDEFINED__ isGRAPH(c)	(isALNUM(c) || isPUNCT(c))
 __UNDEFINED__ isPRINT(c)	(((c) >= 32 && (c) < 127))
 __UNDEFINED__ isPUNCT(c)	(((c) >= 33 && (c) <= 47) || ((c) >= 58 && (c) <= 64)  || ((c) >= 91 && (c) <= 96) || ((c) >= 123 && (c) <= 126))
