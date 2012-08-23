@@ -57,6 +57,8 @@ parts/inc/cop
 parts/inc/exception
 parts/inc/format
 parts/inc/grok
+parts/inc/gv
+parts/inc/HvNAME
 parts/inc/limits
 parts/inc/magic
 parts/inc/memory
@@ -65,6 +67,7 @@ parts/inc/mPUSH
 parts/inc/MY_CXT
 parts/inc/newCONSTSUB
 parts/inc/newRV
+parts/inc/newSV_type
 parts/inc/newSVpv
 parts/inc/podtest
 parts/inc/ppphbin
@@ -134,6 +137,8 @@ t/cop.t
 t/exception.t
 t/format.t
 t/grok.t
+t/gv.t
+t/HvNAME.t
 t/limits.t
 t/magic.t
 t/memory.t
@@ -142,6 +147,7 @@ t/mPUSH.t
 t/MY_CXT.t
 t/newCONSTSUB.t
 t/newRV.t
+t/newSV_type.t
 t/newSVpv.t
 t/podtest.t
 t/ppphtest.t
