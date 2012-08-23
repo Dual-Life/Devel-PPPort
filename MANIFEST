@@ -79,6 +79,7 @@ parts/inc/uv
 parts/inc/variables
 parts/inc/version
 parts/inc/warn
+parts/ppport.fnc
 parts/ppptools.pl
 parts/todo/5004000
 parts/todo/5004010
