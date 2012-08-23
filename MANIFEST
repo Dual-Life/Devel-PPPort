@@ -60,6 +60,7 @@ parts/inc/mPUSH
 parts/inc/MY_CXT
 parts/inc/newCONSTSUB
 parts/inc/newRV
+parts/inc/podtest
 parts/inc/ppphbin
 parts/inc/ppphdoc
 parts/inc/ppphtest
@@ -68,6 +69,7 @@ parts/inc/snprintf
 parts/inc/Sv_set
 parts/inc/sv_xpvf
 parts/inc/SvPV
+parts/inc/SvREFCNT
 parts/inc/threads
 parts/inc/uv
 parts/inc/variables
@@ -125,12 +127,14 @@ t/mPUSH.t
 t/MY_CXT.t
 t/newCONSTSUB.t
 t/newRV.t
+t/podtest.t
 t/ppphtest.t
 t/pvs.t
 t/snprintf.t
 t/Sv_set.t
 t/sv_xpvf.t
 t/SvPV.t
+t/SvREFCNT.t
 t/testutil.pl
 t/threads.t
 t/uv.t
