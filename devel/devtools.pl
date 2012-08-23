@@ -4,9 +4,9 @@
 #
 ################################################################################
 #
-#  $Revision: 1 $
+#  $Revision: 2 $
 #  $Author: mhx $
-#  $Date: 2006/05/25 16:19:22 +0100 $
+#  $Date: 2006/05/28 18:33:35 +0100 $
 #
 ################################################################################
 #
@@ -66,8 +66,8 @@ sub run
 
   runtool({ 'out' => 'tmp.out', 'err' => 'tmp.err' }, $prog, @args);
 
-  my $out = new IO::File "tmp.out" || die "tmp.out: $!\n";
-  my $err = new IO::File "tmp.err" || die "tmp.err: $!\n";
+  my $out = IO::File->new("tmp.out") or die "tmp.out: $!\n";
+  my $err = IO::File->new("tmp.err") or die "tmp.err: $!\n";
 
   my %rval = (
     status    => $? >> 8,
