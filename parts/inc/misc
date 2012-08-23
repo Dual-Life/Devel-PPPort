@@ -1,8 +1,8 @@
 ################################################################################
 ##
-##  $Revision: 26 $
+##  $Revision: 28 $
 ##  $Author: mhx $
-##  $Date: 2005/10/18 20:25:19 +0100 $
+##  $Date: 2005/10/30 10:25:38 +0000 $
 ##
 ################################################################################
 ##
@@ -33,6 +33,7 @@ END_EXTERN_C
 EXTERN_C
 STMT_START
 STMT_END
+XSRETURN
 /PL_\w+/
 
 =implementation
@@ -189,24 +190,6 @@ __UNDEFINED__  get_av          perl_get_av
 __UNDEFINED__  get_hv          perl_get_hv
 /* Replace: 0 */
 
-#ifdef HAS_MEMCMP
-__UNDEFINED__  memNE(s1,s2,l)  (memcmp(s1,s2,l))
-__UNDEFINED__  memEQ(s1,s2,l)  (!memcmp(s1,s2,l))
-#else
-__UNDEFINED__  memNE(s1,s2,l)  (bcmp(s1,s2,l))
-__UNDEFINED__  memEQ(s1,s2,l)  (!bcmp(s1,s2,l))
-#endif
-
-__UNDEFINED__  MoveD(s,d,n,t)  memmove((char*)(d),(char*)(s), (n) * sizeof(t))
-__UNDEFINED__  CopyD(s,d,n,t)  memcpy((char*)(d),(char*)(s), (n) * sizeof(t))
-#ifdef HAS_MEMSET
-__UNDEFINED__  ZeroD(d,n,t)    memzero((char*)(d), (n) * sizeof(t))
-#else
-__UNDEFINED__  ZeroD(d,n,t)    ((void)memzero((char*)(d), (n) * sizeof(t)),d)
-#endif
-
-__UNDEFINED__  Poison(d,n,t)   (void)memset((char*)(d), 0xAB, (n) * sizeof(t))
-
 __UNDEFINED__  dUNDERBAR       dNOOP
 __UNDEFINED__  UNDERBAR        DEFSV
 
@@ -220,6 +203,15 @@ __UNDEFINED__  dAXMARK         I32 ax = POPMARK; \
 
 
 __UNDEFINED__  XSprePUSH       (sp = PL_stack_base + ax - 1)
+
+#if { VERSION < 5.005 }
+#  undef XSRETURN
+#  define XSRETURN(off)                                   \
+      STMT_START {                                        \
+          PL_stack_sp = PL_stack_base + ax + ((off) - 1); \
+          return;                                         \
+      } STMT_END
+#endif
 
 =xsmisc
 
@@ -310,6 +302,18 @@ newSVpvn()
 		XPUSHs(newSVpvn(NULL, 0));
 		XSRETURN(5);
 
+void
+xsreturn(two)
+	int two
+	PPCODE:
+		XPUSHs(newSVpvn("test1", 5));
+		if (two)
+		  XPUSHs(newSVpvn("test2", 5));
+		if (two)
+		  XSRETURN(2);
+		else
+		  XSRETURN(1);
+
 SV *
 PL_sv_undef()
 	CODE:
@@ -382,7 +386,7 @@ prepush()
 		  XSRETURN(1);
 		}
 
-=tests plan => 36
+=tests plan => 38
 
 use vars qw($my_sv @my_av %my_hv);
 
@@ -452,3 +456,5 @@ ok(Devel::PPPort::dAXMARK(4711), 4710);
 
 ok(Devel::PPPort::prepush(), 42);
 
+ok(join(':', Devel::PPPort::xsreturn(0)), 'test1');
+ok(join(':', Devel::PPPort::xsreturn(1)), 'test1:test2');

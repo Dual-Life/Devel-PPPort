@@ -1,3 +1,12 @@
+3.06_04 - 2005-10-30
+
+    * add --strip / --unstrip options
+    * added support for the following API
+        Newx
+        Newxc
+        Newxz
+        XSRETURN
+
 3.06_03 - 2005-10-18
 
     * fix extra ')' in PPPort_pm.PL

@@ -9,7 +9,6 @@ HACKERS
 Makefile.PL
 MANIFEST
 MANIFEST.SKIP
-META.yml
 mktests.PL
 module2.c
 module3.c
@@ -53,6 +52,7 @@ parts/inc/format
 parts/inc/grok
 parts/inc/limits
 parts/inc/magic
+parts/inc/memory
 parts/inc/misc
 parts/inc/mPUSH
 parts/inc/MY_CXT
@@ -111,6 +111,7 @@ t/exception.t
 t/grok.t
 t/limits.t
 t/magic.t
+t/memory.t
 t/misc.t
 t/mPUSH.t
 t/MY_CXT.t

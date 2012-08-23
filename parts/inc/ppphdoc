@@ -1,8 +1,8 @@
 ################################################################################
 ##
-##  $Revision: 23 $
+##  $Revision: 24 $
 ##  $Author: mhx $
-##  $Date: 2005/10/18 20:06:17 +0100 $
+##  $Date: 2005/10/21 12:09:14 +0100 $
 ##
 ################################################################################
 ##
@@ -53,6 +53,9 @@ ppport.h - Perl/Pollution/Portability version __VERSION__
   --nohints                   don't show hints
   --nochanges                 don't suggest changes
   --nofilter                  don't filter input files
+
+  --strip                     strip all script and doc functionality from
+                              ppport.h (this, obviously, cannot be undone)
 
   --list-provided             list provided API
   --list-unsupported          list unsupported API
@@ -129,6 +132,13 @@ unless these are also deactivated.
 
 Don't filter the list of input files. By default, files not looking
 like source code (i.e. not *.xs, *.c, *.cc, *.cpp or *.h) are skipped.
+
+=head2 --strip
+
+Strip all script and documentation functionality from F<ppport.h>.
+This reduces the size of F<ppport.h> dramatically and may be useful
+if you want to include F<ppport.h> in smaller modules without
+increasing their distribution size too much.
 
 =head2 --list-provided
 
