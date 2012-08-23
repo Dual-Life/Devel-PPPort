@@ -68,6 +68,7 @@ parts/inc/ppphbin
 parts/inc/ppphdoc
 parts/inc/ppphtest
 parts/inc/pvs
+parts/inc/shared_pv
 parts/inc/snprintf
 parts/inc/strlfuncs
 parts/inc/Sv_set
@@ -136,6 +137,7 @@ t/newRV.t
 t/podtest.t
 t/ppphtest.t
 t/pvs.t
+t/shared_pv.t
 t/snprintf.t
 t/strlfuncs.t
 t/Sv_set.t
