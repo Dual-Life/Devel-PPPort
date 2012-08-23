@@ -1,8 +1,8 @@
 ################################################################################
 ##
-##  $Revision: 26 $
+##  $Revision: 27 $
 ##  $Author: mhx $
-##  $Date: 2005/06/24 18:03:21 +0100 $
+##  $Date: 2005/10/18 22:36:00 +0100 $
 ##
 ################################################################################
 ##
@@ -15,7 +15,7 @@
 ##
 ################################################################################
 
-=tests plan => 197
+=tests plan => 202
 
 use File::Path qw/rmtree mkpath/;
 use Config;
@@ -736,4 +736,30 @@ newSViv();
 ---------------------------- Makefile.PL --------------------------------------
 
 newSViv();
+
+===============================================================================
+
+# check if explicit variables are handled propery
+
+my $o = ppport(qw(--copy=a));
+ok($o =~ /^Needs to include.*ppport\.h/m);
+ok($o =~ /^Uses PL_signals/m);
+ok($o =~ /^File needs PL_signals, adding static request/m);
+ok(eq_files('MyExt.xsa', 'MyExt.ra'));
+
+unlink qw(MyExt.xsa);
+
+---------------------------- MyExt.xs -----------------------------------------
+
+PL_signals = 123;
+if (PL_signals == 42)
+  foo();
+
+---------------------------- MyExt.ra -----------------------------------------
+
+#define NEED_PL_signals
+#include "ppport.h"
+PL_signals = 123;
+if (PL_signals == 42)
+  foo();
 

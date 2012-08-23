@@ -4,9 +4,9 @@
 #
 ################################################################################
 #
-#  $Revision: 37 $
+#  $Revision: 38 $
 #  $Author: mhx $
-#  $Date: 2005/10/18 20:10:13 +0100 $
+#  $Date: 2005/10/18 22:04:33 +0100 $
 #
 ################################################################################
 #
@@ -203,7 +203,7 @@ sub expand_need_var
 
   my $code = <<ENDCODE;
 #if defined(NEED_$var)
-static $type $myvar) = $init;
+static $type $myvar = $init;
 #elif defined(NEED_${var}_GLOBAL)
 $type $myvar = $init;
 #else
@@ -335,9 +335,9 @@ __DATA__
 #
 ################################################################################
 #
-#  $Revision: 37 $
+#  $Revision: 38 $
 #  $Author: mhx $
-#  $Date: 2005/10/18 20:10:13 +0100 $
+#  $Date: 2005/10/18 22:04:33 +0100 $
 #
 ################################################################################
 #
@@ -499,7 +499,7 @@ require DynaLoader;
 use strict;
 use vars qw($VERSION @ISA $data);
 
-$VERSION = do { my @r = '$Snapshot: /Devel-PPPort/3.06_02 $' =~ /(\d+\.\d+(?:_\d+)?)/; @r ? $r[0] : '9.99' };
+$VERSION = do { my @r = '$Snapshot: /Devel-PPPort/3.06_03 $' =~ /(\d+\.\d+(?:_\d+)?)/; @r ? $r[0] : '9.99' };
 
 @ISA = qw(DynaLoader);
 
