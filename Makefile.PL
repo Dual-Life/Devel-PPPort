@@ -4,9 +4,9 @@
 #
 ################################################################################
 #
-#  $Revision: 13 $
+#  $Revision: 14 $
 #  $Author: mhx $
-#  $Date: 2004/08/13 11:49:26 +0100 $
+#  $Date: 2004/08/19 12:16:37 +0100 $
 #
 ################################################################################
 #
@@ -37,9 +37,7 @@ else {
 
 @ARGV = map { /^--with-(.*)/ && ++$opt{$1} ? () : $_ } @ARGV;
 
-%PL_FILES = ( 'PPPort_pm.PL' => 'PPPort.pm',
-              'PPPort_xs.PL' => 'PPPort.xs',
-              'ppport_h.PL'  => 'ppport.h' ),
+%PL_FILES = ( 'ppport_h.PL'  => 'ppport.h' ),
 
 @C_FILES  = qw{ module2.c module3.c };
 
