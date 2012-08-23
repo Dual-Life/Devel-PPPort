@@ -4,9 +4,9 @@
 *
 ********************************************************************************
 *
-*  $Revision: 4 $
+*  $Revision: 5 $
 *  $Author: mhx $
-*  $Date: 2004/08/13 11:49:24 +0100 $
+*  $Date: 2004/08/22 23:51:54 +0100 $
 *
 ********************************************************************************
 *
@@ -22,6 +22,10 @@
 #include "EXTERN.h"
 #include "perl.h"
 #include "XSUB.h"
+
+#ifndef PATCHLEVEL
+#include "patchlevel.h"
+#endif
 
 #define NEED_newCONSTSUB_GLOBAL
 #include "ppport.h"
