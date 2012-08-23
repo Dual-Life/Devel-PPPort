@@ -111,7 +111,6 @@ parts/todo/5009002
 parts/todo/5009003
 parts/todo/5009004
 PPPort.pm
-PPPort.xs
 ppport_h.PL
 PPPort_pm.PL
 PPPort_xs.PL
