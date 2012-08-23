@@ -1,8 +1,8 @@
 ################################################################################
 ##
-##  $Revision: 22 $
+##  $Revision: 26 $
 ##  $Author: mhx $
-##  $Date: 2005/06/11 08:37:31 +0100 $
+##  $Date: 2005/10/18 20:25:19 +0100 $
 ##
 ################################################################################
 ##
@@ -215,6 +215,12 @@ __UNDEFINED__  dITEMS          I32 items = SP - MARK
 
 __UNDEFINED__  dXSTARG         SV * targ = sv_newmortal()
 
+__UNDEFINED__  dAXMARK         I32 ax = POPMARK; \
+                               register SV ** const mark = PL_stack_base + ax++
+
+
+__UNDEFINED__  XSprePUSH       (sp = PL_stack_base + ax - 1)
+
 =xsmisc
 
 XS(XS_Devel__PPPort_dXSTARG);  /* prototype */
@@ -229,9 +235,23 @@ XS(XS_Devel__PPPort_dXSTARG)
   XSRETURN(1);
 }
 
+XS(XS_Devel__PPPort_dAXMARK);  /* prototype */
+XS(XS_Devel__PPPort_dAXMARK)
+{
+  dSP;
+  dAXMARK;
+  dITEMS;
+  IV iv;
+  SP -= items;
+  iv = SvIV(ST(0)) - 1;
+  PUSHs(sv_2mortal(newSViv(iv)));
+  XSRETURN(1);
+}
+
 =xsboot
 
 newXS("Devel::PPPort::dXSTARG", XS_Devel__PPPort_dXSTARG, file);
+newXS("Devel::PPPort::dAXMARK", XS_Devel__PPPort_dAXMARK, file);
 
 =xsubs
 
@@ -352,7 +372,17 @@ UNDERBAR()
 	OUTPUT:
 		RETVAL
 
-=tests plan => 32
+void
+prepush()
+	CODE:
+		{
+		  dXSTARG;
+		  XSprePUSH;
+		  PUSHi(42);
+		  XSRETURN(1);
+		}
+
+=tests plan => 36
 
 use vars qw($my_sv @my_av %my_hv);
 
@@ -375,6 +405,18 @@ ok(!&Devel::PPPort::boolSV(0));
 $_ = "Fred";
 ok(&Devel::PPPort::DEFSV(), "Fred");
 ok(&Devel::PPPort::UNDERBAR(), "Fred");
+
+if ($] >= 5.009002) {
+  eval q{
+    my $_ = "Tony";
+    ok(&Devel::PPPort::DEFSV(), "Fred");
+    ok(&Devel::PPPort::UNDERBAR(), "Tony");
+  };
+}
+else {
+  ok(1);
+  ok(1);
+}
 
 eval { 1 };
 ok(!&Devel::PPPort::ERRSV());
@@ -406,4 +448,7 @@ ok(!&Devel::PPPort::get_cv('not_my_cv', 0));
 ok(&Devel::PPPort::get_cv('not_my_cv', 1));
 
 ok(Devel::PPPort::dXSTARG(42), 43);
+ok(Devel::PPPort::dAXMARK(4711), 4710);
+
+ok(Devel::PPPort::prepush(), 42);
 

@@ -4,9 +4,9 @@
 #
 ################################################################################
 #
-#  $Revision: 36 $
+#  $Revision: 37 $
 #  $Author: mhx $
-#  $Date: 2005/06/25 16:56:28 +0100 $
+#  $Date: 2005/10/18 20:10:13 +0100 $
 #
 ################################################################################
 #
@@ -50,12 +50,12 @@ $data =~ s{^(.*)__PROVIDED_API__(\s*?)^}
   my $format = sprintf '%%-%ds  %%-%ds  %%s', $len+2, $len+5;
   $len = 3*$len + 23;
 
-$data =~ s/^(.*)__EXPLICIT_API__(\s*?)^/
-           sprintf("$1$format\n", 'Function', 'Static Request', 'Global Request') .
+$data =~ s!^(.*)__EXPLICIT_API__(\s*?)^!
+           sprintf("$1$format\n", 'Function / Variable', 'Static Request', 'Global Request') .
            $1 . '-'x$len . "\n" .
-           join('', map { sprintf "$1$format\n", "$_()", "NEED_$_", "NEED_${_}_GLOBAL" }
+           join('', map { sprintf "$1$format\n", $explicit{$_} eq 'var' ? $_ : "$_()", "NEED_$_", "NEED_${_}_GLOBAL" }
                     sort keys %explicit)
-          /gem;
+          !gem;
 }
 
 my %raw_base = %{&parse_todo('parts/base')};
@@ -188,6 +188,32 @@ sub expand
               )
             \s*$}
             {expand_undefined($2, $1, $3)}gemx;
+  $code =~ s{^([^\S\r\n]*)__NEED_VAR__\s+(.*?)\s+(\w+)(?:\s*=\s*([^;]+?)\s*;\s*)?$}
+            {expand_need_var($1, $3, $2, $4)}gem;
+  return $code;
+}
+
+sub expand_need_var
+{
+  my($indent, $var, $type, $init) = @_;
+
+  $explicit{$var} = 'var';
+
+  my $myvar = "$DPPP(my_$var)";
+
+  my $code = <<ENDCODE;
+#if defined(NEED_$var)
+static $type $myvar) = $init;
+#elif defined(NEED_${var}_GLOBAL)
+$type $myvar = $init;
+#else
+extern $type $myvar;
+#endif
+#define $var $myvar
+ENDCODE
+
+  $code =~ s/^/$indent/mg;
+
   return $code;
 }
 
@@ -219,7 +245,7 @@ sub expand_pp_expr
 {
   my $expr = shift;
 
-  if ($expr =~ /^\s*need\s*(\w+)\s*$/i) {
+  if ($expr =~ /^\s*need\s+(\w+)\s*$/i) {
     my $func = $1;
     my $e = $embed{$func} or die "unknown API function '$func' in NEED\n";
     my $proto = make_prototype($e);
@@ -233,7 +259,7 @@ sub expand_pp_expr
       warn "found no prototype for $func\n";;
     }
 
-    $explicit{$func} = 1;
+    $explicit{$func} = 'func';
 
     $proto =~ s/\b$func(?=\s*\()/$DPPP(my_$func)/;
     my $embed = make_embed($e);
@@ -309,9 +335,9 @@ __DATA__
 #
 ################################################################################
 #
-#  $Revision: 36 $
+#  $Revision: 37 $
 #  $Author: mhx $
-#  $Date: 2005/06/25 16:56:28 +0100 $
+#  $Date: 2005/10/18 20:10:13 +0100 $
 #
 ################################################################################
 #
@@ -473,7 +499,7 @@ require DynaLoader;
 use strict;
 use vars qw($VERSION @ISA $data);
 
-$VERSION = do { my @r = '$Snapshot: /Devel-PPPort/3.06_01 $' =~ /(\d+\.\d+(?:_\d+)?)/; @r ? $r[0] : '9.99' };
+$VERSION = do { my @r = '$Snapshot: /Devel-PPPort/3.06_02 $' =~ /(\d+\.\d+(?:_\d+)?)/; @r ? $r[0] : '9.99' };
 
 @ISA = qw(DynaLoader);
 
@@ -552,6 +578,8 @@ __DATA__
 %include uv
 
 %include misc
+
+%include variables
 
 %include threads
 

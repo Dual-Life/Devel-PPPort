@@ -4,9 +4,9 @@
 *
 ********************************************************************************
 *
-*  $Revision: 6 $
+*  $Revision: 7 $
 *  $Author: mhx $
-*  $Date: 2005/02/02 20:47:34 +0000 $
+*  $Date: 2005/10/18 20:06:51 +0100 $
 *
 ********************************************************************************
 *
@@ -59,3 +59,7 @@ void call_newCONSTSUB_3(void)
   newCONSTSUB(gv_stashpv("Devel::PPPort", FALSE), "test_value_3", newSViv(3));
 }
 
+U32 get_PL_signals_3(void)
+{
+  return PL_signals;
+}

@@ -4,9 +4,9 @@
 *
 ********************************************************************************
 *
-*  $Revision: 6 $
+*  $Revision: 7 $
 *  $Author: mhx $
-*  $Date: 2005/01/31 07:10:50 +0000 $
+*  $Date: 2005/10/18 20:06:49 +0100 $
 *
 ********************************************************************************
 *
@@ -28,9 +28,15 @@
 #endif
 
 #define NEED_newCONSTSUB_GLOBAL
+#define NEED_PL_signals_GLOBAL
 #include "ppport.h"
 
 void call_newCONSTSUB_2(void)
 {
   newCONSTSUB(gv_stashpv("Devel::PPPort", FALSE), "test_value_2", newSViv(2));
+}
+
+U32 get_PL_signals_2(void)
+{
+  return PL_signals;
 }

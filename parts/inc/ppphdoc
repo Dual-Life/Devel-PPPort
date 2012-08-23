@@ -1,8 +1,8 @@
 ################################################################################
 ##
-##  $Revision: 21 $
+##  $Revision: 23 $
 ##  $Author: mhx $
-##  $Date: 2005/02/27 20:13:25 +0000 $
+##  $Date: 2005/10/18 20:06:17 +0100 $
 ##
 ################################################################################
 ##
@@ -21,6 +21,8 @@
 
 NEED_function
 NEED_function_GLOBAL
+NEED_variable
+NEED_variable_GLOBAL
 DPPP_NAMESPACE
 
 =implementation
@@ -95,7 +97,7 @@ Tell F<ppport.h> to check for compatibility with the given
 Perl version. The default is to check for compatibility with Perl
 version __MIN_PERL__. You can use this option to reduce the output
 of F<ppport.h> if you intend to be backward compatible only
-up to a certain Perl version.
+down to a certain Perl version.
 
 =head2 --cplusplus
 
@@ -173,33 +175,38 @@ will provide wrappers for older Perl versions.
 
 =item *
 
-If you use one of a few functions that were not present in earlier
-versions of Perl, and that can't be provided using a macro, you have
-to explicitly request support for these functions by adding one or
+If you use one of a few functions or variables that were not present in
+earlier versions of Perl, and that can't be provided using a macro, you
+have to explicitly request support for these functions by adding one or
 more C<#define>s in your source code before the inclusion of F<ppport.h>.
 
-These functions will be marked C<explicit> in the list shown by
-C<--list-provided>.
+These functions or variables will be marked C<explicit> in the list shown
+by C<--list-provided>.
 
 Depending on whether you module has a single or multiple files that
-use such functions, you want either C<static> or global variants.
+use such functions or variables, you want either C<static> or global
+variants.
 
-For a C<static> function, use:
+For a C<static> function or variable (used only in a single source
+file), use:
 
     #define NEED_function
+    #define NEED_variable
 
-For a global function, use:
+For a global function or variable (used in multiple source files),
+use:
 
     #define NEED_function_GLOBAL
+    #define NEED_variable_GLOBAL
 
-Note that you mustn't have more than one global request for one
-function in your project.
+Note that you mustn't have more than one global request for the
+same function or variable in your project.
 
     __EXPLICIT_API__
 
 To avoid namespace conflicts, you can change the namespace of the
-explicitly exported functions using the C<DPPP_NAMESPACE> macro.
-Just C<#define> the macro before including C<ppport.h>:
+explicitly exported functions / variables using the C<DPPP_NAMESPACE>
+macro. Just C<#define> the macro before including C<ppport.h>:
 
     #define DPPP_NAMESPACE MyOwnNamespace_
     #include "ppport.h"

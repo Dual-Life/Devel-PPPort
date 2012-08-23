@@ -1,3 +1,13 @@
+3.06_02 - 2005-10-18
+
+    * added support for the following API
+        dAXMARK
+        PL_signals
+        PERL_SIGNALS_UNSAFE_FLAG
+        XSprePUSH
+
+    * improve devel/buildperl.pl utility
+
 3.06_01 - 2005-06-25
 
     * fix --compat-version argument checking

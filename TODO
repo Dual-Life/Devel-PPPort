@@ -1,5 +1,14 @@
 TODO:
 
+* wait for Steve's Sv*_set() patch
+
+* Newx* stuff?
+
+    Subject: Re: janitorial work ? [patch]
+    From: Jim Cromie <jcromie@divsol.com>
+    Date: Fri, 17 Jun 2005 21:55:37 -0600
+    Message-ID: <42B39B39.1010208@divsol.com>
+
 * improve apicheck (things like utf8_mg_pos_init() are
   not currently checked)
 

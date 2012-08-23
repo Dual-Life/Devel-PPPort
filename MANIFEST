@@ -40,9 +40,11 @@ parts/base/5008003
 parts/base/5008004
 parts/base/5008005
 parts/base/5008006
+parts/base/5008007
 parts/base/5009000
 parts/base/5009001
 parts/base/5009002
+parts/base/5009003
 parts/embed.fnc
 parts/inc/call
 parts/inc/cop
@@ -63,6 +65,7 @@ parts/inc/sv_xpvf
 parts/inc/SvPV
 parts/inc/threads
 parts/inc/uv
+parts/inc/variables
 parts/inc/version
 parts/ppptools.pl
 parts/todo/5004000
@@ -90,9 +93,11 @@ parts/todo/5008003
 parts/todo/5008004
 parts/todo/5008005
 parts/todo/5008006
+parts/todo/5008007
 parts/todo/5009000
 parts/todo/5009001
 parts/todo/5009002
+parts/todo/5009003
 PPPort.pm
 PPPort.xs
 ppport_h.PL
@@ -117,5 +122,6 @@ t/SvPV.t
 t/testutil.pl
 t/threads.t
 t/uv.t
+t/variables.t
 TODO
 typemap
