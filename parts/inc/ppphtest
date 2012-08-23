@@ -1,4 +1,4 @@
-=tests plan => 128
+=tests plan => 131
 
 use File::Path qw/rmtree mkpath/;
 
@@ -478,14 +478,26 @@ START_MY_CXT;
 ===============================================================================
 
 my $o = ppport(qw(--nochanges));
-ok($o =~ /^Uses grok_hex/m);
-ok($o !~ /^Looks good/m);
+ok($o =~ /Uses grok_hex/m);
+ok($o !~ /Looks good/m);
 
 $o = ppport(qw(--nochanges --compat-version=5.8.0));
-ok($o !~ /^Uses grok_hex/m);
-ok($o =~ /^Looks good/m);
+ok($o !~ /Uses grok_hex/m);
+ok($o =~ /Looks good/m);
 
 ---------------------------- FooBar.xs ----------------------------------------
 
 grok_hex();
+
+===============================================================================
+
+my $o = ppport(qw(--nochanges));
+ok($o =~ /Uses SvPVutf8_force, which may not be portable/m);
+
+$o = ppport(qw(--nochanges --compat-version=5.6.0));
+ok($o !~ /Uses SvPVutf8_force/m);
+
+---------------------------- FooBar.xs ----------------------------------------
+
+SvPVutf8_force();
 

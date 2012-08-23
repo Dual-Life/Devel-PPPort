@@ -1,3 +1,8 @@
+2.99_05 - 2004-08-10
+
+    * --compat-version now also hides compatibility warnings for
+      unsupported API calls
+
 2.99_04 - 2004-08-10
 
     * added code to check for correct INSTALLDIRS

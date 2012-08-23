@@ -445,7 +445,7 @@ require DynaLoader;
 use strict;
 use vars qw($VERSION @ISA $data);
 
-$VERSION = "2.99_04";
+$VERSION = "2.99_05";
 
 @ISA = qw(DynaLoader);
 
