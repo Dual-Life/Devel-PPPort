@@ -1,0 +1,26 @@
+5.004000
+GIMME_V                        # E
+G_VOID                         # E
+HEf_SVKEY                      # E
+HeHASH                         # U
+HeKEY                          # E
+HeKLEN                         # U
+HePV                           # E
+HeSVKEY                        # E
+HeSVKEY_force                  # E
+HeSVKEY_set                    # E
+HeVAL                          # E
+PUSHu                          # U
+SvSetMagicSV                   # U
+SvSetMagicSV_nosteal           # U
+SvSetSV_nosteal                # U
+SvTAINTED                      # U
+SvTAINTED_off                  # U
+SvTAINTED_on                   # U
+SvUV                           # U
+SvUVX                          # U
+SvUVx                          # U
+XPUSHu                         # U
+my_memcmp                      # U
+newRV_inc                      # E
+sv_2uv                         # U

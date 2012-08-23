@@ -23,7 +23,7 @@ eval {
   require Getopt::Long;
   Getopt::Long::GetOptions(\%opt, qw(
     help quiet diag! hints! changes! cplusplus
-    patch=s copy=s diff=s
+    patch=s copy=s diff=s compat-version=s
     list-provided list-unsupported
   )) or usage();
 };
@@ -34,6 +34,19 @@ if ($@ and grep /^-/, @ARGV) {
 }
 
 usage() if $opt{help};
+
+if (exists $opt{'compat-version'}) {
+  my($r,$v,$s) = eval { parse_version($opt{'compat-version'}) };
+  if ($@) {
+    die "Invalid version number format: '$opt{'compat-version'}'\n";
+  }
+  die "Only Perl 5 is supported\n" if $r != 5;
+  die "Invalid version number: $opt{'compat-version'}\n" if $v >= 1000 || $v >= 1000;
+  $opt{'compat-version'} = sprintf "%d.%03d%03d", $r, $v, $s;
+}
+else {
+  $opt{'compat-version'} = 5;
+}
 
 # Never use C comments in this file!!!!!
 my $ccs  = '/'.'*';
@@ -65,12 +78,13 @@ unless (@files) {
   die "No input files given!\n";
 }
 
-my %API = map { /^(\w+)\|([^|]*)\|(\w*)$/
+my %API = map { /^(\w+)\|([^|]*)\|([^|]*)\|(\w*)$/
                 ? ( $1 => { 
-                      ($2                  ? ( todo     => $2 ) : ()),
-                      (index($3, 'v') >= 0 ? ( varargs  => 1  ) : ()),
-                      (index($3, 'p') >= 0 ? ( provided => 1  ) : ()),
-                      (index($3, 'n') >= 0 ? ( nothxarg => 1  ) : ()),
+                      ($2                  ? ( base     => $2 ) : ()),
+                      ($3                  ? ( todo     => $3 ) : ()),
+                      (index($4, 'v') >= 0 ? ( varargs  => 1  ) : ()),
+                      (index($4, 'p') >= 0 ? ( provided => 1  ) : ()),
+                      (index($4, 'n') >= 0 ? ( nothxarg => 1  ) : ()),
                     } )
                 : die "invalid spec: $_" } qw(
 __PERL_API__
@@ -181,20 +195,22 @@ for $filename (@files) {
       $file{uses_replace}{$1}++ if $1 eq $revreplace{$func};
       $file{uses_Perl}{$func}++ if $c =~ /\bPerl_$func\b/;
       if (exists $API{$func}{provided}) {
-        $file{uses}{$func}++;
-        push @{$global{uses}{$func}}, $filename;
-        my @deps = rec_depend($func);
-        if (@deps) {
-          $file{uses_deps}{$func} = \@deps;
-          for (@deps) {
-            $file{uses}{$_} = 0 unless exists $file{uses}{$_};
-            push @{$global{uses}{$_}}, $filename;
+        if (!exists $API{$func}{base} || $API{$func}{base} > $opt{'compat-version'}) {
+          $file{uses}{$func}++;
+          push @{$global{uses}{$func}}, $filename;
+          my @deps = rec_depend($func);
+          if (@deps) {
+            $file{uses_deps}{$func} = \@deps;
+            for (@deps) {
+              $file{uses}{$_} = 0 unless exists $file{uses}{$_};
+              push @{$global{uses}{$_}}, $filename;
+            }
           }
-        }
-        for ($func, @deps) {
-          if (exists $need{$_}) {
-            $file{needs}{$_} = 'static';
-            push @{$global{needs}{$_}}, $filename;
+          for ($func, @deps) {
+            if (exists $need{$_}) {
+              $file{needs}{$_} = 'static';
+              push @{$global{needs}{$_}}, $filename;
+            }
           }
         }
       }
@@ -518,6 +534,34 @@ sub rec_depend
   my $func = shift;
   return () unless exists $depends{$func};
   map { ($_, rec_depend($_)) } @{$depends{$func}};
+}
+
+sub parse_version
+{
+  my $ver = shift;
+
+  if ($ver =~ /^(\d+)\.(\d+)\.(\d+)$/) {
+    return ($1, $2, $3);
+  }
+  elsif ($ver !~ /^\d+\.[\d_]+$/) {
+    die "cannot parse version '$ver'\n";
+  }
+
+  $ver =~ s/_//g;
+  $ver =~ s/$/000000/;
+
+  my($r,$v,$s) = $ver =~ /(\d+)\.(\d{3})(\d{3})/;
+
+  $v = int $v;
+  $s = int $s;
+
+  if ($r < 5 || ($r == 5 && $v < 6)) {
+    if ($s % 10) {
+      die "cannot parse version '$ver'\n";
+    }
+  }
+
+  return ($r, $v, $s);
 }
 
 sub format_version

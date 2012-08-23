@@ -148,17 +148,22 @@ print OUT <<HEAD;
 #include "perl.h"
 #include "XSUB.h"
 
-#define NEED_newCONSTSUB
-#define NEED_sv_2pv_nolen
+#ifndef DPPP_APICHECK_NO_PPPORT_H
+
 #define NEED_eval_pv
-#define NEED_newRV_noinc
-#define NEED_grok_number
-#define NEED_grok_numeric_radix
 #define NEED_grok_bin
 #define NEED_grok_hex
+#define NEED_grok_number
+#define NEED_grok_numeric_radix
 #define NEED_grok_oct
+#define NEED_newCONSTSUB
+#define NEED_newRV_noinc
+#define NEED_sv_2pv_nolen
+#define NEED_sv_2pvbyte
 
 #include "ppport.h"
+
+#endif
 
 static int some_global_var;
 

@@ -4,6 +4,7 @@
 
 NEED_function
 NEED_function_GLOBAL
+DPPP_NAMESPACE
 
 =implementation
 
@@ -17,21 +18,22 @@ __PPPORT_NAME__ - Perl/Pollution/Portability version __VERSION__
 
   perl __PPPORT_NAME__ [options] [files]
 
-  --help               show short help
+  --help                      show short help
 
-  --patch=file         write one patch file with changes
-  --copy=suffix        write changed copies with suffix
-  --diff=program       use diff program and options
+  --patch=file                write one patch file with changes
+  --copy=suffix               write changed copies with suffix
+  --diff=program              use diff program and options
 
-  --cplusplus          accept C++ comments
+  --compat-version=version    provide compatibility with Perl version
+  --cplusplus                 accept C++ comments
 
-  --quiet              don't output anything except fatal errors
-  --nodiag             don't show diagnostics
-  --nohints            don't show hints
-  --nochanges          don't suggest changes
+  --quiet                     don't output anything except fatal errors
+  --nodiag                    don't show diagnostics
+  --nohints                   don't show hints
+  --nochanges                 don't suggest changes
 
-  --list-provided      list provided API
-  --list-unsupported   list unsupported API
+  --list-provided             list provided API
+  --list-unsupported          list unsupported API
 
 =head1 COMPATIBILITY
 
@@ -63,6 +65,14 @@ Text::Diff or a diff program to be installed.
 =head2 --diff=I<program>
 
 Manually set the diff program and options to use.
+
+=head2 --compat-version=I<version>
+
+Tell F<__PPPORT_NAME__> to check for compatibility with the given
+Perl version. The default is to check for compatibility with Perl
+version __MIN_PERL__. You can use this option to reduce the output
+of F<__PPPORT_NAME__> if you intend to be backward compatible only
+up to a certain Perl version.
 
 =head2 --cplusplus
 

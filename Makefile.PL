@@ -10,7 +10,8 @@ if ($ENV{'PERL_CORE'}) {
   @coreopts = ( MAN3PODS => {} );
 }
 else {
-  @coreopts = ();
+  # Devel::PPPort is in the core since 5.7.3
+  @coreopts = ( INSTALLDIRS => ($] >= 5.007003 ? 'perl' : 'site') );
 }
 
 @ARGV = map { /^--with-(.*)/ && ++$opt{$1} ? () : $_ } @ARGV;

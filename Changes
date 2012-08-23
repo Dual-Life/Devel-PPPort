@@ -1,3 +1,10 @@
+2.99_04 - 2004-08-10
+
+    * added code to check for correct INSTALLDIRS
+    * added --compat-version option to ppport.h script to only
+      check for compatibility with at least the given Perl version
+    * some small adjustments
+
 2.99_03 - 2004-08-09
 
     * remove useless dependency from Makefile.PL (spotted by

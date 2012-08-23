@@ -7,12 +7,13 @@ use IO::Select;
 
 my %opt = (
   debug => 0,
+  base  => 0,
 );
 
 print "\n$0 @ARGV\n\n";
 
 GetOptions(\%opt, qw(
-            perl=s todo=s version=s debug
+            perl=s todo=s version=s debug base
           )) or die;
 
 my $fullperl = `which $opt{perl}`;
@@ -104,9 +105,12 @@ exit 0;
 
 sub regen_all
 {
+  my @mf_arg = qw( --with-apicheck OPTIMIZE=-O0 );
+  push @mf_arg, qw( DEFINE=-DDPPP_APICHECK_NO_PPPORT_H ) if $opt{base};
+
   # just to be sure
   run(qw(make realclean));
-  run($fullperl, "Makefile.PL", "--with-apicheck", "OPTIMIZE=-O0")->{status} == 0
+  run($fullperl, "Makefile.PL", @mf_arg)->{status} == 0
       or die "cannot run Makefile.PL: $!\n";
 }
 

@@ -1,10 +1,11 @@
 sub parse_todo
 {
+  my $dir = shift || 'parts/todo';
   local *TODO;
   my %todo;
   my $todo;
 
-  for $todo (glob 'parts/todo/*') {
+  for $todo (glob "$dir/*") {
     open TODO, $todo or die "cannot open $todo: $!\n";
     my $perl = <TODO>;
     chomp $perl;

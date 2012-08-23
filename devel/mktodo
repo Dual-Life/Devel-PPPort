@@ -1,7 +1,19 @@
 #!/usr/bin/perl -w
 use strict;
+use Getopt::Long;
 
-# for (glob 'parts/todo/*') {
+my %opt = (
+  base  => 0,
+);
+
+GetOptions(\%opt, qw(
+            base
+          )) or die;
+
+# my $outdir = $opt{base} ? 'parts/base' : 'parts/todo';
+my $outdir = 'parts/todo';
+
+# for (glob "$outdir/*") {
 #   unlink or die "$_: $!\n";
 # }
 
@@ -20,6 +32,8 @@ shift @perls;
 
 for (@perls) {
   my $todo = do { my $v = $_->{todo}; $v =~ s/\D+//g; $v };
-  -e "parts/todo/$todo" and next;
-  system "devel/mktodo.pl --perl $_->{path} --todo parts/todo/$todo --version $_->{todo}" and die;
+  -e "$outdir/$todo" and next;
+  my @args = ('--perl', $_->{path}, '--todo', "$outdir/$todo", '--version', "$_->{todo}");
+  push @args, '--base' if $opt{base};
+  system 'devel/mktodo.pl', @args and die "system(@args): [$!] [$?]\n";
 }

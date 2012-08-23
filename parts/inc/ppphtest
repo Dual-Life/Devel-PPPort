@@ -1,4 +1,4 @@
-=tests plan => 123
+=tests plan => 128
 
 use File::Path qw/rmtree mkpath/;
 
@@ -474,4 +474,18 @@ eval_pv();
 #include "ppport.h"
 
 START_MY_CXT;
+
+===============================================================================
+
+my $o = ppport(qw(--nochanges));
+ok($o =~ /^Uses grok_hex/m);
+ok($o !~ /^Looks good/m);
+
+$o = ppport(qw(--nochanges --compat-version=5.8.0));
+ok($o !~ /^Uses grok_hex/m);
+ok($o =~ /^Looks good/m);
+
+---------------------------- FooBar.xs ----------------------------------------
+
+grok_hex();
 

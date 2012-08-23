@@ -37,18 +37,19 @@ $data =~ s/^(.*)__EXPLICIT_API__(\s*?)^/
           /gem;
 }
 
-my %t = %{&parse_todo};
+my %raw_base = %{&parse_todo('parts/base')};
+my %raw_todo = %{&parse_todo('parts/todo')};
 
 my %todo;
-for (keys %t) {
-  push @{$todo{$t{$_}}}, $_;
+for (keys %raw_todo) {
+  push @{$todo{$raw_todo{$_}}}, $_;
 }
 
 # check consistency
 for (@api) {
-  if (exists $t{$_}) {
+  if (exists $raw_todo{$_}) {
     warn "$INCLUDE/$provides{$_} provides $_, which is still marked "
-         . "todo for " . format_version($t{$_}) . "\n";
+         . "todo for " . format_version($raw_todo{$_}) . "\n";
   }
 }
 
@@ -62,7 +63,11 @@ for (keys %provides) {
 push @perl_api, keys %embed;
 
 for (@perl_api) {
-  my $line = "$_|" . ($t{$_} || '') . '|';
+  if (exists $provides{$_} && !exists $raw_base{$_}) {
+    check(2, "Mmmh, $_ doesn't seem to need backporting.");
+  }
+  my $line = "$_|" . (exists $provides{$_} && exists $raw_base{$_} ? $raw_base{$_} : '') . '|';
+  $line .= ($raw_todo{$_} || '') . '|';
   $line .= 'p' if exists $provides{$_};
   if (exists $embed{$_}) {
     my $e = $embed{$_};
@@ -266,7 +271,7 @@ sub check
 {
   my $level = shift;
 
-  if (exists $ENV{PPP_CHECK_LEVEL} and $ENV{PPP_CHECK_LEVEL} >= $level) {
+  if (exists $ENV{DPPP_CHECK_LEVEL} and $ENV{DPPP_CHECK_LEVEL} >= $level) {
     print STDERR @_, "\n";
   }
 }
@@ -440,7 +445,7 @@ require DynaLoader;
 use strict;
 use vars qw($VERSION @ISA $data);
 
-$VERSION = "2.99_03";
+$VERSION = "2.99_04";
 
 @ISA = qw(DynaLoader);
 

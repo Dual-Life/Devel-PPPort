@@ -123,7 +123,6 @@ set_numeric_local              # U (perl_set_numeric_local)
 set_numeric_radix              # U
 set_numeric_standard           # U (perl_set_numeric_standard)
 str_to_version                 # U
-sv_2pvbyte_nolen               # E
 sv_2pvutf8                     # E
 sv_2pvutf8_nolen               # E
 sv_force_normal                # U
