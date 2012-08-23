@@ -4,9 +4,9 @@
 #
 ################################################################################
 #
-#  $Revision: 25 $
+#  $Revision: 26 $
 #  $Author: mhx $
-#  $Date: 2006/06/25 05:30:35 +0100 $
+#  $Date: 2006/07/21 18:21:39 +0100 $
 #
 ################################################################################
 #
@@ -32,7 +32,7 @@ sub generate_tests
   my @tests;
   my $file;
 
-  for $file (glob 'parts/inc/*') {
+  for $file (all_files_in_dir('parts/inc')) {
     my($testfile) = $file =~ /(\w+)\.?$/;  # VMS has a trailing dot
     $testfile = "t/$testfile.t";
   
