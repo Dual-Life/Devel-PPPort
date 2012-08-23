@@ -1,6 +1,6 @@
-: BEGIN {die "You meant to run embed.pl"} # Stop early if fed to perl.
+: BEGIN{die "You meant to run regen/embed.pl"} # Stop early if fed to perl.
 :
-: This file is processed by embed.pl and autodoc.pl
+: This file is processed by regen/embed.pl and autodoc.pl
 :
 : Lines are of the form:
 :    flags|return_type|function_name|arg1|arg2|...|argN
@@ -13,7 +13,7 @@
 :   A  Member of public API:
 :
 :         add entry to global.sym (unless x or m);
-:         any doc entry goes in perlapi.pod rather than perlintern.api
+:         any doc entry goes in perlapi.pod rather than perlintern.pod
 :         makes '#define foo Perl_foo' scope not just for PERL_CORE/PERL_EXT
 :
 :   a  Allocates memory a la malloc/calloc.  Also implies "R":
@@ -46,9 +46,15 @@
 :
 :         proto.h: add __attribute__format__ (or ...null_ok__)
 :
+:   i  Static inline: function in source code has a S_ prefix:
+:
+:         proto.h: function is declared as S_foo rather than foo,
+:                PERL_STATIC_INLINE is added to declaration;
+:         embed.h: "#define foo S_foo" entries added
+:
 :   M  May change:
 :
-:         (currently no effect)
+:         any doc entry is marked that function may change
 :
 :   m  Implemented as a macro:
 :
@@ -62,6 +68,10 @@
 :         In the PERL_IMPLICIT_SYS branch of embed.h, generates
 :             "#define foo Perl_foo",      rather than
 :             "#define foo(a,b,c) Perl_foo(aTHX_ a,b,c)
+:
+:   O  Has a perl_ compatibility macro.
+:
+:      The really OLD name for API funcs
 :
 :   o  Has no Perl_foo compatibility macro:
 :
@@ -114,8 +124,6 @@
 :
 : Individual flags may be separated by whitespace.
 
-START_EXTERN_C
-
 #if defined(PERL_IMPLICIT_SYS)
 Ano	|PerlInterpreter*|perl_alloc_using \
 				|NN struct IPerlMem *ipM \
@@ -165,20 +173,17 @@ npR	|MEM_SIZE|malloc_good_size	|size_t nbytes
 
 AnpR	|void*	|get_context
 Anp	|void	|set_context	|NN void *t
-EXpRnP	|I32	|regcurly	|NN const char *s
 
-END_EXTERN_C
-
-/* functions with flag 'n' should come before here */
-START_EXTERN_C
-#  include "pp_proto.h"
+XEop	|bool	|try_amagic_bin	|int method|int flags
+XEop	|bool	|try_amagic_un	|int method|int flags
 Ap	|SV*	|amagic_call	|NN SV* left|NN SV* right|int method|int dir
+Ap	|SV *	|amagic_deref_call|NN SV *ref|int method
 Ap	|int	|Gv_AMupdate	|NN HV* stash|bool destructing
 ApR	|CV*	|gv_handler	|NULLOK HV* stash|I32 id
-: Used in perly.y
-p	|OP*	|append_elem	|I32 optype|NULLOK OP* first|NULLOK OP* last
-: Used in perly.y
-p	|OP*	|append_list	|I32 optype|NULLOK LISTOP* first|NULLOK LISTOP* last
+Apd	|OP*	|op_append_elem	|I32 optype|NULLOK OP* first|NULLOK OP* last
+Apd	|OP*	|op_append_list	|I32 optype|NULLOK OP* first|NULLOK OP* last
+Apd	|OP*	|op_linklist	|NN OP *o
+Apd	|OP*	|op_prepend_elem|I32 optype|NULLOK OP* first|NULLOK OP* last
 : FIXME - this is only called by pp_chown. They should be merged.
 p	|I32	|apply		|I32 type|NN SV** mark|NN SV** sp
 ApM	|void	|apply_attrs_string|NN const char *stashpv|NN CV *cv|NN const char *attrstr|STRLEN len
@@ -202,7 +207,7 @@ ApdoxM	|SV**	|av_create_and_unshift_one|NN AV **const avp|NN SV *const val
 Apd	|void	|av_unshift	|NN AV *av|I32 num
 Apo	|SV**	|av_arylen_p	|NN AV *av
 Apo	|IV*	|av_iter_p	|NN AV *av
-#if defined(PERL_IN_AV_C) || defined(PERL_DECL_PROT)
+#if defined(PERL_IN_AV_C)
 s	|MAGIC*	|get_aux_mg	|NN AV *av
 #endif
 : Used in perly.y
@@ -212,12 +217,15 @@ pR	|OP*	|block_end	|I32 floor|NULLOK OP* seq
 ApR	|I32	|block_gimme
 : Used in perly.y
 pR	|int	|block_start	|int full
+Aodp	|void	|blockhook_register |NN BHK *hk
 : Used in perl.c
 p	|void	|boot_core_UNIVERSAL
 : Used in perl.c
 p	|void	|boot_core_PerlIO
 Ap	|void	|call_list	|I32 oldscope|NN AV *paramList
-: Used in serveral source files
+Apd	|const PERL_CONTEXT *	|caller_cx|I32 level \
+				|NULLOK const PERL_CONTEXT **dbcxp
+: Used in several source files
 pR	|bool	|cando		|Mode_t mode|bool effective|NN const Stat_t* statbufp
 ApR	|U32	|cast_ulong	|NV f
 ApR	|I32	|cast_i32	|NV f
@@ -230,9 +238,11 @@ ApR	|I32	|my_chsize	|int fd|Off_t length
 pR	|OP*	|convert	|I32 optype|I32 flags|NULLOK OP* o
 : Used in op.c and perl.c
 pM	|PERL_CONTEXT*	|create_eval_scope|U32 flags
+Aprd	|void	|croak_sv	|NN SV *baseex
 : croak()'s first parm can be NULL.  Otherwise, mod_perl breaks.
 Afprd	|void	|croak		|NULLOK const char* pat|...
-Apr	|void	|vcroak		|NULLOK const char* pat|NULLOK va_list* args
+Aprd	|void	|vcroak		|NULLOK const char* pat|NULLOK va_list* args
+Aprd	|void	|croak_no_modify
 Aprd	|void	|croak_xs_usage	|NN const CV *const cv \
 				|NN const char *const params
 
@@ -286,12 +296,10 @@ Anp	|char*	|delimcpy	|NN char* to|NN const char* toend|NN const char* from \
 				|NN const char* fromend|int delim|NN I32* retlen
 : Used in op.c, perl.c
 pM	|void	|delete_eval_scope
-Afp	|OP*	|die		|NULLOK const char* pat|...
-#if defined(PERL_IN_UTIL_C) || defined(PERL_DECL_PROT)
-s	|OP*	|vdie		|NULLOK const char* pat|NULLOK va_list* args
-#endif
+Apd	|OP*	|die_sv		|NN SV *baseex
+Afpd	|OP*	|die		|NULLOK const char* pat|...
 : Used in util.c
-pr	|void	|die_where	|NULLOK SV* msv
+pr	|void	|die_unwind	|NN SV* msv
 Ap	|void	|dounwind	|I32 cxix
 : FIXME
 pmb	|bool	|do_aexec	|NULLOK SV* really|NN SV** mark|NN SV** sp
@@ -299,7 +307,6 @@ pmb	|bool	|do_aexec	|NULLOK SV* really|NN SV** mark|NN SV** sp
 p	|bool	|do_aexec5	|NULLOK SV* really|NN SV** mark|NN SV** sp|int fd|int do_report
 Ap	|int	|do_binmode	|NN PerlIO *fp|int iotype|int mode
 : Used in pp.c
-p	|void	|do_chop	|NN SV *astr|NN SV *sv
 Ap	|bool	|do_close	|NULLOK GV* gv|bool not_implicit
 : Defined in doio.c, used only in pp_sys.c
 p	|bool	|do_eof		|NN GV* gv
@@ -319,7 +326,7 @@ Ap	|int	|do_spawn_nowait|NN char* cmd
 p	|bool	|do_exec3	|NN const char *incmd|int fd|int do_report
 #endif
 p	|void	|do_execfree
-#if defined(PERL_IN_DOIO_C) || defined(PERL_DECL_PROT)
+#if defined(PERL_IN_DOIO_C)
 s	|void	|exec_failed	|NN const char *cmd|int fd|int do_report
 #endif
 #if defined(HAS_MSG) || defined(HAS_SEM) || defined(HAS_SHM)
@@ -337,8 +344,8 @@ p	|I32	|do_semop	|NN SV** mark|NN SV** sp
 p	|I32	|do_shmio	|I32 optype|NN SV** mark|NN SV** sp
 #endif
 Ap	|void	|do_join	|NN SV *sv|NN SV *delim|NN SV **mark|NN SV **sp
-: Used in pp.c and pp_hot.c
-p	|OP*	|do_kv
+: Used in pp.c and pp_hot.c, prototype generated by regen/opcode.pl
+: p	|OP*	|do_kv
 Apmb	|bool	|do_open	|NN GV* gv|NN const char* name|I32 len|int as_raw \
 				|int rawmode|int rawperm|NULLOK PerlIO* supplied_fp
 Ap	|bool	|do_open9	|NN GV *gv|NN const char *name|I32 len|int as_raw \
@@ -352,8 +359,6 @@ Ap	|bool	|do_openn	|NN GV *gv|NN const char *oname|I32 len \
 p	|bool	|do_print	|NULLOK SV* sv|NN PerlIO* fp
 : Used in pp_sys.c
 pR	|OP*	|do_readline
-: Used in pp.c
-p	|I32	|do_chomp	|NN SV* sv
 : Defined in doio.c, used only in pp_sys.c
 p	|bool	|do_seek	|NULLOK GV* gv|Off_t pos|int whence
 Ap	|void	|do_sprintf	|NN SV* sv|I32 len|NN SV** sarg
@@ -392,7 +397,7 @@ ApdR	|char*	|fbm_instr	|NN unsigned char* big|NN unsigned char* bigend \
 : Defined in util.c, used only in perl.c
 p	|char*	|find_script	|NN const char *scriptname|bool dosearch \
 				|NULLOK const char *const *const search_ext|I32 flags
-#if defined(PERL_IN_OP_C) || defined(PERL_DECL_PROT)
+#if defined(PERL_IN_OP_C)
 s	|OP*	|force_list	|NULLOK OP* arg
 : FIXME
 s	|OP*	|fold_constants	|NN OP *o
@@ -400,7 +405,7 @@ s	|OP*	|fold_constants	|NN OP *o
 Afpd	|char*	|form		|NN const char* pat|...
 Ap	|char*	|vform		|NN const char* pat|NULLOK va_list* args
 Ap	|void	|free_tmps
-#if defined(PERL_IN_OP_C) || defined(PERL_DECL_PROT)
+#if defined(PERL_IN_OP_C)
 s	|OP*	|gen_constant_list|NULLOK OP* o
 #endif
 #if !defined(HAS_GETENV_LEN)
@@ -436,15 +441,17 @@ Apmb	|void	|gv_fullname3	|NN SV* sv|NN const GV* gv|NULLOK const char* prefix
 Ap	|void	|gv_fullname4	|NN SV* sv|NN const GV* gv|NULLOK const char* prefix|bool keepmain
 : Used in scope.c
 pMox	|GP *	|newGP		|NN GV *const gv
+pX	|void	|cvgv_set	|NN CV* cv|NULLOK GV* gv
+pX	|void	|cvstash_set	|NN CV* cv|NULLOK HV* stash
 Ap	|void	|gv_init	|NN GV* gv|NULLOK HV* stash|NN const char* name|STRLEN len|int multi
 Ap	|void	|gv_name_set	|NN GV* gv|NN const char *name|U32 len|U32 flags
-Apd	|void	|gv_try_downgrade|NN GV* gv
+XMpd	|void	|gv_try_downgrade|NN GV* gv
 Apd	|HV*	|gv_stashpv	|NN const char* name|I32 flags
 Apd	|HV*	|gv_stashpvn	|NN const char* name|U32 namelen|I32 flags
 Apd	|HV*	|gv_stashsv	|NN SV* sv|I32 flags
 Apd	|void	|hv_clear	|NULLOK HV *hv
 : used in SAVEHINTS() and op.c
-poM	|HV *	|hv_copy_hints_hv|NULLOK HV *const ohv
+ApdR	|HV *	|hv_copy_hints_hv|NULLOK HV *const ohv
 Ap	|void	|hv_delayfree_ent|NN HV *hv|NULLOK HE *entry
 Abmd	|SV*	|hv_delete	|NULLOK HV *hv|NN const char *key|I32 klen \
 				|I32 flags
@@ -460,6 +467,7 @@ Ap	|void*	|hv_common	|NULLOK HV *hv|NULLOK SV *keysv \
 Ap	|void*	|hv_common_key_len|NULLOK HV *hv|NN const char *key \
 				|I32 klen_i32|const int action|NULLOK SV *val \
 				|const U32 hash
+Apod	|STRLEN	|hv_fill	|NN HV const *const hv
 Ap	|void	|hv_free_ent	|NN HV *hv|NULLOK HE *entryK
 Apd	|I32	|hv_iterinit	|NN HV *hv
 ApdR	|char*	|hv_iterkey	|NN HE* entry|NN I32* retlen
@@ -470,43 +478,59 @@ ApMdR	|HE*	|hv_iternext_flags|NN HV *hv|I32 flags
 ApdR	|SV*	|hv_iterval	|NN HV *hv|NN HE *entry
 Ap	|void	|hv_ksplit	|NN HV *hv|IV newmax
 Apdbm	|void	|hv_magic	|NN HV *hv|NULLOK GV *gv|int how
-: Used in B.xs
-XEdpoM	|HV *	|refcounted_he_chain_2hv|NULLOK const struct refcounted_he *c
-: Used in APItest.xs
-XEpoM	|SV *	|refcounted_he_fetch|NULLOK const struct refcounted_he *chain \
-				|NULLOK SV *keysv|NULLOK const char *key \
-				|STRLEN klen, int flags, U32 hash
-: Used in various files
-dpoM	|void	|refcounted_he_free|NULLOK struct refcounted_he *he
-: Used in various files
-XEdpoM	|struct refcounted_he *|refcounted_he_new \
-				|NULLOK struct refcounted_he *const parent \
-				|NULLOK SV *const key|NULLOK SV *const value
-#if defined(PERL_IN_HV_C) || defined(PERL_DECL_PROT)
-s	|struct refcounted_he *	|refcounted_he_new_common \
-				|NULLOK struct refcounted_he *const parent \
-				|NN const char *const key_p \
-				|const STRLEN key_len|const char flags \
-				|char value_type|NN const void *value \
-				|const STRLEN value_len
+#if defined(PERL_IN_HV_C)
+s	|SV *	|refcounted_he_value	|NN const struct refcounted_he *he
 #endif
+Xpd	|HV *	|refcounted_he_chain_2hv|NULLOK const struct refcounted_he *c|U32 flags
+Xpd	|SV *	|refcounted_he_fetch_pvn|NULLOK const struct refcounted_he *chain \
+				|NN const char *keypv|STRLEN keylen|U32 hash|U32 flags
+Xpd	|SV *	|refcounted_he_fetch_pv|NULLOK const struct refcounted_he *chain \
+				|NN const char *key|U32 hash|U32 flags
+Xpd	|SV *	|refcounted_he_fetch_sv|NULLOK const struct refcounted_he *chain \
+				|NN SV *key|U32 hash|U32 flags
+Xpd	|struct refcounted_he *|refcounted_he_new_pvn \
+				|NULLOK struct refcounted_he *parent \
+				|NN const char *keypv|STRLEN keylen \
+				|U32 hash|NULLOK SV *value|U32 flags
+Xpd	|struct refcounted_he *|refcounted_he_new_pv \
+				|NULLOK struct refcounted_he *parent \
+				|NN const char *key \
+				|U32 hash|NULLOK SV *value|U32 flags
+Xpd	|struct refcounted_he *|refcounted_he_new_sv \
+				|NULLOK struct refcounted_he *parent \
+				|NN SV *key \
+				|U32 hash|NULLOK SV *value|U32 flags
+Xpd	|void	|refcounted_he_free|NULLOK struct refcounted_he *he
+Xpd	|struct refcounted_he *|refcounted_he_inc|NULLOK struct refcounted_he *he
 Abmd	|SV**	|hv_store	|NULLOK HV *hv|NULLOK const char *key \
 				|I32 klen|NULLOK SV *val|U32 hash
 Abmd	|HE*	|hv_store_ent	|NULLOK HV *hv|NULLOK SV *key|NULLOK SV *val\
 				|U32 hash
 AbmM	|SV**	|hv_store_flags	|NULLOK HV *hv|NULLOK const char *key \
 				|I32 klen|NULLOK SV *val|U32 hash|int flags
-Apd	|void	|hv_undef	|NULLOK HV *hv
-AnpP	|I32	|ibcmp		|NN const char* a|NN const char* b|I32 len
-AnpP	|I32	|ibcmp_locale	|NN const char* a|NN const char* b|I32 len
-Apd	|I32	|ibcmp_utf8	|NN const char *s1|NULLOK char **pe1|UV l1 \
+Amd	|void	|hv_undef	|NULLOK HV *hv
+poX	|void	|hv_undef_flags	|NULLOK HV *hv|U32 flags
+Am	|I32	|ibcmp		|NN const char* a|NN const char* b|I32 len
+AnpP	|I32	|foldEQ		|NN const char* a|NN const char* b|I32 len
+Am	|I32	|ibcmp_locale	|NN const char* a|NN const char* b|I32 len
+AnpP	|I32	|foldEQ_locale	|NN const char* a|NN const char* b|I32 len
+Am	|I32	|ibcmp_utf8	|NN const char *s1|NULLOK char **pe1|UV l1 \
 				|bool u1|NN const char *s2|NULLOK char **pe2 \
 				|UV l2|bool u2
-#if defined(PERL_IN_DOIO_C) || defined(PERL_DECL_PROT)
+Amd	|I32	|foldEQ_utf8	|NN const char *s1|NULLOK char **pe1|UV l1 \
+				|bool u1|NN const char *s2|NULLOK char **pe2 \
+				|UV l2|bool u2
+AMp	|I32	|foldEQ_utf8_flags |NN const char *s1|NULLOK char **pe1|UV l1 \
+				|bool u1|NN const char *s2|NULLOK char **pe2 \
+				|UV l2|bool u2|U32 flags
+AnpP	|I32	|foldEQ_latin1	|NN const char* a|NN const char* b|I32 len
+#if defined(PERL_IN_DOIO_C)
 sR	|bool	|ingroup	|Gid_t testgid|bool effective
 #endif
 : Used in toke.c
 p	|void	|init_argv_symbols|int argc|NN char **argv
+: Used in pp_ctl.c
+po	|void	|init_dbargs
 : Used in mg.c
 p	|void	|init_debugger
 Ap	|void	|init_stacks
@@ -559,7 +583,9 @@ Anpdmb	|bool	|is_utf8_string_loc|NN const U8 *s|STRLEN len|NULLOK const U8 **p
 Anpd	|bool	|is_utf8_string_loclen|NN const U8 *s|STRLEN len|NULLOK const U8 **ep|NULLOK STRLEN *el
 ApR	|bool	|is_utf8_alnum	|NN const U8 *p
 ApR	|bool	|is_utf8_idfirst|NN const U8 *p
+ApR	|bool	|is_utf8_xidfirst|NN const U8 *p
 ApR	|bool	|is_utf8_idcont	|NN const U8 *p
+ApR	|bool	|is_utf8_xidcont	|NN const U8 *p
 ApR	|bool	|is_utf8_alpha	|NN const U8 *p
 ApR	|bool	|is_utf8_ascii	|NN const U8 *p
 ApR	|bool	|is_utf8_space	|NN const U8 *p
@@ -589,19 +615,17 @@ EXpR	|bool	|is_utf8_X_V		|NN const U8 *p
 p	|OP*	|jmaybe		|NN OP *o
 : Used in pp.c 
 pP	|I32	|keyword	|NN const char *name|I32 len|bool all_keywords
-#if defined(PERL_IN_OP_C) || defined(PERL_DECL_PROT)
+#if defined(PERL_IN_OP_C)
 s	|OP*	|opt_scalarhv	|NN OP* rep_op
 s	|OP*	|is_inplace_av	|NN OP* o|NULLOK OP* oright
 #endif
 Ap	|void	|leave_scope	|I32 base
-: Used in pp_ctl.c, and by Data::Alias
-EXp	|void	|lex_end
-: Used in various files
-p	|void	|lex_start	|NULLOK SV* line|NULLOK PerlIO *rsfp|bool new_filter
 : Public lexer API
+AMpd	|void	|lex_start	|NULLOK SV* line|NULLOK PerlIO *rsfp|U32 flags
 AMpd	|bool	|lex_bufutf8
 AMpd	|char*	|lex_grow_linestr|STRLEN len
-AMpd	|void	|lex_stuff_pvn	|NN char* pv|STRLEN len|U32 flags
+AMpd	|void	|lex_stuff_pvn	|NN const char* pv|STRLEN len|U32 flags
+AMpd	|void	|lex_stuff_pv	|NN const char* pv|U32 flags
 AMpd	|void	|lex_stuff_sv	|NN SV* sv|U32 flags
 AMpd	|void	|lex_unstuff	|NN char* ptr
 AMpd	|void	|lex_read_to	|NN char* ptr
@@ -610,14 +634,23 @@ AMpd	|bool	|lex_next_chunk	|U32 flags
 AMpd	|I32	|lex_peek_unichar|U32 flags
 AMpd	|I32	|lex_read_unichar|U32 flags
 AMpd	|void	|lex_read_space	|U32 flags
+: Public parser API
+AMpd	|OP*	|parse_arithexpr|U32 flags
+AMpd	|OP*	|parse_termexpr	|U32 flags
+AMpd	|OP*	|parse_listexpr	|U32 flags
+AMpd	|OP*	|parse_fullexpr	|U32 flags
+AMpd	|OP*	|parse_block	|U32 flags
+AMpd	|OP*	|parse_barestmt	|U32 flags
+AMpd	|SV*	|parse_label	|U32 flags
+AMpd	|OP*	|parse_fullstmt	|U32 flags
+AMpd	|OP*	|parse_stmtseq	|U32 flags
 : Used in various files
 Ap	|void	|op_null	|NN OP* o
 : FIXME. Used by Data::Alias
 EXp	|void	|op_clear	|NN OP* o
 Ap	|void	|op_refcnt_lock
 Ap	|void	|op_refcnt_unlock
-#if defined(PERL_IN_OP_C) || defined(PERL_DECL_PROT)
-s	|OP*	|linklist	|NN OP *o
+#if defined(PERL_IN_OP_C)
 s	|OP*	|listkids	|NULLOK OP* o
 #endif
 : Used in S_doeval in pp_ctl.c
@@ -628,6 +661,10 @@ Ap	|void	|vload_module|U32 flags|NN SV* name|NULLOK SV* ver|NULLOK va_list* args
 p	|OP*	|localize	|NN OP *o|I32 lex
 ApdR	|I32	|looks_like_number|NN SV *const sv
 Apd	|UV	|grok_bin	|NN const char* start|NN STRLEN* len_p|NN I32* flags|NULLOK NV *result
+#ifdef PERL_IN_DQUOTE_STATIC_C
+EMsR	|char	|grok_bslash_c	|const char source|const bool utf8|const bool output_warning
+EMsR	|bool	|grok_bslash_o	|NN const char* s|NN UV* uv|NN STRLEN* len|NN const char** error_msg|const bool output_warning
+#endif
 Apd	|UV	|grok_hex	|NN const char* start|NN STRLEN* len_p|NN I32* flags|NULLOK NV *result
 Apd	|int	|grok_number	|NN const char *pv|STRLEN len|NULLOK UV *valuep
 ApdR	|bool	|grok_numeric_radix|NN const char **sp|NN const char *send
@@ -681,14 +718,18 @@ p	|int	|magic_setutf8	|NN SV* sv|NN MAGIC* mg
 p	|int	|magic_set_all_env|NN SV* sv|NN MAGIC* mg
 p	|U32	|magic_sizepack	|NN SV* sv|NN MAGIC* mg
 p	|int	|magic_wipepack	|NN SV* sv|NN MAGIC* mg
+pod	|SV*	|magic_methcall	|NN SV *sv|NN const MAGIC *mg \
+				|NN const char *meth|U32 flags \
+				|U32 argc|...
 Ap	|void	|markstack_grow
 #if defined(USE_LOCALE_COLLATE)
 p	|int	|magic_setcollxfrm|NN SV* sv|NN MAGIC* mg
 : Defined in locale.c, used only in sv.c
 p	|char*	|mem_collxfrm	|NN const char* s|STRLEN len|NN STRLEN* xlen
 #endif
-Afp	|SV*	|mess		|NN const char* pat|...
-Ap	|SV*	|vmess		|NN const char* pat|NULLOK va_list* args
+Afpd	|SV*	|mess		|NN const char* pat|...
+Apd	|SV*	|mess_sv	|NN SV* basemsg|bool consume
+Apd	|SV*	|vmess		|NN const char* pat|NULLOK va_list* args
 : FIXME - either make it public, or stop exporting it. (Data::Alias uses this)
 : Used in gv.c, op.c, toke.c
 EXp	|void	|qerror		|NN SV* err
@@ -700,14 +741,17 @@ Apd	|int	|mg_copy	|NN SV *sv|NN SV *nsv|NULLOK const char *key \
 : Defined in mg.c, used only in scope.c
 pd	|void	|mg_localize	|NN SV* sv|NN SV* nsv|bool setmagic
 ApdR	|MAGIC*	|mg_find	|NULLOK const SV* sv|int type
+ApdR	|MAGIC*	|mg_findext	|NULLOK const SV* sv|int type|NULLOK const MGVTBL *vtbl
 Apd	|int	|mg_free	|NN SV* sv
+Apd	|void	|mg_free_type	|NN SV* sv|int how
 Apd	|int	|mg_get		|NN SV* sv
 Apd	|U32	|mg_length	|NN SV* sv
 Apd	|void	|mg_magical	|NN SV* sv
 Apd	|int	|mg_set		|NN SV* sv
 Ap	|I32	|mg_size	|NN SV* sv
 Ap	|void	|mini_mktime	|NN struct tm *ptm
-: Used by MOD(), which Data::Alias uses
+AMpd	|OP*	|op_lvalue	|NULLOK OP* o|I32 type
+: To be removed after 5.14 (see [perl #78908]):
 EXp	|OP*	|mod		|NULLOK OP* o|I32 type
 : Used in op.c and pp_sys.c
 p	|int	|mode_from_discipline|NULLOK const char* s|STRLEN len
@@ -725,7 +769,8 @@ Ap	|I32	|my_fflush_all
 Anp	|Pid_t	|my_fork
 Anp	|void	|atfork_lock
 Anp	|void	|atfork_unlock
-Ap	|I32	|my_lstat
+Apmb	|I32	|my_lstat
+pX	|I32	|my_lstat_flags	|NULLOK const U32 flags
 #if !defined(HAS_MEMCMP) || !defined(HAS_SANE_MEMCMP)
 AnpP	|I32	|my_memcmp	|NN const char* s1|NN const char* s2|I32 len
 #endif
@@ -736,7 +781,8 @@ Ap	|I32	|my_pclose	|NULLOK PerlIO* ptr
 Ap	|PerlIO*|my_popen	|NN const char* cmd|NN const char* mode
 Ap	|PerlIO*|my_popen_list	|NN const char* mode|int n|NN SV ** args
 Ap	|void	|my_setenv	|NULLOK const char* nam|NULLOK const char* val
-Ap	|I32	|my_stat
+Apmb	|I32	|my_stat
+pX	|I32	|my_stat_flags	|NULLOK const U32 flags
 Ap	|char *	|my_strftime	|NN const char *fmt|int sec|int min|int hour|int mday|int mon|int year|int wday|int yday|int isdst
 #if defined(MYSWAP)
 ApPa	|short	|my_swap	|short s
@@ -748,27 +794,27 @@ p	|void	|my_unexec
 Apa	|OP*	|newANONLIST	|NULLOK OP* o
 Apa	|OP*	|newANONHASH	|NULLOK OP* o
 Ap	|OP*	|newANONSUB	|I32 floor|NULLOK OP* proto|NULLOK OP* block
-Apa	|OP*	|newASSIGNOP	|I32 flags|NULLOK OP* left|I32 optype|NULLOK OP* right
-Apa	|OP*	|newCONDOP	|I32 flags|NN OP* first|NULLOK OP* trueop|NULLOK OP* falseop
+Apda	|OP*	|newASSIGNOP	|I32 flags|NULLOK OP* left|I32 optype|NULLOK OP* right
+Apda	|OP*	|newCONDOP	|I32 flags|NN OP* first|NULLOK OP* trueop|NULLOK OP* falseop
 Apd	|CV*	|newCONSTSUB	|NULLOK HV* stash|NULLOK const char* name|NULLOK SV* sv
 #ifdef PERL_MAD
 Ap	|OP*	|newFORM	|I32 floor|NULLOK OP* o|NULLOK OP* block
 #else
 Ap	|void	|newFORM	|I32 floor|NULLOK OP* o|NULLOK OP* block
 #endif
-Apa	|OP*	|newFOROP	|I32 flags|NULLOK char* label|line_t forline \
-				|NULLOK OP* sv|NN OP* expr|NULLOK OP* block|NULLOK OP* cont
-Apa	|OP*	|newGIVENOP	|NN OP* cond|NN OP* block|PADOFFSET defsv_off
-Apa	|OP*	|newLOGOP	|I32 optype|I32 flags|NN OP *first|NN OP *other
-Apa	|OP*	|newLOOPEX	|I32 type|NN OP* label
-Apa	|OP*	|newLOOPOP	|I32 flags|I32 debuggable|NULLOK OP* expr|NULLOK OP* block
-Apa	|OP*	|newNULLLIST
-Apa	|OP*	|newOP		|I32 optype|I32 flags
+Apda	|OP*	|newFOROP	|I32 flags|NULLOK OP* sv|NN OP* expr|NULLOK OP* block|NULLOK OP* cont
+Apda	|OP*	|newGIVENOP	|NN OP* cond|NN OP* block|PADOFFSET defsv_off
+Apda	|OP*	|newLOGOP	|I32 optype|I32 flags|NN OP *first|NN OP *other
+Apda	|OP*	|newLOOPEX	|I32 type|NN OP* label
+Apda	|OP*	|newLOOPOP	|I32 flags|I32 debuggable|NULLOK OP* expr|NULLOK OP* block
+Apda	|OP*	|newNULLLIST
+Apda	|OP*	|newOP		|I32 optype|I32 flags
 Ap	|void	|newPROG	|NN OP* o
-Apa	|OP*	|newRANGE	|I32 flags|NN OP* left|NN OP* right
-Apa	|OP*	|newSLICEOP	|I32 flags|NULLOK OP* subscript|NULLOK OP* listop
-Apa	|OP*	|newSTATEOP	|I32 flags|NULLOK char* label|NULLOK OP* o
-Ap	|CV*	|newSUB		|I32 floor|NULLOK OP* o|NULLOK OP* proto|NULLOK OP* block
+Apda	|OP*	|newRANGE	|I32 flags|NN OP* left|NN OP* right
+Apda	|OP*	|newSLICEOP	|I32 flags|NULLOK OP* subscript|NULLOK OP* listop
+Apda	|OP*	|newSTATEOP	|I32 flags|NULLOK char* label|NULLOK OP* o
+Abm	|CV*	|newSUB		|I32 floor|NULLOK OP* o|NULLOK OP* proto \
+				|NULLOK OP* block
 ApM	|CV *	|newXS_flags	|NULLOK const char *name|NN XSUBADDR_t subaddr\
 				|NN const char *const filename \
 				|NULLOK const char *const proto|U32 flags
@@ -776,26 +822,26 @@ Apd	|CV*	|newXS		|NULLOK const char *name|NN XSUBADDR_t subaddr\
 				|NN const char *filename
 AmdbR	|AV*	|newAV
 Apa	|OP*	|newAVREF	|NN OP* o
-Apa	|OP*	|newBINOP	|I32 type|I32 flags|NULLOK OP* first|NULLOK OP* last
+Apda	|OP*	|newBINOP	|I32 type|I32 flags|NULLOK OP* first|NULLOK OP* last
 Apa	|OP*	|newCVREF	|I32 flags|NULLOK OP* o
-Apa	|OP*	|newGVOP	|I32 type|I32 flags|NN GV* gv
+Apda	|OP*	|newGVOP	|I32 type|I32 flags|NN GV* gv
 Apa	|GV*	|newGVgen	|NN const char* pack
 Apa	|OP*	|newGVREF	|I32 type|NULLOK OP* o
 ApaR	|OP*	|newHVREF	|NN OP* o
 AmdbR	|HV*	|newHV
 ApaR	|HV*	|newHVhv	|NULLOK HV *hv
 Apabm	|IO*	|newIO
-Apa	|OP*	|newLISTOP	|I32 type|I32 flags|NULLOK OP* first|NULLOK OP* last
+Apda	|OP*	|newLISTOP	|I32 type|I32 flags|NULLOK OP* first|NULLOK OP* last
 #ifdef USE_ITHREADS
-Apa	|OP*	|newPADOP	|I32 type|I32 flags|NN SV* sv
+Apda	|OP*	|newPADOP	|I32 type|I32 flags|NN SV* sv
 #endif
-Apa	|OP*	|newPMOP	|I32 type|I32 flags
-Apa	|OP*	|newPVOP	|I32 type|I32 flags|NULLOK char* pv
+Apda	|OP*	|newPMOP	|I32 type|I32 flags
+Apda	|OP*	|newPVOP	|I32 type|I32 flags|NULLOK char* pv
 Apa	|SV*	|newRV		|NN SV *const sv
 Apda	|SV*	|newRV_noinc	|NN SV *const sv
 Apda	|SV*	|newSV		|const STRLEN len
 Apa	|OP*	|newSVREF	|NN OP* o
-Apa	|OP*	|newSVOP	|I32 type|I32 flags|NN SV* sv
+Apda	|OP*	|newSVOP	|I32 type|I32 flags|NN SV* sv
 Apda	|SV*	|newSViv	|const IV i
 Apda	|SV*	|newSVuv	|const UV u
 Apda	|SV*	|newSVnv	|const NV n
@@ -804,16 +850,23 @@ Apda	|SV*	|newSVpvn	|NULLOK const char *const s|const STRLEN len
 Apda	|SV*	|newSVpvn_flags	|NULLOK const char *const s|const STRLEN len|const U32 flags
 Apda	|SV*	|newSVhek	|NULLOK const HEK *const hek
 Apda	|SV*	|newSVpvn_share	|NULLOK const char* s|I32 len|U32 hash
+Apda	|SV*	|newSVpv_share	|NULLOK const char* s|U32 hash
 Afpda	|SV*	|newSVpvf	|NN const char *const pat|...
 Apa	|SV*	|vnewSVpvf	|NN const char *const pat|NULLOK va_list *const args
 Apd	|SV*	|newSVrv	|NN SV *const rv|NULLOK const char *const classname
 Apda	|SV*	|newSVsv	|NULLOK SV *const old
 Apda	|SV*	|newSV_type	|const svtype type
-Apa	|OP*	|newUNOP	|I32 type|I32 flags|NULLOK OP* first
-Apa	|OP*	|newWHENOP	|NULLOK OP* cond|NN OP* block
-Apa	|OP*	|newWHILEOP	|I32 flags|I32 debuggable|NULLOK LOOP* loop \
-				|I32 whileline|NULLOK OP* expr|NULLOK OP* block|NULLOK OP* cont \
+Apda	|OP*	|newUNOP	|I32 type|I32 flags|NULLOK OP* first
+Apda	|OP*	|newWHENOP	|NULLOK OP* cond|NN OP* block
+Apda	|OP*	|newWHILEOP	|I32 flags|I32 debuggable|NULLOK LOOP* loop \
+				|NULLOK OP* expr|NULLOK OP* block|NULLOK OP* cont \
 				|I32 has_my
+Apd	|CV*	|rv2cv_op_cv	|NN OP *cvop|U32 flags
+Apd	|OP*	|ck_entersub_args_list|NN OP *entersubop
+Apd	|OP*	|ck_entersub_args_proto|NN OP *entersubop|NN GV *namegv|NN SV *protosv
+Apd	|OP*	|ck_entersub_args_proto_or_list|NN OP *entersubop|NN GV *namegv|NN SV *protosv
+Apd	|void	|cv_get_call_checker|NN CV *cv|NN Perl_call_checker *ckfun_p|NN SV **ckobj_p
+Apd	|void	|cv_set_call_checker|NN CV *cv|NN Perl_call_checker ckfun|NN SV *ckobj
 Apa	|PERL_SI*|new_stackinfo|I32 stitems|I32 cxitems
 Ap	|char*	|scan_vstring	|NN const char *s|NN const char *const e \
 				|NN SV *sv
@@ -823,7 +876,7 @@ Apd	|const char*	|prescan_version	|NN const char *s\
 	|NULLOK int *ssaw_decimal|NULLOK int *swidth|NULLOK bool *salpha
 Apd	|SV*	|new_version	|NN SV *ver
 Apd	|SV*	|upg_version	|NN SV *ver|bool qv
-Apd	|bool	|vverify	|NN SV *vs
+Apd	|SV*	|vverify	|NN SV *vs
 Apd	|SV*	|vnumify	|NN SV *vs
 Apd	|SV*	|vnormal	|NN SV *vs
 Apd	|SV*	|vstringify	|NN SV *vs
@@ -848,7 +901,9 @@ p	|PADOFFSET|allocmy	|NN const char *const name|const STRLEN len\
 				|const U32 flags
 : Used in op.c and toke.c
 AMpdR	|PADOFFSET|pad_findmy	|NN const char* name|STRLEN len|U32 flags
-Ap	|PADOFFSET|find_rundefsvoffset	|
+ApD	|PADOFFSET|find_rundefsvoffset	|
+: Used in pp.c
+Ap	|SV*	|find_rundefsv	|
 : Used in perly.y
 pR	|OP*	|oopsAV		|NN OP* o
 : Used in perly.y
@@ -860,13 +915,14 @@ Apd	|SV*	|pad_sv		|PADOFFSET po
 #endif
 : Defined in pad.c, used only in op.c
 pd	|void	|pad_free	|PADOFFSET po
-#if defined(PERL_IN_PAD_C) || defined(PERL_DECL_PROT)
+#if defined(PERL_IN_PAD_C)
 sd	|void	|pad_reset
 #endif
 : Used in op.c
 pd	|void	|pad_swipe	|PADOFFSET po|bool refadjust
-: FIXME
+: peephole optimiser
 p	|void	|peep		|NULLOK OP* o
+p	|void	|rpeep		|NULLOK OP* o
 : Defined in doio.c, used only in pp_hot.c
 dopM	|PerlIO*|start_glob	|NN SV *tmpglob|NN IO *io
 #if defined(USE_REENTRANT_API)
@@ -875,47 +931,46 @@ Ap	|void	|reentrant_init
 Ap	|void	|reentrant_free
 Anp	|void*	|reentrant_retry|NN const char *f|...
 #endif
+: "Very" special - can't use the O flag for this one:
+: (The rename from perl_atexit to Perl_call_atexit was in 864dbfa3ca8032ef)
 Ap	|void	|call_atexit	|ATEXIT_t fn|NULLOK void *ptr
-Apd	|I32	|call_argv	|NN const char* sub_name|I32 flags|NN char** argv
-Apd	|I32	|call_method	|NN const char* methname|I32 flags
-Apd	|I32	|call_pv	|NN const char* sub_name|I32 flags
-Apd	|I32	|call_sv	|NN SV* sv|VOL I32 flags
+ApdO	|I32	|call_argv	|NN const char* sub_name|I32 flags|NN char** argv
+ApdO	|I32	|call_method	|NN const char* methname|I32 flags
+ApdO	|I32	|call_pv	|NN const char* sub_name|I32 flags
+ApdO	|I32	|call_sv	|NN SV* sv|VOL I32 flags
 Ap	|void	|despatch_signals
 Ap	|OP *	|doref		|NN OP *o|I32 type|bool set_op_ref
-Apd	|SV*	|eval_pv	|NN const char* p|I32 croak_on_error
-Apd	|I32	|eval_sv	|NN SV* sv|I32 flags
-Apd	|SV*	|get_sv		|NN const char *name|I32 flags
-Apd	|AV*	|get_av		|NN const char *name|I32 flags
-Apd	|HV*	|get_hv		|NN const char *name|I32 flags
-Apd	|CV*	|get_cv		|NN const char* name|I32 flags
+ApdO	|SV*	|eval_pv	|NN const char* p|I32 croak_on_error
+ApdO	|I32	|eval_sv	|NN SV* sv|I32 flags
+ApdO	|SV*	|get_sv		|NN const char *name|I32 flags
+ApdO	|AV*	|get_av		|NN const char *name|I32 flags
+ApdO	|HV*	|get_hv		|NN const char *name|I32 flags
+ApdO	|CV*	|get_cv		|NN const char* name|I32 flags
 Apd	|CV*	|get_cvn_flags	|NN const char* name|STRLEN len|I32 flags
-Ap	|int	|init_i18nl10n	|int printwarn
-Ap	|int	|init_i18nl14n	|int printwarn
-Ap	|void	|new_collate	|NULLOK const char* newcoll
-Ap	|void	|new_ctype	|NN const char* newctype
-Ap	|void	|new_numeric	|NULLOK const char* newcoll
+ApO	|int	|init_i18nl10n	|int printwarn
+ApO	|int	|init_i18nl14n	|int printwarn
+ApO	|void	|new_collate	|NULLOK const char* newcoll
+ApO	|void	|new_ctype	|NN const char* newctype
+ApO	|void	|new_numeric	|NULLOK const char* newcoll
 Ap	|void	|set_numeric_local
 Ap	|void	|set_numeric_radix
 Ap	|void	|set_numeric_standard
-Apd	|void	|require_pv	|NN const char* pv
+ApdO	|void	|require_pv	|NN const char* pv
 Apd	|void	|pack_cat	|NN SV *cat|NN const char *pat|NN const char *patend \
 				|NN SV **beglist|NN SV **endlist|NN SV ***next_in_list|U32 flags
 Apd	|void	|packlist 	|NN SV *cat|NN const char *pat|NN const char *patend|NN SV **beglist|NN SV **endlist
 #if defined(PERL_USES_PL_PIDSTATUS) && defined(PERL_IN_UTIL_C)
 s	|void	|pidgone	|Pid_t pid|int status
 #endif
-DUXpo	|void	|pmflag		|NN U32 *pmfl|int ch
 : Used in perly.y
 p	|OP*	|pmruntime	|NN OP *o|NN OP *expr|bool isreg
-#if defined(PERL_IN_OP_C) || defined(PERL_DECL_PROT)
+#if defined(PERL_IN_OP_C)
 s	|OP*	|pmtrans	|NN OP* o|NN OP* expr|NN OP* repl
 #endif
 Ap	|void	|pop_scope
-: Used in perly.y
-p	|OP*	|prepend_elem	|I32 optype|NULLOK OP* head|NULLOK OP* tail
 Ap	|void	|push_scope
 Amb	|OP*	|ref		|NULLOK OP* o|I32 type
-#if defined(PERL_IN_OP_C) || defined(PERL_DECL_PROT)
+#if defined(PERL_IN_OP_C)
 s	|OP*	|refkids	|NULLOK OP* o|I32 type
 #endif
 Ap	|void	|regdump	|NN const regexp* r
@@ -923,6 +978,11 @@ Ap	|void	|regdump	|NN const regexp* r
 Ap	|SV*	|regclass_swash	|NULLOK const regexp *prog \
 				|NN const struct regnode *node|bool doinit \
 				|NULLOK SV **listsvp|NULLOK SV **altsvp
+#ifdef PERL_IN_REGCOMP_C
+EMi	|U8	|set_regclass_bit|NN struct RExC_state_t* pRExC_state|NN regnode* node|const U8 value|NN HV** invlist_ptr|NN AV** alternate_ptr
+EMs	|U8	|set_regclass_bit_fold|NN struct RExC_state_t *pRExC_state|NN regnode* node|const U8 value|NN HV** invlist_ptr|NN AV** alternate_ptr
+EMs	|void	|add_alternate	|NN AV** alternate_ptr|NN U8* string|STRLEN len
+#endif
 Ap	|I32	|pregexec	|NN REGEXP * const prog|NN char* stringarg \
 				|NN char* strend|NN char* strbeg|I32 minend \
 				|NN SV* screamer|U32 nosave
@@ -940,6 +1000,9 @@ Ap	|char*	|re_intuit_start|NN REGEXP * const rx|NULLOK SV* sv|NN char* strpos \
 				|NN char* strend|const U32 flags \
 				|NULLOK re_scream_pos_data *data
 Ap	|SV*	|re_intuit_string|NN REGEXP  *const r
+#if defined(PERL_IN_DQUOTE_STATIC_C)
+EiPR	|I32	|regcurly	|NN const char *s
+#endif
 Ap	|I32	|regexec_flags	|NN REGEXP *const rx|NN char *stringarg \
 				|NN char *strend|NN char *strbeg|I32 minend \
 				|NN SV *sv|NULLOK void *data|U32 flags
@@ -977,7 +1040,7 @@ p	|int	|rsignal_restore|int i|NULLOK Sigsave_t* t
 : Used in pp_sys.c
 p	|int	|rsignal_save	|int i|Sighandler_t t1|NN Sigsave_t* save
 Ap	|Sighandler_t|rsignal_state|int i
-#if defined(PERL_IN_PP_CTL_C) || defined(PERL_DECL_PROT)
+#if defined(PERL_IN_PP_CTL_C)
 s	|void	|rxres_free	|NN void** rsp
 s	|void	|rxres_restore	|NN void **rsp|NN REGEXP *rx
 #endif
@@ -991,6 +1054,7 @@ Apda	|char*	|savepv		|NULLOK const char* pv
 Apda	|char*	|savepvn	|NULLOK const char* pv|I32 len
 Apda	|char*	|savesharedpv	|NULLOK const char* pv
 Apda	|char*	|savesharedpvn	|NN const char *const pv|const STRLEN len
+Apda	|char*	|savesharedsvpv	|NN SV *sv
 Apda	|char*	|savesvpv	|NN SV* sv
 Ap	|void	|savestack_grow
 Ap	|void	|savestack_grow_cnt	|I32 need
@@ -1008,14 +1072,14 @@ Ap	|void	|save_destructor|DESTRUCTORFUNC_NOCONTEXT_t f|NN void* p
 Ap	|void	|save_destructor_x|DESTRUCTORFUNC_t f|NULLOK void* p
 Apmb	|void	|save_freesv	|NULLOK SV* sv
 : Used in SAVEFREOP(), used in op.c, pp_ctl.c
-pmb	|void	|save_freeop	|NULLOK OP* o
+Apmb	|void	|save_freeop	|NULLOK OP* o
 Apmb	|void	|save_freepv	|NULLOK char* pv
 Ap	|void	|save_generic_svref|NN SV** sptr
 Ap	|void	|save_generic_pvref|NN char** str
 Ap	|void	|save_shared_pvref|NN char** str
 Ap	|void	|save_gp	|NN GV* gv|I32 empty
 Ap	|HV*	|save_hash	|NN GV* gv
-p	|void	|save_hints
+Ap	|void	|save_hints
 Amp	|void	|save_helem	|NN HV *hv|NN SV *key|NN SV **sptr
 Ap	|void	|save_helem_flags|NN HV *hv|NN SV *key|NN SV **sptr|const U32 flags
 Ap	|void	|save_hptr	|NN HV** hptr
@@ -1030,7 +1094,7 @@ Ap	|void	|save_long	|NN long* longp
 Apmb	|void	|save_mortalizesv|NN SV* sv
 Ap	|void	|save_nogv	|NN GV* gv
 : Used in SAVEFREOP(), used in gv.c, op.c, perl.c, pp_ctl.c, pp_sort.c
-pmb	|void	|save_op
+Apmb	|void	|save_op
 Ap	|SV*	|save_scalar	|NN GV* gv
 Ap	|void	|save_pptr	|NN char** pptr
 Ap	|void	|save_vptr	|NN void *ptr
@@ -1040,19 +1104,20 @@ Ap	|void	|save_sptr	|NN SV** sptr
 Ap	|SV*	|save_svref	|NN SV** sptr
 Ap	|void	|save_pushptr	|NULLOK void *const ptr|const int type
 : Used by SAVECOPARYBASE() in op.c
-p	|void	|save_pushi32ptr|const I32 i|NULLOK void *const ptr|const int type
+Ap	|void	|save_pushi32ptr|const I32 i|NULLOK void *const ptr|const int type
 : Used by SAVESWITCHSTACK() in pp.c
-p	|void	|save_pushptrptr|NULLOK void *const ptr1 \
+Ap	|void	|save_pushptrptr|NULLOK void *const ptr1 \
 				|NULLOK void *const ptr2|const int type
-#if defined(PERL_IN_SCOPE_C) || defined(PERL_DECL_PROT)
+#if defined(PERL_IN_SCOPE_C)
 s	|void	|save_pushptri32ptr|NULLOK void *const ptr1|const I32 i \
 				|NULLOK void *const ptr2|const int type
 #endif
 : Used in perly.y
 p	|OP*	|sawparens	|NULLOK OP* o
+Apd	|OP*	|op_contextualize|NN OP* o|I32 context
 : Used in perly.y
 p	|OP*	|scalar		|NULLOK OP* o
-#if defined(PERL_IN_OP_C) || defined(PERL_DECL_PROT)
+#if defined(PERL_IN_OP_C)
 s	|OP*	|scalarkids	|NULLOK OP* o
 s	|OP*	|scalarseq	|NULLOK OP* o
 #endif
@@ -1062,8 +1127,7 @@ Apd	|NV	|scan_bin	|NN const char* start|STRLEN len|NN STRLEN* retlen
 Apd	|NV	|scan_hex	|NN const char* start|STRLEN len|NN STRLEN* retlen
 Ap	|char*	|scan_num	|NN const char* s|NN YYSTYPE *lvalp
 Apd	|NV	|scan_oct	|NN const char* start|STRLEN len|NN STRLEN* retlen
-: Used in perly.y
-p	|OP*	|scope		|NULLOK OP* o
+AMpd	|OP*	|op_scope	|NULLOK OP* o
 Ap	|char*	|screaminstr	|NN SV *bigstr|NN SV *littlestr|I32 start_shift \
 				|I32 end_shift|NN I32 *old_posp|I32 last
 Apd	|void	|setdefout	|NULLOK GV* gv
@@ -1080,17 +1144,18 @@ Ap	|SV**	|stack_grow	|NN SV** sp|NN SV** p|int n
 Ap	|I32	|start_subparse	|I32 is_format|U32 flags
 : Used in pp_ctl.c
 p	|void	|sub_crush_depth|NN CV* cv
-Apd	|bool	|sv_2bool	|NN SV *const sv
+Amd	|bool	|sv_2bool	|NN SV *const sv
+Apd	|bool	|sv_2bool_flags	|NN SV *const sv|const I32 flags
 Apd	|CV*	|sv_2cv		|NULLOK SV* sv|NN HV **const st|NN GV **const gvp \
 				|const I32 lref
 Apd	|IO*	|sv_2io		|NN SV *const sv
-#if defined(PERL_IN_SV_C) || defined(PERL_DECL_PROT)
+#if defined(PERL_IN_SV_C)
 s	|bool	|glob_2number	|NN GV* const gv
 #endif
 Amb	|IV	|sv_2iv		|NULLOK SV *sv
 Apd	|IV	|sv_2iv_flags	|NULLOK SV *const sv|const I32 flags
 Apd	|SV*	|sv_2mortal	|NULLOK SV *const sv
-Apd	|NV	|sv_2nv		|NULLOK SV *const sv
+Apd	|NV	|sv_2nv_flags	|NULLOK SV *const sv|const I32 flags
 : Used in pp.c, pp_hot.c, sv.c
 pMd	|SV*	|sv_2num	|NN SV *const sv
 Amb	|char*	|sv_2pv		|NULLOK SV *sv|NULLOK STRLEN *lp
@@ -1107,7 +1172,7 @@ Apd	|char*	|sv_pvn		|NN SV *sv|NN STRLEN *lp
 Apd	|char*	|sv_pvutf8n	|NN SV *sv|NN STRLEN *lp
 Apd	|char*	|sv_pvbyten	|NN SV *sv|NN STRLEN *lp
 Apd	|I32	|sv_true	|NULLOK SV *const sv
-#if defined(PERL_IN_SV_C) || defined(PERL_DECL_PROT)
+#if defined(PERL_IN_SV_C)
 sd	|void	|sv_add_arena	|NN char *const ptr|const U32 size \
 				|const U32 flags
 #endif
@@ -1124,20 +1189,35 @@ Apd	|void	|sv_chop	|NN SV *const sv|NULLOK const char *const ptr
 pd	|I32	|sv_clean_all
 : Used only in perl.c
 pd	|void	|sv_clean_objs
-Apd	|void	|sv_clear	|NN SV *const sv
-Apd	|I32	|sv_cmp		|NULLOK SV *const sv1|NULLOK SV *const sv2
-Apd	|I32	|sv_cmp_locale	|NULLOK SV *const sv1|NULLOK SV *const sv2
-#if defined(USE_LOCALE_COLLATE)
-Apd	|char*	|sv_collxfrm	|NN SV *const sv|NN STRLEN *const nxp
+Apd	|void	|sv_clear	|NN SV *const orig_sv
+#if defined(PERL_IN_SV_C)
+s	|bool	|curse		|NN SV * const sv|const bool check_refcnt
 #endif
-Ap	|OP*	|sv_compile_2op	|NN SV *sv|NN OP **startop \
+Aopd	|I32	|sv_cmp		|NULLOK SV *const sv1|NULLOK SV *const sv2
+Apd	|I32	|sv_cmp_flags	|NULLOK SV *const sv1|NULLOK SV *const sv2 \
+				|const U32 flags
+Aopd	|I32	|sv_cmp_locale	|NULLOK SV *const sv1|NULLOK SV *const sv2
+Apd	|I32	|sv_cmp_locale_flags	|NULLOK SV *const sv1 \
+				|NULLOK SV *const sv2|const U32 flags
+#if defined(USE_LOCALE_COLLATE)
+Amd	|char*	|sv_collxfrm	|NN SV *const sv|NN STRLEN *const nxp
+Apd	|char*	|sv_collxfrm_flags	|NN SV *const sv|NN STRLEN *const nxp|I32 const flags
+#endif
+: Frustratingly, because regcomp.c is also compiled as ext/re/re_comp.c,
+: anything it needs has to be exported. So this has to be X. I'd rather it
+: wasn't.
+Xpo	|OP*	|sv_compile_2op_is_broken|NN SV *sv|NN OP **startop \
+				|NN const char *code|NN PAD **padp
+ApD	|OP*	|sv_compile_2op	|NN SV *sv|NN OP **startop \
 				|NN const char *code|NN PAD **padp
 Apd	|int	|getcwd_sv	|NN SV* sv
 Apd	|void	|sv_dec		|NULLOK SV *const sv
+Apd	|void	|sv_dec_nomg	|NULLOK SV *const sv
 Ap	|void	|sv_dump	|NN SV* sv
 ApdR	|bool	|sv_derived_from|NN SV* sv|NN const char *const name
 ApdR	|bool	|sv_does	|NN SV* sv|NN const char *const name
-Apd	|I32	|sv_eq		|NULLOK SV* sv1|NULLOK SV* sv2
+Amd	|I32	|sv_eq		|NULLOK SV* sv1|NULLOK SV* sv2
+Apd	|I32	|sv_eq_flags	|NULLOK SV* sv1|NULLOK SV* sv2|const U32 flags
 Apd	|void	|sv_free	|NULLOK SV *const sv
 : FIXME Used in SvREFCNT_dec() but only
 : if defined(__GNUC__) && !defined(PERL_GCC_BRACE_GROUPS_FORBIDDEN)
@@ -1147,6 +1227,7 @@ pd	|void	|sv_free_arenas
 Apd	|char*	|sv_gets	|NN SV *const sv|NN PerlIO *const fp|I32 append
 Apd	|char*	|sv_grow	|NN SV *const sv|STRLEN newlen
 Apd	|void	|sv_inc		|NULLOK SV *const sv
+Apd	|void	|sv_inc_nomg	|NULLOK SV *const sv
 Amdb	|void	|sv_insert	|NN SV *const bigstr|const STRLEN offset \
 				|const STRLEN len|NN const char *const little \
 				|const STRLEN littlelen
@@ -1198,6 +1279,7 @@ Amdb	|void	|sv_setsv	|NN SV *dstr|NULLOK SV *sstr
 Amdb	|void	|sv_taint	|NN SV* sv
 ApdR	|bool	|sv_tainted	|NN SV *const sv
 Apd	|int	|sv_unmagic	|NN SV *const sv|const int type
+Apd	|int	|sv_unmagicext	|NN SV *const sv|const int type|NULLOK MGVTBL *vtbl
 Apdmb	|void	|sv_unref	|NN SV* sv
 Apd	|void	|sv_unref_flags	|NN SV *const ref|const U32 flags
 Apd	|void	|sv_untaint	|NN SV *const sv
@@ -1214,6 +1296,25 @@ Apd	|void	|sv_vsetpvfn	|NN SV *const sv|NN const char *const pat|const STRLEN pa
 ApR	|NV	|str_to_version	|NN SV *sv
 Ap	|SV*	|swash_init	|NN const char* pkg|NN const char* name|NN SV* listsv|I32 minbits|I32 none
 Ap	|UV	|swash_fetch	|NN SV *swash|NN const U8 *ptr|bool do_utf8
+EXMpR	|HV*	|_swash_inversion_hash	|NN SV* const swash
+EXMpR	|HV*	|_new_invlist	|IV initial_size
+EXMpR	|HV*	|_swash_to_invlist	|NN SV* const swash
+EXMp	|void	|_append_range_to_invlist   |NN HV* const invlist|const UV start|const UV end
+#ifdef PERL_IN_REGCOMP_C
+EiMR	|HV*	|add_cp_to_invlist	|NULLOK HV* invlist|const UV cp
+EsMR	|HV*	|add_range_to_invlist	|NULLOK HV* invlist|const UV start|const UV end
+EiMR	|UV*	|invlist_array	|NN HV* const invlist
+EiM	|void	|invlist_destroy	|NN HV* const invlist
+EsM	|void	|invlist_extend    |NN HV* const invlist|const UV len
+EsMR	|HV*	|invlist_intersection	|NN HV* const a|NN HV* const b
+EiMR	|UV	|invlist_len	|NN HV* const invlist
+EiMR	|UV	|invlist_max	|NN HV* const invlist
+EiM	|void	|invlist_set_array	|NN HV* const invlist|NN const UV* const array
+EiM	|void	|invlist_set_len	|NN HV* const invlist|const UV len
+EiM	|void	|invlist_set_max	|NN HV* const invlist|const UV max
+EiM	|void	|invlist_trim	|NN HV* const invlist
+EsMR	|HV*	|invlist_union	|NN HV* const a|NN HV* const b
+#endif
 Ap	|void	|taint_env
 Ap	|void	|taint_proper	|NULLOK const char* f|NN const char *const s
 Apd	|UV	|to_utf8_case	|NN const U8 *p|NN U8* ustrp|NULLOK STRLEN *lenp \
@@ -1246,10 +1347,13 @@ AdpPR	|STRLEN	|utf8_length	|NN const U8* s|NN const U8 *e
 ApdPR	|IV	|utf8_distance	|NN const U8 *a|NN const U8 *b
 ApdPR	|U8*	|utf8_hop	|NN const U8 *s|I32 off
 ApMd	|U8*	|utf8_to_bytes	|NN U8 *s|NN STRLEN *len
+Apd	|int	|bytes_cmp_utf8	|NN const U8 *b|STRLEN blen|NN const U8 *u \
+				|STRLEN ulen
 ApMd	|U8*	|bytes_from_utf8|NN const U8 *s|NN STRLEN *len|NULLOK bool *is_utf8
 ApMd	|U8*	|bytes_to_utf8	|NN const U8 *s|NN STRLEN *len
 Apd	|UV	|utf8_to_uvchr	|NN const U8 *s|NULLOK STRLEN *retlen
 Apd	|UV	|utf8_to_uvuni	|NN const U8 *s|NULLOK STRLEN *retlen
+pM	|bool	|check_utf8_print	|NN const U8 *s|const STRLEN len
 
 #ifdef EBCDIC
 Adp	|UV	|utf8n_to_uvchr	|NN const U8 *s|STRLEN curlen|NULLOK STRLEN *retlen|U32 flags
@@ -1282,11 +1386,14 @@ Ap	|U32	|seed
 : Only used in perl.c
 pR	|UV	|get_hash_seed
 : Used in doio.c, pp_hot.c, pp_sys.c
-p	|void	|report_evil_fh	|NULLOK const GV *gv|NULLOK const IO *io|I32 op
+p	|void	|report_evil_fh	|NULLOK const GV *gv
+: Used in doio.c, pp_hot.c, pp_sys.c
+p	|void	|report_wrongway_fh|NULLOK const GV *gv|const char have
 : Used in mg.c, pp.c, pp_hot.c, regcomp.c
 XEpd	|void	|report_uninit	|NULLOK const SV *uninit_sv
+Apd	|void	|warn_sv	|NN SV *baseex
 Afpd	|void	|warn		|NN const char* pat|...
-Ap	|void	|vwarn		|NN const char* pat|NULLOK va_list* args
+Apd	|void	|vwarn		|NN const char* pat|NULLOK va_list* args
 Afp	|void	|warner		|U32 err|NN const char* pat|...
 Afp	|void	|ck_warner	|U32 err|NN const char* pat|...
 Afp	|void	|ck_warner_d	|U32 err|NN const char* pat|...
@@ -1300,11 +1407,12 @@ p	|void	|write_to_stderr|NN SV* msv
 p	|int	|yyerror	|NN const char *const s
 : Used in perly.y, and by Data::Alias
 EXp	|int	|yylex
+p	|void	|yyunlex
 : Used in perl.c, pp_ctl.c
-p	|int	|yyparse
+p	|int	|yyparse	|int gramtype
 : Only used in scope.c
 p	|void	|parser_free	|NN const yy_parser *parser
-#if defined(PERL_IN_TOKE_C) || defined(PERL_DECL_PROT)
+#if defined(PERL_IN_TOKE_C)
 s	|int	|yywarn		|NN const char *const s
 #endif
 #if defined(MYMALLOC)
@@ -1405,14 +1513,20 @@ ApR	|HEK*	|hek_dup	|NULLOK HEK* e|NN CLONE_PARAMS* param
 Ap	|void	|re_dup_guts	|NN const REGEXP *sstr|NN REGEXP *dstr \
 				|NN CLONE_PARAMS* param
 Ap	|PerlIO*|fp_dup		|NULLOK PerlIO *const fp|const char type|NN CLONE_PARAMS *const param
-ApR	|DIR*	|dirp_dup	|NULLOK DIR *const dp
+ApR	|DIR*	|dirp_dup	|NULLOK DIR *const dp|NN CLONE_PARAMS *const param
 ApR	|GP*	|gp_dup		|NULLOK GP *const gp|NN CLONE_PARAMS *const param
 ApR	|MAGIC*	|mg_dup		|NULLOK MAGIC *mg|NN CLONE_PARAMS *const param
-#if defined(PERL_IN_SV_C) || defined(PERL_DECL_PROT)
+#if defined(PERL_IN_SV_C)
 s	|SV **	|sv_dup_inc_multiple|NN SV *const *source|NN SV **dest \
 				|SSize_t items|NN CLONE_PARAMS *const param
 #endif
+#if defined(PERL_IN_SV_C)
+sR	|SV*	|sv_dup_common	|NN const SV *const sstr \
+				|NN CLONE_PARAMS *const param
+#endif
 ApR	|SV*	|sv_dup		|NULLOK const SV *const sstr|NN CLONE_PARAMS *const param
+ApR	|SV*	|sv_dup_inc	|NULLOK const SV *const sstr \
+				|NN CLONE_PARAMS *const param
 Ap	|void	|rvpv_dup	|NN SV *const dstr|NN const SV *const sstr|NN CLONE_PARAMS *const param
 Ap	|yy_parser*|parser_dup	|NULLOK const yy_parser *const proto|NN CLONE_PARAMS *const param
 #endif
@@ -1421,7 +1535,7 @@ ApR	|void*	|ptr_table_fetch|NN PTR_TBL_t *const tbl|NULLOK const void *const sv
 Ap	|void	|ptr_table_store|NN PTR_TBL_t *const tbl|NULLOK const void *const oldsv \
 				|NN void *const newsv
 Ap	|void	|ptr_table_split|NN PTR_TBL_t *const tbl
-Ap	|void	|ptr_table_clear|NULLOK PTR_TBL_t *const tbl
+ApD	|void	|ptr_table_clear|NULLOK PTR_TBL_t *const tbl
 Ap	|void	|ptr_table_free|NULLOK PTR_TBL_t *const tbl
 #if defined(USE_ITHREADS)
 #  if defined(HAVE_INTERP_INTERN)
@@ -1433,8 +1547,11 @@ Ap	|void	|sys_intern_clear
 Ap	|void	|sys_intern_init
 #endif
 
+AopP	|const XOP *	|custom_op_xop	|NN const OP *o
 ApR	|const char *	|custom_op_name	|NN const OP *o
 ApR	|const char *	|custom_op_desc	|NN const OP *o
+Aop	|void	|custom_op_register	|NN Perl_ppaddr_t ppaddr \
+			|NN const XOP *xop
 
 Adp	|void	|sv_nosharing	|NULLOK SV *sv
 Adpbm	|void	|sv_nolocking	|NULLOK SV *sv
@@ -1446,9 +1563,7 @@ Adpb	|void	|sv_nounlocking	|NULLOK SV *sv
 #endif
 Adp	|int	|nothreadhook
 
-END_EXTERN_C
-
-#if defined(PERL_IN_DOOP_C) || defined(PERL_DECL_PROT)
+#if defined(PERL_IN_DOOP_C)
 sR	|I32	|do_trans_simple	|NN SV * const sv
 sR	|I32	|do_trans_count		|NN SV * const sv
 sR	|I32	|do_trans_complex	|NN SV * const sv
@@ -1457,22 +1572,18 @@ sR	|I32	|do_trans_count_utf8	|NN SV * const sv
 sR	|I32	|do_trans_complex_utf8	|NN SV * const sv
 #endif
 
-#if defined(PERL_IN_GV_C) || defined(PERL_DECL_PROT)
+#if defined(PERL_IN_GV_C)
 s	|void	|gv_init_sv	|NN GV *gv|const svtype sv_type
+s	|void	|gv_magicalize_isa	|NN GV *gv
+s	|void	|gv_magicalize_overload	|NN GV *gv
 s	|HV*	|gv_get_super_pkg|NN const char* name|I32 namelen
 s	|HV*	|require_tie_mod|NN GV *gv|NN const char *varpv|NN SV* namesv \
 				|NN const char *methpv|const U32 flags
 #endif
 
-: #if defined(PERL_IN_HV_C) || defined(PERL_IN_SV_C) || defined(PERL_DECL_PROT)
-: Used in hv.c
-paRxoM	|void*	|get_arena	|const size_t arenasize |const svtype bodytype
-: #endif
-
-#if defined(PERL_IN_HV_C) || defined(PERL_DECL_PROT)
+#if defined(PERL_IN_HV_C)
 s	|void	|hsplit		|NN HV *hv
 s	|void	|hfreeentries	|NN HV *hv
-s	|I32	|anonymise_cv	|NULLOK HEK *stash|NN SV *val
 sa	|HE*	|new_he
 sanR	|HEK*	|save_hek_flags	|NN const char *str|I32 len|U32 hash|int flags
 sn	|void	|hv_magic_check	|NN HV *hv|NN bool *needs_copy|NN bool *needs_store
@@ -1484,62 +1595,20 @@ sM	|SV*	|hv_delete_common|NULLOK HV *hv|NULLOK SV *keysv \
 		|NULLOK const char *key|STRLEN klen|int k_flags|I32 d_flags \
 		|U32 hash
 sM	|void	|clear_placeholders	|NN HV *hv|U32 items
-sM	|SV *	|refcounted_he_value	|NN const struct refcounted_he *he
 #endif
 
-#if defined(PERL_IN_MG_C) || defined(PERL_DECL_PROT)
+#if defined(PERL_IN_MG_C)
 s	|void	|save_magic	|I32 mgs_ix|NN SV *sv
-s	|int	|magic_methpack	|NN SV *sv|NN const MAGIC *mg|NN const char *meth
-s	|int	|magic_methcall	|NN SV *sv|NN const MAGIC *mg|NN const char *meth|I32 f \
+-s	|int	|magic_methpack	|NN SV *sv|NN const MAGIC *mg|NN const char *meth
+s	|SV*	|magic_methcall1|NN SV *sv|NN const MAGIC *mg \
+				|NN const char *meth|U32 flags \
 				|int n|NULLOK SV *val
 s	|void	|restore_magic	|NULLOK const void *p
-s	|void	|unwind_handler_stack|NN const void *p
+s	|void	|unwind_handler_stack|NULLOK const void *p
 
 #endif
 
-#if defined(PERL_IN_OP_C) || defined(PERL_DECL_PROT)
-: These are all indirectly referenced by globals.c. This is somewhat annoying.
-pR	|OP*	|ck_anoncode	|NN OP *o
-pR	|OP*	|ck_bitop	|NN OP *o
-pR	|OP*	|ck_concat	|NN OP *o
-pR	|OP*	|ck_defined	|NN OP *o
-pR	|OP*	|ck_delete	|NN OP *o
-pR	|OP*	|ck_die		|NN OP *o
-pR	|OP*	|ck_eof		|NN OP *o
-pR	|OP*	|ck_eval	|NN OP *o
-pR	|OP*	|ck_exec	|NN OP *o
-pR	|OP*	|ck_exists	|NN OP *o
-pR	|OP*	|ck_exit	|NN OP *o
-pR	|OP*	|ck_ftst	|NN OP *o
-pR	|OP*	|ck_fun		|NN OP *o
-pR	|OP*	|ck_glob	|NN OP *o
-pR	|OP*	|ck_grep	|NN OP *o
-pR	|OP*	|ck_index	|NN OP *o
-pR	|OP*	|ck_join	|NN OP *o
-pR	|OP*	|ck_lfun	|NN OP *o
-pR	|OP*	|ck_listiob	|NN OP *o
-pR	|OP*	|ck_match	|NN OP *o
-pR	|OP*	|ck_method	|NN OP *o
-pR	|OP*	|ck_null	|NN OP *o
-pR	|OP*	|ck_open	|NN OP *o
-pR	|OP*	|ck_readline	|NN OP *o
-pR	|OP*	|ck_repeat	|NN OP *o
-pR	|OP*	|ck_require	|NN OP *o
-pR	|OP*	|ck_return	|NN OP *o
-pR	|OP*	|ck_rfun	|NN OP *o
-pR	|OP*	|ck_rvconst	|NN OP *o
-pR	|OP*	|ck_sassign	|NN OP *o
-pR	|OP*	|ck_select	|NN OP *o
-pR	|OP*	|ck_shift	|NN OP *o
-pR	|OP*	|ck_sort	|NN OP *o
-pR	|OP*	|ck_spair	|NN OP *o
-pR	|OP*	|ck_split	|NN OP *o
-pR	|OP*	|ck_subr	|NN OP *o
-pR	|OP*	|ck_substr	|NN OP *o
-pR	|OP*	|ck_svconst	|NN OP *o
-pR	|OP*	|ck_trunc	|NN OP *o
-pR	|OP*	|ck_unpack	|NN OP *o
-pR	|OP*	|ck_each	|NN OP *o
+#if defined(PERL_IN_OP_C)
 sRn	|bool	|is_handle_constructor|NN const OP *o|I32 numargs
 sR	|I32	|is_list_assignment|NULLOK const OP *o
 #  ifdef USE_ITHREADS
@@ -1590,7 +1659,7 @@ s	|void	|Slab_to_rw	|NN void *op
 #  endif
 #endif
 
-#if defined(PERL_IN_PERL_C) || defined(PERL_DECL_PROT)
+#if defined(PERL_IN_PERL_C)
 s	|void	|find_beginning	|NN SV* linestr_sv|NN PerlIO *rsfp
 s	|void	|forbid_setid	|const char flag|const bool suidscript
 s	|void	|incpush	|NN const char *const dir|STRLEN len \
@@ -1613,20 +1682,23 @@ so	|void	|validate_suid	|NN PerlIO *rsfp
 
 s	|void*	|parse_body	|NULLOK char **env|XSINIT_t xsinit
 rs	|void	|run_body	|I32 oldscope
+#  ifndef PERL_IS_MINIPERL
 s	|SV *	|incpush_if_exists|NN AV *const av|NN SV *dir|NN SV *const stem
+#  endif
 #endif
 
-#if defined(PERL_IN_PP_C) || defined(PERL_DECL_PROT)
+#if defined(PERL_IN_PP_C)
+s	|void	|do_chomp	|NN SV *retval|NN SV *sv|bool chomping
 s	|OP*	|do_delete_local
 sR	|SV*	|refto		|NN SV* sv
 #endif
-#if defined(PERL_IN_PP_C) || defined(PERL_IN_PP_HOT_C) || defined(PERL_DECL_PROT)
+#if defined(PERL_IN_PP_C) || defined(PERL_IN_PP_HOT_C)
 : Used in pp_hot.c
 pRxo	|GV*	|softref2xv	|NN SV *const sv|NN const char *const what \
 				|const svtype type|NN SV ***spp
 #endif
 
-#if defined(PERL_IN_PP_PACK_C) || defined(PERL_DECL_PROT)
+#if defined(PERL_IN_PP_PACK_C)
 s	|I32	|unpack_rec	|NN struct tempsym* symptr|NN const char *s \
 				|NN const char *strbeg|NN const char *strend|NULLOK const char **new_s
 s	|SV **	|pack_rec	|NN SV *cat|NN struct tempsym* symptr|NN SV **beglist|NN SV **endlist
@@ -1644,7 +1716,7 @@ sR	|char *	|sv_exp_grow	|NN SV *sv|STRLEN needed
 snR	|char *	|bytes_to_uni	|NN const U8 *start|STRLEN len|NN char *dest
 #endif
 
-#if defined(PERL_IN_PP_CTL_C) || defined(PERL_DECL_PROT)
+#if defined(PERL_IN_PP_CTL_C)
 sR	|OP*	|docatch	|NULLOK OP *o
 sR	|OP*	|dofindlabel	|NN OP *o|NN const char *label|NN OP **opstack|NN OP **oplimit
 sR	|OP*	|doparseform	|NN SV *sv
@@ -1657,9 +1729,9 @@ sR	|I32	|dopoptosub_at	|NN const PERL_CONTEXT* cxstk|I32 startingblock
 sR	|I32	|dopoptowhen	|I32 startingblock
 s	|void	|save_lines	|NULLOK AV *array|NN SV *sv
 s	|bool	|doeval		|int gimme|NULLOK OP** startop|NULLOK CV* outside|U32 seq
-sR	|PerlIO *|check_type_and_open|NN const char *name
+sR	|PerlIO *|check_type_and_open|NN SV *name
 #ifndef PERL_DISABLE_PMC
-sR	|PerlIO *|doopen_pm	|NN const char *name|const STRLEN namelen
+sR	|PerlIO *|doopen_pm	|NN SV *name
 #endif
 sRn	|bool	|path_is_absolute|NN const char *name
 sR	|I32	|run_user_filter|int idx|NN SV *buf_sv|int maxlen
@@ -1669,12 +1741,12 @@ s	|void	|destroy_matcher|NN PMOP* matcher
 s	|OP*	|do_smartmatch	|NULLOK HV* seen_this|NULLOK HV* seen_other
 #endif
 
-#if defined(PERL_IN_PP_HOT_C) || defined(PERL_DECL_PROT)
+#if defined(PERL_IN_PP_HOT_C)
 s	|void	|do_oddball	|NN HV *hash|NN SV **relem|NN SV **firstrelem
 sR	|SV*	|method_common	|NN SV* meth|NULLOK U32* hashp
 #endif
 
-#if defined(PERL_IN_PP_SORT_C) || defined(PERL_DECL_PROT)
+#if defined(PERL_IN_PP_SORT_C)
 s	|I32	|sv_ncmp	|NN SV *const a|NN SV *const b
 s	|I32	|sv_i_ncmp	|NN SV *const a|NN SV *const b
 s	|I32	|amagic_ncmp	|NN SV *const a|NN SV *const b
@@ -1687,15 +1759,18 @@ s	|I32	|sortcv_stacked	|NN SV *const a|NN SV *const b
 s	|void	|qsortsvu	|NULLOK SV** array|size_t num_elts|NN SVCOMPARE_t compare
 #endif
 
-#if defined(PERL_IN_PP_SYS_C) || defined(PERL_DECL_PROT)
+#if defined(PERL_IN_PP_SYS_C)
 s	|OP*	|doform		|NN CV *cv|NN GV *gv|NN OP *retop
 #  if !defined(HAS_MKDIR) || !defined(HAS_RMDIR)
 sR	|int	|dooneliner	|NN const char *cmd|NN const char *filename
 #  endif
 s	|SV *	|space_join_names_mortal|NN char *const *array
 #endif
+p	|OP *	|tied_method|NN const char *const methname|NN SV **sp \
+				|NN SV *const sv|NN const MAGIC *const mg \
+				|const U32 flags|U32 argc|...
 
-#if defined(PERL_IN_REGCOMP_C) || defined(PERL_DECL_PROT)
+#if defined(PERL_IN_REGCOMP_C)
 Es	|regnode*|reg		|NN struct RExC_state_t *pRExC_state \
 				|I32 paren|NN I32 *flagp|U32 depth
 Es	|regnode*|reganode	|NN struct RExC_state_t *pRExC_state|U8 op \
@@ -1712,7 +1787,7 @@ Es	|UV	|reg_recode	|const char value|NN SV **encp
 Es	|regnode*|regpiece	|NN struct RExC_state_t *pRExC_state \
 				|NN I32 *flagp|U32 depth
 Es	|regnode*|reg_namedseq	|NN struct RExC_state_t *pRExC_state \
-				|NULLOK UV *valuep|NULLOK I32 *flagp
+				|NULLOK UV *valuep|NULLOK I32 *flagp|U32 depth
 Es	|void	|reginsert	|NN struct RExC_state_t *pRExC_state \
 				|U8 op|NN regnode *opnd|U32 depth
 Es	|void	|regtail	|NN struct RExC_state_t *pRExC_state \
@@ -1732,8 +1807,6 @@ Esn	|void	|cl_anything	|NN const struct RExC_state_t *pRExC_state \
 				|NN struct regnode_charclass_class *cl
 EsRn	|int	|cl_is_anything	|NN const struct regnode_charclass_class *cl
 Esn	|void	|cl_init	|NN const struct RExC_state_t *pRExC_state \
-				|NN struct regnode_charclass_class *cl
-Esn	|void	|cl_init_zero	|NN const struct RExC_state_t *pRExC_state \
 				|NN struct regnode_charclass_class *cl
 Esn	|void	|cl_and		|NN struct regnode_charclass_class *cl \
 				|NN const struct regnode_charclass_class *and_with
@@ -1781,12 +1854,12 @@ Es	|U8	|regtail_study	|NN struct RExC_state_t *pRExC_state \
 #  endif
 #endif
 
-#if defined(PERL_IN_REGEXEC_C) || defined(PERL_DECL_PROT)
+#if defined(PERL_IN_REGEXEC_C)
 ERs	|I32	|regmatch	|NN regmatch_info *reginfo|NN regnode *prog
 ERs	|I32	|regrepeat	|NN const regexp *prog|NN const regnode *p|I32 max|int depth
 ERs	|I32	|regtry		|NN regmatch_info *reginfo|NN char **startpos
-ERs	|bool	|reginclass	|NULLOK const regexp *prog|NN const regnode *n|NN const U8 *p|NULLOK STRLEN *lenp\
-				|bool do_utf8sv_is_utf8
+ERs	|bool	|reginclass	|NULLOK const regexp * const prog|NN const regnode * const n|NN const U8 * const p|NULLOK STRLEN *lenp\
+				|bool const do_utf8sv_is_utf8
 Es	|CHECKPOINT|regcppush	|I32 parenfloor
 Es	|char*	|regcppop	|NN const regexp *rex
 ERsn	|U8*	|reghop3	|NN U8 *s|I32 off|NN const U8 *lim
@@ -1809,7 +1882,7 @@ Es	|void	|debug_start_match|NN const REGEXP *prog|const bool do_utf8\
 #  endif
 #endif
 
-#if defined(PERL_IN_DUMP_C) || defined(PERL_DECL_PROT)
+#if defined(PERL_IN_DUMP_C)
 s	|CV*	|deb_curcv	|const I32 ix
 s	|void	|debprof	|NN const OP *o
 s	|void	|sequence	|NULLOK const OP *o
@@ -1818,26 +1891,26 @@ s	|UV	|sequence_num	|NULLOK const OP *o
 s	|SV*	|pm_description	|NN const PMOP *pm
 #endif
 
-#if defined(PERL_IN_SCOPE_C) || defined(PERL_DECL_PROT)
+#if defined(PERL_IN_SCOPE_C)
 s	|SV*	|save_scalar_at	|NN SV **sptr|const U32 flags
 #endif
 
-#if defined(PERL_IN_GV_C) || defined(PERL_IN_SV_C) || defined(PERL_IN_PAD_C) || defined(PERL_DECL_PROT)
+#if defined(PERL_IN_GV_C) || defined(PERL_IN_SV_C) || defined(PERL_IN_PAD_C) || defined(PERL_IN_OP_C)
 : Used in gv.c
 po	|void	|sv_add_backref	|NN SV *const tsv|NN SV *const sv
 #endif
 
-#if defined(PERL_IN_HV_C) || defined(PERL_IN_MG_C) || defined(PERL_IN_SV_C) || defined(PERL_DECL_PROT)
+#if defined(PERL_IN_HV_C) || defined(PERL_IN_MG_C) || defined(PERL_IN_SV_C)
 : Used in hv.c and mg.c
-poM	|int	|sv_kill_backrefs	|NN SV *const sv|NN AV *const av
+poM	|void	|sv_kill_backrefs	|NN SV *const sv|NULLOK AV *const av
 #endif
 
-#if defined(PERL_IN_SV_C) || defined(PERL_DECL_PROT)
+pX	|void	|sv_del_backref	|NN SV *const tsv|NN SV *const sv
+#if defined(PERL_IN_SV_C)
 nsR	|char *	|uiv_2buf	|NN char *const buf|const IV iv|UV uv|const int is_uv|NN char **const peob
 s	|void	|sv_unglob	|NN SV *const sv
 s	|void	|not_a_number	|NN SV *const sv
 s	|I32	|visit		|NN SVFUNC_t f|const U32 flags|const U32 mask
-s	|void	|sv_del_backref	|NN SV *const tsv|NN SV *const sv
 sR	|SV *	|varname	|NULLOK const GV *const gv|const char gvtype \
 				|PADOFFSET targ|NULLOK const SV *const keyname \
 				|I32 aindex|int subscript_type
@@ -1852,32 +1925,40 @@ s	|int	|sv_2iuv_non_preserve	|NN SV *const sv
 #    endif
 #  endif
 sR	|I32	|expect_number	|NN char **const pattern
-#
 sn	|STRLEN	|sv_pos_u2b_forwards|NN const U8 *const start \
-		|NN const U8 *const send|STRLEN uoffset
+		|NN const U8 *const send|NN STRLEN *const uoffset \
+		|NN bool *const at_end
 sn	|STRLEN	|sv_pos_u2b_midway|NN const U8 *const start \
-		|NN const U8 *send|const STRLEN uoffset|const STRLEN uend
+		|NN const U8 *send|STRLEN uoffset|const STRLEN uend
 s	|STRLEN	|sv_pos_u2b_cached|NN SV *const sv|NN MAGIC **const mgp \
 		|NN const U8 *const start|NN const U8 *const send \
-		|const STRLEN uoffset|STRLEN uoffset0|STRLEN boffset0
+		|STRLEN uoffset|STRLEN uoffset0|STRLEN boffset0
+s	|void	|utf8_mg_len_cache_update|NN SV *const sv|NN MAGIC **const mgp \
+		|const STRLEN ulen
 s	|void	|utf8_mg_pos_cache_update|NN SV *const sv|NN MAGIC **const mgp \
 		|const STRLEN byte|const STRLEN utf8|const STRLEN blen
 s	|STRLEN	|sv_pos_b2u_midway|NN const U8 *const s|NN const U8 *const target \
 		|NN const U8 *end|STRLEN endu
+s	|void	|assert_uft8_cache_coherent|NN const char *const func \
+		|STRLEN from_cache|STRLEN real|NN SV *const sv
 sn	|char *	|F0convert	|NV nv|NN char *const endbuf|NN STRLEN *const len
 #  if defined(PERL_OLD_COPY_ON_WRITE)
 sM	|void	|sv_release_COW	|NN SV *sv|NN const char *pvx|NN SV *after
 #  endif
 s	|SV *	|more_sv
-s	|void *	|more_bodies	|const svtype sv_type
 s	|bool	|sv_2iuv_common	|NN SV *const sv
 s	|void	|glob_assign_glob|NN SV *const dstr|NN SV *const sstr \
 		|const int dtype
 s	|void	|glob_assign_ref|NN SV *const dstr|NN SV *const sstr
 sRn	|PTR_TBL_ENT_t *|ptr_table_find|NN PTR_TBL_t *const tbl|NULLOK const void *const sv
+s	|void	|anonymise_cv_maybe	|NN GV *gv|NN CV *cv
 #endif
 
-#if defined(PERL_IN_TOKE_C) || defined(PERL_DECL_PROT)
+: Used in sv.c and hv.c
+po	|void *	|more_bodies	|const svtype sv_type|const size_t body_size \
+				|const size_t arena_size
+
+#if defined(PERL_IN_TOKE_C)
 s	|void	|check_uni
 s	|void	|force_next	|I32 type
 s	|char*	|force_version	|NN char *s|int guessing
@@ -1908,7 +1989,6 @@ s	|U8*	|add_utf16_textfilter|NN U8 *const s|bool reversed
 #endif
 s	|void	|checkcomma	|NN const char *s|NN const char *name \
 				|NN const char *what
-s	|bool	|feature_is_enabled|NN const char *const name|STRLEN namelen
 s	|void	|force_ident	|NN const char *s|int kind
 s	|void	|incline	|NN const char *s
 s	|int	|intuit_method	|NN char *s|NULLOK GV *gv|NULLOK CV *cv
@@ -1938,22 +2018,21 @@ s	|void	|printbuf	|NN const char *const fmt|NN const char *const s
 #  endif
 #endif
 
-#if defined(PERL_IN_UNIVERSAL_C) || defined(PERL_DECL_PROT)
+#if defined(PERL_IN_UNIVERSAL_C)
 s	|bool|isa_lookup	|NN HV *stash|NN const char * const name
-so	|HV *	|get_isa_hash	|NN HV *const stash
 #endif
 
-#if defined(PERL_IN_LOCALE_C) || defined(PERL_DECL_PROT)
+#if defined(PERL_IN_LOCALE_C)
 #if defined(USE_LOCALE_NUMERIC) || defined(USE_LOCALE_COLLATE)
 s	|char*	|stdize_locale	|NN char* locs
 #endif
 #endif
 
-#if defined(PERL_IN_UTIL_C) || defined(PERL_DECL_PROT)
+#if defined(PERL_IN_UTIL_C)
 s	|const COP*|closest_cop	|NN const COP *cop|NULLOK const OP *o
 s	|SV*	|mess_alloc
-s	|SV *|vdie_croak_common|NULLOK const char *pat|NULLOK va_list *args
-s	|bool	|vdie_common	|NULLOK SV *message|bool warn
+s	|SV *|with_queued_errors|NN SV *ex
+s	|bool	|invoke_exception_hook|NULLOK SV *ex|bool warn
 sr	|char *	|write_no_mem
 #if defined(PERL_MEM_LOG) && !defined(PERL_MEM_LOG_NOIMPL)
 sn	|void	|mem_log_common	|enum mem_log_type mlt|const UV n|const UV typesize \
@@ -1964,20 +2043,20 @@ sn	|void	|mem_log_common	|enum mem_log_type mlt|const UV n|const UV typesize \
 #endif
 #endif
 
-#if defined(PERL_IN_NUMERIC_C) || defined(PERL_DECL_PROT)
+#if defined(PERL_IN_NUMERIC_C)
 sn	|NV|mulexp10	|NV value|I32 exponent
 #endif
 
-#if defined(PERL_IN_UTF8_C) || defined(PERL_DECL_PROT)
+#if defined(PERL_IN_UTF8_C)
 sRn	|STRLEN	|is_utf8_char_slow|NN const U8 *s|const STRLEN len
 sR	|bool	|is_utf8_common	|NN const U8 *const p|NN SV **swash|NN const char * const swashname
 sR	|SV*	|swash_get	|NN SV* swash|UV start|UV span
 #endif
 
-START_EXTERN_C
-
 Apd	|void	|sv_setsv_flags	|NN SV *dstr|NULLOK SV *sstr|const I32 flags
 Apd	|void	|sv_catpvn_flags|NN SV *const dstr|NN const char *sstr|const STRLEN len \
+				|const I32 flags
+Apd	|void	|sv_catpv_flags	|NN SV *dstr|NN const char *sstr \
 				|const I32 flags
 Apd	|void	|sv_catsv_flags	|NN SV *const dsv|NULLOK SV *const ssv|const I32 flags
 Apmd	|STRLEN	|sv_utf8_upgrade_flags|NN SV *const sv|const I32 flags
@@ -2027,7 +2106,7 @@ ApR	|PerlIO *|PerlIO_stderr
 
 : Only used in dump.c
 p	|void	|deb_stack_all
-#if defined(PERL_IN_DEB_C) || defined(PERL_DECL_PROT)
+#if defined(PERL_IN_DEB_C)
 s	|void	|deb_stack_n	|NN SV** stack_base|I32 stack_min \
 				|I32 stack_max|I32 mark_min|I32 mark_max
 #endif
@@ -2035,14 +2114,12 @@ s	|void	|deb_stack_n	|NN SV** stack_base|I32 stack_min \
 : Used in perl.c, pp_ctl.c, toke.c
 pda	|PADLIST*|pad_new	|int flags
 : Only used in op.c
-pd	|void	|pad_undef	|NN CV* cv
-: Only used in op.c
 Mpd	|PADOFFSET|pad_add_name	|NN const char *name|const STRLEN len\
 				|const U32 flags|NULLOK HV *typestash\
 				|NULLOK HV *ourstash
 : Only used in op.c
 pd	|PADOFFSET|pad_add_anon	|NN SV* sv|OPCODE op_type
-#if defined(PERL_IN_PAD_C) || defined(PERL_DECL_PROT)
+#if defined(PERL_IN_PAD_C)
 sd	|void	|pad_check_dup	|NN SV *name|const U32 flags \
 				|NULLOK const HV *ourstash
 #endif
@@ -2063,8 +2140,13 @@ pd	|void	|pad_fixup_inner_anons|NN PADLIST *padlist|NN CV *old_cv|NN CV *new_cv
 pdX	|void	|pad_push	|NN PADLIST *padlist|int depth
 : Only used in PAD_COMPNAME_TYPE() in op.c
 pR	|HV*	|pad_compname_type|const PADOFFSET po
+: Used in sv.c
+#if defined(USE_ITHREADS)
+pR	|AV*	|padlist_dup	|NULLOK AV *const srcpad \
+				|NN CLONE_PARAMS *const param
+#endif
 
-#if defined(PERL_IN_PAD_C) || defined(PERL_DECL_PROT)
+#if defined(PERL_IN_PAD_C)
 sd	|PADOFFSET|pad_findlex	|NN const char *name|NN const CV* cv|U32 seq|int warn \
 				|NULLOK SV** out_capture|NN SV** out_name_sv \
 				|NN int *out_flags
@@ -2092,9 +2174,13 @@ ApoR	|HE**	|hv_eiter_p	|NN HV *hv
 Apo	|void	|hv_riter_set	|NN HV *hv|I32 riter
 Apo	|void	|hv_eiter_set	|NN HV *hv|NULLOK HE *eiter
 Ap	|void	|hv_name_set	|NN HV *hv|NULLOK const char *name|U32 len|U32 flags
+p	|void	|hv_ename_add	|NN HV *hv|NN const char *name|U32 len \
+				|U32 flags
+p	|void	|hv_ename_delete|NN HV *hv|NN const char *name|U32 len \
+				|U32 flags
 : Used in dump.c and hv.c
 poM	|AV**	|hv_backreferences_p	|NN HV *hv
-#if defined(PERL_IN_DUMP_C) || defined(PERL_IN_HV_C) || defined(PERL_IN_SV_C) || defined(PERL_DECL_PROT)
+#if defined(PERL_IN_DUMP_C) || defined(PERL_IN_HV_C) || defined(PERL_IN_SV_C)
 : Only used in sv.c
 poM	|void	|hv_kill_backrefs	|NN HV *hv
 #endif
@@ -2106,7 +2192,7 @@ Apo	|void	|hv_placeholders_set	|NN HV *hv|I32 ph
 : This is indirectly referenced by globals.c. This is somewhat annoying.
 p	|SV*	|magic_scalarpack|NN HV *hv|NN MAGIC *mg
 
-#if defined(PERL_IN_SV_C) || defined(PERL_DECL_PROT)
+#if defined(PERL_IN_SV_C)
 s	|SV *	|find_hash_subscript|NULLOK const HV *const hv \
 		|NN const SV *const val
 s	|I32	|find_array_subscript|NULLOK const AV *const av \
@@ -2208,7 +2294,7 @@ p	|void	|dump_sv_child	|NN SV *sv
 #ifdef PERL_DONT_CREATE_GVSV
 Apbm	|GV*	|gv_SVadd	|NULLOK GV *gv
 #endif
-#if defined(PERL_IN_UTIL_C) || defined(PERL_DECL_PROT)
+#if defined(PERL_IN_UTIL_C)
 s	|bool	|ckwarn_common	|U32 w
 #endif
 Apo	|bool	|ckwarn		|U32 w
@@ -2216,9 +2302,6 @@ Apo	|bool	|ckwarn_d	|U32 w
 : FIXME - exported for ByteLoader - public or private?
 XEopMa	|STRLEN *|new_warnings_bitfield|NULLOK STRLEN *buffer \
 				|NN const char *const bits|STRLEN size
-
-: Used in av.c, hv.c
-p	|void	|offer_nice_chunk	|NN void *const chunk|const U32 chunk_size
 
 #ifndef SPRINTF_RETURNS_STRLEN
 Apnod	|int	|my_sprintf	|NN char *buffer|NN const char *pat|...
@@ -2239,6 +2322,15 @@ Apo	|void*	|my_cxt_init	|NN int *index|size_t size
 #endif
 #endif
 
+: This function is an implementation detail. The public API for this is
+: XS_VERSION_BOOTCHECK
+Xpo	|void	|xs_version_bootcheck|U32 items|U32 ax|NN const char *xs_p \
+				|STRLEN xs_len
+: This function is an implementation detail. The public API for this is
+: XS_APIVERSION_BOOTCHECK
+Xpo	|void	|xs_apiversion_bootcheck|NN SV *module|NN const char *api_p \
+				|STRLEN api_len
+
 #ifndef HAS_STRLCAT
 Apno	|Size_t	|my_strlcat	|NULLOK char *dst|NULLOK const char *src|Size_t size
 #endif
@@ -2249,7 +2341,7 @@ Apno     |Size_t |my_strlcpy     |NULLOK char *dst|NULLOK const char *src|Size_t
 
 #ifdef PERL_MAD
 Mnp	|void	|pad_peg	|NN const char* s
-#if defined(PERL_IN_DUMP_C) || defined(PERL_DECL_PROT)
+#if defined(PERL_IN_DUMP_C)
 sf	|void	|xmldump_attr	|I32 level|NN PerlIO *file|NN const char* pat \
 				|...
 #endif
@@ -2267,6 +2359,7 @@ Mp	|void	|xmldump_form	|NN const GV* gv
 Mp	|void	|xmldump_eval
 Mp	|char*	|sv_catxmlsv	|NN SV *dsv|NN SV *ssv
 Mp	|char*	|sv_catxmlpvn	|NN SV *dsv|NN const char *pv|STRLEN len|int utf8
+Mp	|char*	|sv_catxmlpv	|NN SV *dsv|NN const char *pv|int utf8
 Mp	|char*	|sv_xmlpeek	|NN SV* sv
 Mp	|void	|do_pmop_xmldump|I32 level|NN PerlIO *file \
 				|NULLOK const PMOP *pm
@@ -2289,7 +2382,7 @@ Mp	|MADPROP*|newMADPROP	|char key|char type|NULLOK void* val \
 				|I32 vlen
 Mp	|void	|mad_free	|NULLOK MADPROP* mp
 
-#  if defined(PERL_IN_TOKE_C) || defined(PERL_DECL_PROT)
+#  if defined(PERL_IN_TOKE_C)
 s	|char*	|skipspace0	|NN char *s
 s	|char*	|skipspace1	|NN char *s
 s	|char*	|skipspace2	|NN char *s|NULLOK SV **sv
@@ -2297,7 +2390,7 @@ s	|void	|start_force	|int where
 s	|void	|curmad		|char slot|NULLOK SV *sv
 #  endif
 Mp	|int	|madlex
-Mp	|int	|madparse
+Mp	|int	|madparse	|int gramtype
 #endif
 #if !defined(HAS_SIGNBIT)
 AMdnoP	|int	|Perl_signbit	|NV f
@@ -2324,26 +2417,50 @@ Xpo	|struct mro_meta*	|mro_meta_init	|NN HV* stash
 p	|struct mro_meta*	|mro_meta_dup	|NN struct mro_meta* smeta|NN CLONE_PARAMS* param
 #endif
 Apd	|AV*	|mro_get_linear_isa|NN HV* stash
-#if defined(PERL_IN_MRO_C) || defined(PERL_DECL_PROT)
+#if defined(PERL_IN_MRO_C)
 sd	|AV*	|mro_get_linear_isa_dfs|NN HV* stash|U32 level
+s	|void	|mro_clean_isarev|NN HV * const isa   \
+				 |NN const char * const name \
+				 |const STRLEN len \
+				 |NULLOK HV * const exceptions
+s	|void	|mro_gather_and_rename|NN HV * const stashes \
+				      |NN HV * const seen_stashes \
+				      |NULLOK HV *stash \
+				      |NULLOK HV *oldstash \
+				      |NN SV *namesv
 #endif
 : Used in hv.c, mg.c, pp.c, sv.c
 pd	|void   |mro_isa_changed_in|NN HV* stash
 Apd	|void	|mro_method_changed_in	|NN HV* stash
+pdx	|void	|mro_package_moved	|NULLOK HV * const stash|NULLOK HV * const oldstash|NN const GV * const gv|U32 flags
 : Only used in perl.c
 p	|void   |boot_core_mro
 Apon	|void	|sys_init	|NN int* argc|NN char*** argv
 Apon	|void	|sys_init3	|NN int* argc|NN char*** argv|NN char*** env
 Apon	|void	|sys_term
-ApoM	|const char *|fetch_cop_label|NULLOK struct refcounted_he *const chain \
+ApoM	|const char *|fetch_cop_label|NN COP *const cop \
 		|NULLOK STRLEN *len|NULLOK U32 *flags
 : Only used  in op.c
-xpoM	|struct refcounted_he *|store_cop_label \
-		|NULLOK struct refcounted_he *const chain|NN const char *label
+xpoM	|void|store_cop_label \
+		|NN COP *const cop|NN const char *label|STRLEN len|U32 flags
 
 xpo	|int	|keyword_plugin_standard|NN char* keyword_ptr|STRLEN keyword_len|NN OP** op_ptr
+: Used in perly.y
+xp	|void	|munge_qwlist_to_paren_list|NN OP* qwlist
 
-END_EXTERN_C
-/*
- * ex: set ts=8 sts=4 sw=4 noet:
- */
+#if defined(USE_ITHREADS)
+#  if defined(PERL_IN_SV_C)
+s	|void	|unreferenced_to_tmp_stack|NN AV *const unreferenced
+#  endif
+Aanop	|CLONE_PARAMS *|clone_params_new|NN PerlInterpreter *const from \
+		|NN PerlInterpreter *const to
+Anop	|void	|clone_params_del|NN CLONE_PARAMS *param
+#endif
+
+: Used in perl.c and toke.c
+op	|void	|populate_isa	|NN const char *name|STRLEN len|...
+
+: Used in keywords.c and toke.c
+op	|bool	|feature_is_enabled|NN const char *const name|STRLEN namelen
+
+: ex: set ts=8 sts=4 sw=4 noet:

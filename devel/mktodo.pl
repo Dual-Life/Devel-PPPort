@@ -5,9 +5,9 @@
 #
 ################################################################################
 #
-#  $Revision: 17 $
+#  $Revision: 18 $
 #  $Author: mhx $
-#  $Date: 2010/03/07 12:15:43 +0000 $
+#  $Date: 2011/04/13 08:38:10 +0100 $
 #
 ################################################################################
 #
@@ -316,10 +316,28 @@ sub read_sym
 
 sub get_apicheck_symbol_map
 {
-  my $r = run(qw(make apicheck.i));
-  
-  if ($r->{didnotrun} or $r->{status}) {
-    die "cannot run make apicheck.i";
+  my $r;
+
+  while (1) {
+    $r = run(qw(make apicheck.i));
+
+    last unless $r->{didnotrun} or $r->{status};
+
+    my %sym = map { /error: macro "(\w+)" (?:requires|passed) \d+ argument/ ? ($1 => 'A') : () }
+              @{$r->{stderr}};
+
+    if (keys %sym) {
+      for my $s (sort keys %sym) {
+        sym('new', $s, $sym{$s});
+        $all{$s} = $sym{$s};
+      }
+      write_todo($opt{todo}, $opt{version}, \%all);
+      regen_apicheck();
+    }
+    else {
+      die "cannot run make apicheck.i ($r->{didnotrun} / $r->{status}):\n".
+          join('', @{$r->{stdout}})."\n---\n".join('', @{$r->{stderr}});
+    }
   }
 
   my $fh = IO::File->new('apicheck.i')

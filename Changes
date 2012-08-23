@@ -1,3 +1,7 @@
+3.19_03 - 2011-04-13
+
+    * keep up with latest core changes
+
 3.19_02 - 2010-03-07
 
     * fix a warning emitted by the test suite with older perls
@@ -11,7 +15,7 @@
 3.19_01 - 2010-02-20
 
     * fix CPAN #50763: mistaken use of $[
-      (thanks to Zephram for spotting this)
+      (thanks to Zefram for spotting this)
     * remove spurious PUSHMARK from Perl_ppaddr_t
       (thanks to Gerard Goossen for providing a patch)
     * improved support for newer compilers in buildperl.pl

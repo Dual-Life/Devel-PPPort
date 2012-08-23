@@ -1,6 +1,5 @@
 5.011002
 PL_keyword_plugin              # E
-gv_try_downgrade               # U
 lex_bufutf8                    # U
 lex_discard_to                 # U
 lex_grow_linestr               # U

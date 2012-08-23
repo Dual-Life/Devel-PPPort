@@ -66,6 +66,8 @@ get_sv                         # E (perl_get_sv)
 gv_dump                        # E
 init_i18nl10n                  # E (perl_init_i18nl10n)
 init_i18nl14n                  # E (perl_init_i18nl14n)
+isASCII                        # U
+isXDIGIT                       # U
 is_uni_alnum                   # E
 is_uni_alnum_lc                # E
 is_uni_alpha                   # E
@@ -147,7 +149,6 @@ set_numeric_local              # E (perl_set_numeric_local)
 set_numeric_radix              # E
 set_numeric_standard           # E (perl_set_numeric_standard)
 str_to_version                 # E
-sv_2nv                         # E (Perl_sv_2nv)
 sv_2pv_nolen                   # U
 sv_2pvbyte                     # E
 sv_2pvbyte_nolen               # U
@@ -283,10 +284,8 @@ dTHXa                          # added by devel/scanprov
 dTHXoa                         # added by devel/scanprov
 dXSTARG                        # added by devel/scanprov
 isALNUMC                       # added by devel/scanprov
-isASCII                        # added by devel/scanprov
 isCNTRL                        # added by devel/scanprov
 isGRAPH                        # added by devel/scanprov
 isPUNCT                        # added by devel/scanprov
-isXDIGIT                       # added by devel/scanprov
 pTHX                           # added by devel/scanprov
 pTHX_                          # added by devel/scanprov

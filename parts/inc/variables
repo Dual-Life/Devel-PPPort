@@ -1,8 +1,8 @@
 ################################################################################
 ##
-##  $Revision: 21 $
+##  $Revision: 22 $
 ##  $Author: mhx $
-##  $Date: 2010/03/07 12:15:46 +0000 $
+##  $Date: 2011/04/13 08:39:16 +0100 $
 ##
 ################################################################################
 ##
@@ -383,7 +383,13 @@ other_variables()
 		ppp_TESTVAR(PL_debstash);
 		ppp_TESTVAR(PL_defgv);
 		ppp_TESTVAR(PL_diehook);
+#if { VERSION >= 5.13.7 }
+                /* can't get a pointer any longer */
+                mXPUSHi(PL_dirty ? 1 : 1);
+                count++;
+#else
 		ppp_TESTVAR(PL_dirty);
+#endif
 		ppp_TESTVAR(PL_dowarn);
 		ppp_TESTVAR(PL_errgv);
 		ppp_TESTVAR(PL_laststatval);

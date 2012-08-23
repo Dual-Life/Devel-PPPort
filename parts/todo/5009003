@@ -18,7 +18,6 @@ is_utf8_string_loclen          # U
 newGIVENOP                     # U
 newSVhek                       # U
 newWHENOP                      # U
-newWHILEOP                     # E (Perl_newWHILEOP)
 savepvs                        # U
 sortsv_flags                   # U
 vverify                        # U
