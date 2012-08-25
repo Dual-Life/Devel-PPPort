@@ -22,14 +22,14 @@
 #    define     UVof      "lo"
 #    define     UVxf      "lx"
 #    define     UVXf      "lX"
+#  elif IVSIZE == INTSIZE
+#    define   IVdf      "d"
+#    define   UVuf      "u"
+#    define   UVof      "o"
+#    define   UVxf      "x"
+#    define   UVXf      "X"
 #  else
-#    if IVSIZE == INTSIZE
-#      define   IVdf      "d"
-#      define   UVuf      "u"
-#      define   UVof      "o"
-#      define   UVxf      "x"
-#      define   UVXf      "X"
-#    endif
+#    error "cannot define IV/UV formats"
 #  endif
 #endif
 
