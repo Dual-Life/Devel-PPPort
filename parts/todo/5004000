@@ -36,7 +36,7 @@ hv_ksplit                      # U
 hv_store_ent                   # U
 ibcmp_locale                   # U
 my_failure_exit                # U
-my_memcmp                      # U
+my_memset                      # U
 my_pclose                      # E (Perl_my_pclose)
 my_popen                       # E (Perl_my_popen)
 newSVpvf                       # U

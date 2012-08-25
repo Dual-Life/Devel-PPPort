@@ -1,0 +1,39 @@
+5.017004
+BhkDISABLE                     # E
+BhkENABLE                      # E
+BhkENTRY_set                   # E
+MULTICALL                      # E
+PERL_SYS_TERM                  # E
+PL_comppad_name                # E
+POP_MULTICALL                  # E
+PUSH_MULTICALL                 # E
+PadARRAY                       # U
+PadMAX                         # U
+PadlistARRAY                   # U
+PadlistMAX                     # U
+PadlistNAMES                   # E
+PadlistNAMESARRAY              # E
+PadlistNAMESMAX                # U
+PadlistREFCNT                  # U
+PadnameLEN                     # E
+PadnamePV                      # E
+PadnameSV                      # E
+PadnameUTF8                    # E
+PadnamelistARRAY               # E
+PadnamelistMAX                 # E
+XS_EXTERNAL                    # E
+XS_INTERNAL                    # E
+XopDISABLE                     # E
+XopENABLE                      # E
+XopENTRY                       # E
+XopENTRY_set                   # E
+cophh_new_empty                # E
+my_lstat                       # U (Perl_my_lstat)
+my_stat                        # U (Perl_my_stat)
+newSVpadname                   # E
+reentrant_free                 # U
+reentrant_init                 # U
+reentrant_retry                # U
+reentrant_size                 # U
+ref                            # U (Perl_ref)
+sv_setref_pvs                  # A

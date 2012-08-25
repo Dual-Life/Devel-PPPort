@@ -2,6 +2,7 @@
 Newx                           # E
 Newxc                          # E
 Newxz                          # E
+PL_check                       # E
 SvMAGIC_set                    # U
 SvRV_set                       # U
 SvSTASH_set                    # U
@@ -31,6 +32,7 @@ newSVhek                       # U
 newSVpvs                       # U
 newSVpvs_share                 # U
 newWHENOP                      # U
+pad_compname_type              # U
 savepvs                        # U
 sortsv_flags                   # U
 sv_catpvs                      # U

@@ -18,6 +18,7 @@ is_utf8_string_loclen          # U
 newGIVENOP                     # U
 newSVhek                       # U
 newWHENOP                      # U
+pad_compname_type              # U
 savepvs                        # U
 sortsv_flags                   # U
 vverify                        # U
