@@ -53,7 +53,7 @@ my %config = (
                  },
   thread5005  => {
                    config_args     => '-des -Duse5005threads',
-                   masked_versions => [ qr/^5\.00[012345]|^5.(9|\d\d)/ ],
+                   masked_versions => [ qr/^5\.00[012345]|^5\.(9|\d\d)|^5\.8\.9/ ],
                  },
   debug       => {
                    config_args => '-des -Doptimize=-g',
