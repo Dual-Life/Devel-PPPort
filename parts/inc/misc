@@ -35,6 +35,7 @@ EXTERN_C
 STMT_START
 STMT_END
 UTF8_MAXBYTES
+WIDEST_UTYPE
 XSRETURN
 
 =implementation
@@ -268,9 +269,16 @@ __UNDEFINED__ isXDIGIT(c)       isxdigit(c)
  */
 #  undef isPRINT
 # endif
+
+#ifdef HAS_QUAD
+# define WIDEST_UTYPE U64TYPE
+#else
+# define WIDEST_UTYPE U32
+#endif
+
 __UNDEFINED__ isALNUMC(c)       (isALPHA(c) || isDIGIT(c))
-__UNDEFINED__ isASCII(c)        ((U8) (c) <= 127)
-__UNDEFINED__ isCNTRL(c)        ((U8) (c) < ' ' || (c) == 127)
+__UNDEFINED__ isASCII(c)        ((WIDEST_UTYPE) (c) <= 127)
+__UNDEFINED__ isCNTRL(c)        ((WIDEST_UTYPE) (c) < ' ' || (c) == 127)
 __UNDEFINED__ isGRAPH(c)        (isALNUM(c) || isPUNCT(c))
 __UNDEFINED__ isPRINT(c)        (((c) >= 32 && (c) < 127))
 __UNDEFINED__ isPUNCT(c)        (((c) >= 33 && (c) <= 47) || ((c) >= 58 && (c) <= 64)  || ((c) >= 91 && (c) <= 96) || ((c) >= 123 && (c) <= 126))
