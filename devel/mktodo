@@ -24,7 +24,7 @@ our %opt = (
   check   => 1,
   verbose => 0,
   install => '/tmp/perl/install/default',
-  blead   => 'bleadperl',
+  blead   => 'bleadperl-debug',
 );
 
 GetOptions(\%opt, qw( base check! verbose install=s blead=s blead-version=s )) or die;

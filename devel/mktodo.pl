@@ -47,6 +47,22 @@ $ENV{SKIP_SLOW_TESTS} = 1;
 
 regen_all();
 
+my %stdsym = map { ($_ => 1) } qw (
+  strlen
+  snprintf
+  strcmp
+  memcpy
+  strncmp
+  memmove
+  memcmp
+  tolower
+  exit
+  memset
+  vsnprintf
+  siglongjmp
+  sprintf
+);
+
 my %sym;
 for (`$Config{nm} $fullperl`) {
   chomp;
@@ -277,7 +293,7 @@ sub find_undefined_symbols
   for my $sym (keys %$ls) {
     unless (exists $ps->{$sym}) {
       if ($sym !~ /\@/ and $sym !~ /^_/) {
-        push @undefined, $sym;
+        push @undefined, $sym unless $stdsym{$sym};
       }
     }
   }
