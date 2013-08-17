@@ -356,7 +356,9 @@ sub build_and_install
   print "building perl $perl->{version} ($current{config})\n";
 
   run_or_die("./Configure $config{$current{config}}{config_args} -Dusedevel -Uinstallusrbinperl -Dprefix=$prefix");
-  run_or_die("sed -i -e '/^.*<builtin>/d' -e '/^.*<built-in>/d' -e '/^.*<command line>/d' -e '/^.*<command-line>/d' makefile x2p/makefile");
+  if (-f "x2p/makefile") {
+    run_or_die("sed -i -e '/^.*<builtin>/d' -e '/^.*<built-in>/d' -e '/^.*<command line>/d' -e '/^.*<command-line>/d' makefile x2p/makefile");
+  }
   run_or_die("make all");
   run("make test") if $opt{test};
   if ($opt{install}) {
