@@ -5,7 +5,7 @@
 /META.yml
 /MYMETA.*
 pm_to_blib
-/PPPort.*
+/PPPort.pm
 /RealPPPort.*
 /ppport.h
 /t/*.t
