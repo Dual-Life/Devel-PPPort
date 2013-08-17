@@ -31,7 +31,7 @@ $data =~ s{^\%(include)\s+(\w+)((?:[^\S\r\n]+.*?)?)\s*$}
 
 $data = expand($data);
 
-my @api = sort { lc $a cmp lc $b } keys %provides;
+my @api = sort { lc $a cmp lc $b or $a cmp $b } keys %provides;
 
 $data =~ s{^(.*)__PROVIDED_API__(\s*?)^}
           {join '', map "$1$_\n", @api}gem;
