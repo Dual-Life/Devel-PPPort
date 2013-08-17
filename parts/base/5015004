@@ -28,3 +28,4 @@ sv_does_sv                     # U
 whichsig_pv                    # U
 whichsig_pvn                   # U
 whichsig_sv                    # U
+WIDEST_UTYPE                   # added by devel/scanprov

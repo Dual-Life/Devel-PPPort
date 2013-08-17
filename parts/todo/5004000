@@ -16,6 +16,8 @@ SvSetSV_nosteal                # U
 SvTAINTED                      # U
 SvTAINTED_off                  # U
 SvTAINTED_on                   # U
+XCPT_TRY_END                   # U
+XCPT_TRY_START                 # U
 block_gimme                    # U
 call_list                      # U
 cv_const_sv                    # U
@@ -63,6 +65,8 @@ sv_vcatpvfn                    # U
 sv_vsetpvf                     # U
 sv_vsetpvf_mg                  # U
 sv_vsetpvfn                    # U
+toLOWER_LC                     # U
+toUPPER                        # U
 unsharepvn                     # U
 vnewSVpvf                      # U
 warner                         # U

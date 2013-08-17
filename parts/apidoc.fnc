@@ -31,13 +31,22 @@ AmU||Nullhv
 AmU||Nullsv
 AmU||ORIGMARK
 AmU||SP
+AmU||SVt_INVLIST
 AmU||SVt_IV
+AmU||SVt_NULL
 AmU||SVt_NV
 AmU||SVt_PV
 AmU||SVt_PVAV
 AmU||SVt_PVCV
+AmU||SVt_PVFM
+AmU||SVt_PVGV
 AmU||SVt_PVHV
+AmU||SVt_PVIO
+AmU||SVt_PVIV
+AmU||SVt_PVLV
 AmU||SVt_PVMG
+AmU||SVt_PVNV
+AmU||SVt_REGEXP
 AmU||UNDERBAR
 AmU||XCPT_CATCH
 AmU||XCPT_TRY_END
@@ -208,10 +217,25 @@ Am|U32|SvREFCNT|SV* sv
 Am|U32|SvROK|SV* sv
 Am|U32|SvUTF8|SV* sv
 Am|U32|XopFLAGS|XOP *xop
+Am|U8|READ_XDIGIT|char str*
+Am|U8|toFOLD|U8 ch
+Am|U8|toLOWER_L1|U8 ch
+Am|U8|toLOWER_LC|U8 ch
+Am|U8|toLOWER|U8 ch
+Am|U8|toTITLE|U8 ch
+Am|U8|toUPPER|U8 ch
 Am|UV|SvUVX|SV* sv
 Am|UV|SvUV_nomg|SV* sv
 Am|UV|SvUVx|SV* sv
 Am|UV|SvUV|SV* sv
+Am|UV|toFOLD_uni|UV cp|U8* s|STRLEN* lenp
+Am|UV|toFOLD_utf8|U8* p|U8* s|STRLEN* lenp
+Am|UV|toLOWER_uni|UV cp|U8* s|STRLEN* lenp
+Am|UV|toLOWER_utf8|U8* p|U8* s|STRLEN* lenp
+Am|UV|toTITLE_uni|UV cp|U8* s|STRLEN* lenp
+Am|UV|toTITLE_utf8|U8* p|U8* s|STRLEN* lenp
+Am|UV|toUPPER_uni|UV cp|U8* s|STRLEN* lenp
+Am|UV|toUPPER_utf8|U8* p|U8* s|STRLEN* lenp
 Am|bool|SvIOK_UV|SV* sv
 Am|bool|SvIOK_notUV|SV* sv
 Am|bool|SvIsCOW_shared_hash|SV* sv
@@ -222,11 +246,20 @@ Am|bool|SvTRUE_nomg|SV* sv
 Am|bool|SvTRUE|SV* sv
 Am|bool|SvUOK|SV* sv
 Am|bool|SvVOK|SV* sv
+Am|bool|isALPHANUMERIC|char ch
 Am|bool|isALPHA|char ch
 Am|bool|isASCII|char ch
+Am|bool|isBLANK|char ch
+Am|bool|isCNTRL|char ch
 Am|bool|isDIGIT|char ch
+Am|bool|isGRAPH|char ch
+Am|bool|isIDCONT|char ch
+Am|bool|isIDFIRST|char ch
 Am|bool|isLOWER|char ch
 Am|bool|isOCTAL|char ch
+Am|bool|isPRINT|char ch
+Am|bool|isPSXSPC|char ch
+Am|bool|isPUNCT|char ch
 Am|bool|isSPACE|char ch
 Am|bool|isUPPER|char ch
 Am|bool|isWORDCHAR|char ch
@@ -263,8 +296,6 @@ Am|char*|SvPVutf8x|SV* sv|STRLEN len
 Am|char*|SvPVutf8|SV* sv|STRLEN len
 Am|char*|SvPVx|SV* sv|STRLEN len
 Am|char*|SvPV|SV* sv|STRLEN len
-Am|char|toLOWER|char ch
-Am|char|toUPPER|char ch
 Am|const char *|OP_DESC|OP *o
 Am|const char *|OP_NAME|OP *o
 Am|int|AvFILL|AV* av
@@ -320,6 +351,7 @@ Am|void|SvPOK_only_UTF8|SV* sv
 Am|void|SvPOK_only|SV* sv
 Am|void|SvPOK_on|SV* sv
 Am|void|SvPV_set|SV* sv|char* val
+Am|void|SvREFCNT_dec_NN|SV* sv
 Am|void|SvREFCNT_dec|SV* sv
 Am|void|SvREFCNT_inc_simple_void_NN|SV* sv
 Am|void|SvREFCNT_inc_simple_void|SV* sv

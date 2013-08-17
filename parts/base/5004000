@@ -41,6 +41,7 @@ hv_iterkeysv                   # E
 hv_ksplit                      # E
 hv_store_ent                   # U
 ibcmp_locale                   # U
+isPRINT                        # U
 my_failure_exit                # E
 my_memset                      # U
 my_pclose                      # E (Perl_my_pclose)
@@ -63,6 +64,8 @@ sv_tainted                     # E
 sv_untaint                     # E
 sv_vcatpvfn                    # E
 sv_vsetpvfn                    # E
+toLOWER_LC                     # U
+toUPPER                        # U
 unsharepvn                     # E
 PERL_HASH                      # added by devel/scanprov
 PERL_INT_MAX                   # added by devel/scanprov
@@ -84,6 +87,5 @@ PERL_UQUAD_MIN                 # added by devel/scanprov
 PERL_USHORT_MAX                # added by devel/scanprov
 PERL_USHORT_MIN                # added by devel/scanprov
 SvUVXx                         # added by devel/scanprov
-isPRINT                        # added by devel/scanprov
 memEQ                          # added by devel/scanprov
 memNE                          # added by devel/scanprov
