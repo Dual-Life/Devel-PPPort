@@ -211,6 +211,9 @@ __NEED_DUMMY_VAR__ yy_parser PL_parser;
 
 U32 get_PL_signals_1(void)
 {
+#ifdef PERL_NO_GET_CONTEXT
+  dTHX;
+#endif
   return PL_signals;
 }
 
