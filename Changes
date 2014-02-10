@@ -2,6 +2,7 @@
 
     * Add support for the following API
         SvREFCNT_dec_NN
+        mg_findext
 
 3.21 - 2013-08-17
 
