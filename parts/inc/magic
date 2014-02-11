@@ -23,16 +23,17 @@ sv_magic_portable
 #if { NEED mg_findext }
 
 MAGIC *
-my_find_mg(pTHX_ SV * sv, int type, const MGVTBL *vtbl) {
-	MAGIC *mg;
-	for (mg = SvMAGIC (sv); mg; mg = mg->mg_moremagic) {
-		if (mg->mg_type == type && mg->mg_virtual == vtbl)
-			return mg;
-	}
+mg_findext(pTHX_ SV * sv, int type, const MGVTBL *vtbl) {
+    if (sv) {
+        MAGIC *mg;
+        for (mg = SvMAGIC (sv); mg; mg = mg->mg_moremagic) {
+            if (mg->mg_type == type && mg->mg_virtual == vtbl)
+                return mg;
+        }
+    }
 
-	return NULL;
+    return NULL;
 }
-#define mg_findext(a, b, c) my_find_mg(aTHX_ a, b, c)
 
 #endif
 #endif
@@ -391,10 +392,13 @@ sv_magic_portable(sv)
         OUTPUT:
                 RETVAL
 
-=tests plan => 17
+=tests plan => 18
 
 ok(my $obj = Devel::PPPort->new_with_mg());
-ok(Devel::PPPort::as_string($obj) eq 'hello');
+ok(Devel::PPPort::as_string($obj), 'hello');
+
+$obj = bless {}, 'Fake::Class';
+ok(Devel::PPPort::as_string($obj), "Sorry, your princess is in another castle.");
 
 use Tie::Hash;
 my %h;
