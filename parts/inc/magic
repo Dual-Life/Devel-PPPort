@@ -13,6 +13,7 @@
 
 mg_findext
 sv_unmagicext
+sv_magicext
 
 __UNDEFINED__
 /sv_\w+_mg/
