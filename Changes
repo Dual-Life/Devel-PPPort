@@ -4,6 +4,9 @@
         SvREFCNT_dec_NN
         mg_findext
         sv_unmagicext
+    * Update META
+        Move bug tracker to github
+        Provide link to repository
 
 3.21 - 2013-08-17
 
