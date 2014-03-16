@@ -1,3 +1,8 @@
+3.22 - xxxx-xx-xx
+
+    * Add support for the following API
+        SvREFCNT_dec_NN
+
 3.21 - 2013-08-17
 
     * Fix cpan #87870: Merge core perl commit 90b0dc0e2e
