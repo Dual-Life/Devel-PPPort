@@ -13,7 +13,6 @@
 
 mg_findext
 sv_unmagicext
-sv_magicext
 
 __UNDEFINED__
 /sv_\w+_mg/
@@ -228,6 +227,11 @@ MAGIC *
 mg_findext(pTHX_ SV * sv, int type, const MGVTBL *vtbl) {
     if (sv) {
         MAGIC *mg;
+
+#ifdef AvPAD_NAMELIST
+	assert(!(SvTYPE(sv) == SVt_PVAV && AvPAD_NAMELIST(sv)));
+#endif
+
         for (mg = SvMAGIC (sv); mg; mg = mg->mg_moremagic) {
             if (mg->mg_type == type && mg->mg_virtual == vtbl)
                 return mg;
@@ -349,7 +353,7 @@ new_with_other_mg(package, ...)
     self_ref = newRV_noinc((SV*)self);
 
     sv_magic((SV*)self, NULL, PERL_MAGIC_ext, data, strlen(data));
-    mg = mg_find((SV*)self, '~');
+    mg = mg_find((SV*)self, PERL_MAGIC_ext);
     mg->mg_virtual = &other_mg_vtbl;
 
     RETVAL = sv_bless(self_ref, stash);
@@ -373,7 +377,7 @@ new_with_mg(package, ...)
     self_ref = newRV_noinc((SV*)self);
 
     sv_magic((SV*)self, NULL, PERL_MAGIC_ext, data, strlen(data));
-    mg = mg_find((SV*)self, '~');
+    mg = mg_find((SV*)self, PERL_MAGIC_ext);
     mg->mg_virtual = &null_mg_vtbl;
 
     RETVAL = sv_bless(self_ref, stash);
