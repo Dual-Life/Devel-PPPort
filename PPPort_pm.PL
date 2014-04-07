@@ -492,8 +492,8 @@ __UNSUPPORTED_API__
 =head1 BUGS
 
 If you find any bugs, C<Devel::PPPort> doesn't seem to build on your
-system or any of its tests fail, please use the CPAN Request Tracker
-at L<http://rt.cpan.org/> to create a ticket for the module.
+system, or any of its tests fail, please file an issue here:
+L<https://github.com/mhx/Devel-PPPort/issues/>
 
 =head1 AUTHORS
 

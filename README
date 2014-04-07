@@ -59,9 +59,9 @@ version of this module:
 -------
 
 If you find any bugs, Devel::PPPort doesn't seem to build on your
-system or any of its tests fail, please use the CPAN Request Tracker
+system, or any of its tests fail, please file an issue here:
 
-  http://rt.cpan.org/
+  https://github.com/mhx/Devel-PPPort/issues/
 
 to create a ticket for the module.
 
