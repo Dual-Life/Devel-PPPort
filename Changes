@@ -1,4 +1,4 @@
-3.22 - xxxx-xx-xx
+3.22 - 2014-03-19
 
     * Add support for the following API
         SvREFCNT_dec_NN
@@ -7,6 +7,8 @@
     * Update META
         Move bug tracker to github
         Provide link to repository
+    * Avoid syntax disallowed by C++11
+      (Thanks to Tony C for the patch)
 
 3.21 - 2013-08-17
 
