@@ -1,9 +1,10 @@
-3.23 - 2014-04-xx
+3.23 - 2014-04-12
 
     * Add support for HeUTF8
     * Add GetFileContents() to retrieve the contents of the
       ppport.h file
     * Update MAX_VER to be 5.20
+    * Update issue tracker to GitHub
 
 3.22 - 2014-03-19
 
