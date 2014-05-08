@@ -1,3 +1,13 @@
+3.24 - 2014-05-08
+
+    * Remove SvREFCNT_dec_NN until it can be implemented
+      properly.
+      (Thanks to bulk88 for reporting GH #10)
+    * Fix GH #11 - compiler warning under clang
+      (Thanks to jhi for reporting it)
+    * Fix GH #12 - compiler warnings
+      (Thanks to jhi for reporting it)
+
 3.23 - 2014-04-12
 
     * Add support for HeUTF8
