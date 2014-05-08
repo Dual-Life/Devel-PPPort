@@ -413,7 +413,7 @@ as_string(self)
   PPCODE:
     obj = (HV*) SvRV(self);
 
-    if (mg = mg_findext((SV*)obj, PERL_MAGIC_ext, &null_mg_vtbl)) {
+    if ((mg = mg_findext((SV*)obj, PERL_MAGIC_ext, &null_mg_vtbl))) {
         XPUSHs(sv_2mortal(newSVpv(mg->mg_ptr, strlen(mg->mg_ptr))));
     } else {
 	XPUSHs(sv_2mortal(newSVpvs("Sorry, your princess is in another castle.")));
