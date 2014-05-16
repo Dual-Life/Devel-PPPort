@@ -166,6 +166,15 @@ __UNDEFINED__  AvFILLp      AvFILL
 
 __UNDEFINED__  ERRSV        get_sv("@",FALSE)
 
+#if { VERSION < 5.13.1 }
+#  undef croak_sv
+#  define croak_sv(sv)                \
+      STMT_START {                    \
+            sv_setsv(ERRSV, sv);      \
+            Perl_croak(aTHX_ Nullch); \
+      } STMT_END
+#endif
+
 /* Hint: gv_stashpvn
  * This function's backport doesn't support the length parameter, but
  * rather ignores it. Portability can only be ensured if the length
