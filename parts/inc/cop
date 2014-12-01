@@ -47,8 +47,6 @@ __UNDEFINED__  CopSTASH_eq(c,hv)        (CopSTASH(c) == (hv))
 
 #endif /* USE_ITHREADS */
 
-#if { VERSION >= 5.6.0 }
-
 #ifndef caller_cx
 
 # if defined(NEED_caller_cx) || defined(NEED_caller_cx_GLOBAL)
@@ -63,14 +61,12 @@ DPPP_dopoptosub_at(const PERL_CONTEXT *cxstk, I32 startingblock)
         default:
             continue;
         case CXt_SUB:
-#ifdef CXp_SUB_RE_FAKE
             /* in sub foo { /(?{...})/ }, foo ends up on the CX stack
              * twice; the first for the normal foo() call, and the second
              * for a faked up re-entry into the sub to execute the
              * code block. Hide this faked entry from the world. */
             if (cx->cx_type & CXp_SUB_RE_FAKE)
                 continue;
-#endif
         case CXt_EVAL:
         case CXt_FORMAT:
             return i;
@@ -125,7 +121,6 @@ caller_cx(pTHX_ I32 count, const PERL_CONTEXT **dbcxp)
 
 # endif
 #endif /* caller_cx */
-#endif /* VERSION */
 
 =xsinit
 
@@ -146,8 +141,6 @@ CopFILE()
                 RETVAL = CopFILE(PL_curcop);
         OUTPUT:
                 RETVAL
-
-#if { VERSION >= 5.6.0 }
 
 void
 caller_cx(level)
@@ -175,19 +168,7 @@ caller_cx(level)
 
         XSRETURN(4);
 
-#endif
-
 =tests plan => 28
-
-BEGIN {
-  if ($] < 5.006000) {
-    # Skip
-    for (1..28) {
-      ok(1, 1);
-    }
-    exit;
-  }
-}
 
 my $package;
 {
@@ -232,7 +213,7 @@ for (
     [\&Two::dbtwo, 1, qw/main dbtwo main dbtwo/],
 ) {
     my ($sub, $arg, @want) = @$_;
-    my @got = &$sub($arg);
+    my @got = $sub->($arg);
     ok(@got, @want);
     for (0..$#want) {
         ok($got[$_], $want[$_]);
