@@ -147,7 +147,6 @@ caller_cx(level)
         const PERL_CONTEXT *cx, *dbcx;
         const char *pv;
         const GV *gv;
-        HV *hv;
     PPCODE:
         cx = caller_cx(level, &dbcx);
         if (!cx) XSRETURN_EMPTY;
