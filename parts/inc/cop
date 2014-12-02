@@ -47,6 +47,7 @@ __UNDEFINED__  CopSTASH_eq(c,hv)        (CopSTASH(c) == (hv))
 
 #endif /* USE_ITHREADS */
 
+#if { VERSION >= 5.6.0 }
 #ifndef caller_cx
 
 # if defined(NEED_caller_cx) || defined(NEED_caller_cx_GLOBAL)
@@ -115,6 +116,7 @@ caller_cx(pTHX_ I32 count, const PERL_CONTEXT **dbcxp)
 
 # endif
 #endif /* caller_cx */
+#endif /* 5.6.0 */
 
 =xsinit
 
@@ -135,6 +137,8 @@ CopFILE()
                 RETVAL = CopFILE(PL_curcop);
         OUTPUT:
                 RETVAL
+
+#if { VERSION >= 5.6.0 }
 
 void
 caller_cx(level)
@@ -162,6 +166,8 @@ caller_cx(level)
 
         XSRETURN(4);
 
+#endif /* 5.6.0 */
+
 =tests plan => 28
 
 my $package;
@@ -175,6 +181,16 @@ ok($package, "MyPackage");
 my $file = &Devel::PPPort::CopFILE();
 print "# $file\n";
 ok($file =~ /cop/i);
+
+BEGIN {
+  if ($] < 5.006000) {
+    # Skip
+    for (1..28) {
+      ok(1, 1);
+    }
+    exit;
+  }
+}
 
 BEGIN {
     package DB;
