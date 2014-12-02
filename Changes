@@ -1,3 +1,10 @@
+3.25 - 2014-12-02
+
+    * Add caller_cx
+      (Thanks to Ben Morrow for patch)
+    * Silence compiler and coverity warnings
+      (Thanks to jhi for patches)
+
 3.24 - 2014-05-08
 
     * Remove SvREFCNT_dec_NN until it can be implemented
