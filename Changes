@@ -1,3 +1,8 @@
+3.26 - 2015-01-07
+
+    * Silence some warnings on compilation in perl core
+      (Thanks to Dave M. for patches)
+
 3.25 - 2014-12-02
 
     * Add caller_cx (works back to Perl 5.6.0)
