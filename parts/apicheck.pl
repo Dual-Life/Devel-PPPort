@@ -137,6 +137,7 @@ print OUT <<HEAD;
 
 #define NEED_PL_signals
 #define NEED_PL_parser
+#define NEED_caller_cx
 #define NEED_eval_pv
 #define NEED_grok_bin
 #define NEED_grok_hex
@@ -163,6 +164,7 @@ print OUT <<HEAD;
 #define NEED_sv_pvn_force_flags
 #define NEED_sv_setpvf_mg
 #define NEED_sv_setpvf_mg_nocontext
+#define NEED_sv_unmagicext
 #define NEED_vload_module
 #define NEED_vnewSVpvf
 #define NEED_warner
