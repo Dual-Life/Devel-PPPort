@@ -1,3 +1,11 @@
+3.27 - 2015-01-13
+
+    * Regen base and todo files.
+    * Fix isASCII and isCNTRL for <5.6.0
+    * Other minor fixups.
+
+    (Thanks to mhx for all of the work on this release)
+
 3.26 - 2015-01-07
 
     * Silence some warnings on compilation in perl core
