@@ -1,3 +1,8 @@
+3.29 - 2015-03-05
+
+    * Fix issue found by Coverity
+      (Thanks to Dave M. for patch)
+
 3.28 - 2015-01-16
 
     * Update MANIFEST for regened base/todo files
