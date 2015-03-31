@@ -2,6 +2,21 @@
 
     * Support Perl 5.26.* which no longer has '.' in @INC
 
+3.35_03 - Sun May 14 2017 cperl-5.27.0
+
+    * Fix for . in @INC
+    * fix strict hashpairs
+
+3.35_02 - Sun Nov 20 2016 cperl-5.26.0
+
+    * Fix -Wc11-compat warning
+
+3.35_01 - Thu Oct 13 2016 cperl-5.24.1
+
+    * Merge cperl improvements
+    * make -s support
+    * fix for non-gcc 3.33_02
+
 3.35 - 2016-06-17
 
     * Fix compilation in bleadperl by removing a bad test.
@@ -27,6 +42,18 @@
       (Thanks to leont)
     * Fix compiler warnings
       (Thanks to Dave M.)
+
+3.32_02 - 2014-04-14
+
+    * cperl added support for 5.16 binary names
+    * support @INC without . (-Dfortify_inc)
+    * See https://github.com/rurban/Devel-PPPort/tree/516gvhv
+
+3.32_01 - 2015-03-31
+
+    * Add HvNAMELEN, HvNAMEUTF8, HvENAME, HvENAMELEN, HvENAMEUTF8
+      and gv_fetchpvn, gv_fetchmethod_flags, gv_init_pv, gv_init_pvn,
+      gv_init_sv (Reini Urban)
 
 3.32 - 2015-09-30
 
