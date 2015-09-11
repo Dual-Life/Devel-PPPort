@@ -167,7 +167,7 @@ __NEED_DUMMY_VAR__ yy_parser PL_parser;
 /* PL_expect, PL_copline, PL_rsfp, PL_rsfp_filters, PL_linestr, PL_bufptr, PL_bufend, PL_lex_state, PL_lex_stuff, PL_tokenbuf depends on PL_parser */
 /* Warning: PL_expect, PL_copline, PL_rsfp, PL_rsfp_filters, PL_linestr, PL_bufptr, PL_bufend, PL_lex_state, PL_lex_stuff, PL_tokenbuf
  * Do not use this variable unless you know exactly what you're
- * doint. It is internal to the perl parser and may change or even
+ * doing. It is internal to the perl parser and may change or even
  * be removed in the future. As of perl 5.9.5, you have to check
  * for (PL_parser != NULL) for this variable to have any effect.
  * An always non-NULL PL_parser dummy is provided for earlier
