@@ -1,3 +1,7 @@
+3.36_01 - 2017-05-15
+
+    * Merge cperl improvements
+
 3.36 - 2017-05-14
 
     * Support Perl 5.26.* which no longer has '.' in @INC
@@ -43,17 +47,16 @@
     * Fix compiler warnings
       (Thanks to Dave M.)
 
-3.32_02 - 2014-04-14
+3.32_02 - 2016-04-14
 
-    * cperl added support for 5.16 binary names
-    * support @INC without . (-Dfortify_inc)
-    * See https://github.com/rurban/Devel-PPPort/tree/516gvhv
+    * Support silencing via make -s
+    * Support -Dfortify_inc, no . in @INC
 
 3.32_01 - 2015-03-31
 
     * Add HvNAMELEN, HvNAMEUTF8, HvENAME, HvENAMELEN, HvENAMEUTF8
       and gv_fetchpvn, gv_fetchmethod_flags, gv_init_pv, gv_init_pvn,
-      gv_init_sv (Reini Urban)
+      gv_init_sv (Reini Urban)    
 
 3.32 - 2015-09-30
 
