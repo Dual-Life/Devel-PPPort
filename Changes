@@ -1,3 +1,7 @@
+3.32 - 2015-09-30
+
+    * Lexical topic no longer works as of perl 5.23
+
 3.31 - 2015-03-12
 
     * Regen todo files to sync with blead
