@@ -11,16 +11,34 @@
 
 =provides
 
+gv_fetchpvn_flags
 __UNDEFINED__
 
 =implementation
 
+#ifndef gv_fetchpvn_flags
+#if { NEED gv_fetchpvn_flags }
+
+GV* 
+gv_fetchpvn_flags(pTHX_ const char* name, STRLEN len, int flags, int types) {
+	char *namepv = savepvn(name, len);
+	GV* stash = gv_fetchpv(namepv, TRUE, SVt_PVHV);
+	Safefree(namepv);
+	return stash;
+}
+
+#endif
+#endif
+
 __UNDEFINED__ GvSVn(gv)        GvSV(gv)
 __UNDEFINED__ isGV_with_GP(gv) isGV(gv)
-__UNDEFINED__ gv_fetchpvn_flags(name, len, flags, svt) gv_fetchpv(name, flags, svt)
 __UNDEFINED__ gv_fetchsv(name, flags, svt) gv_fetchpv(SvPV_nolen_const(name), flags, svt)
 
 __UNDEFINED__ get_cvn_flags(name, namelen, flags) get_cv(name, flags)
+
+=xsinit
+
+#define NEED_gv_fetchpvn_flags
 
 =xsubs
 
