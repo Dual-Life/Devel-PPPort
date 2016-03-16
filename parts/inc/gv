@@ -35,6 +35,7 @@ __UNDEFINED__ isGV_with_GP(gv) isGV(gv)
 __UNDEFINED__ gv_fetchsv(name, flags, svt) gv_fetchpv(SvPV_nolen_const(name), flags, svt)
 
 __UNDEFINED__ get_cvn_flags(name, namelen, flags) get_cv(name, flags)
+__UNDEFINED__ gv_init_pvn(gv, stash, ptr, len, flags) gv_init(gv, stash, ptr, len, flags & GV_ADDMULTI ? TRUE : FALSE)
 
 =xsinit
 
