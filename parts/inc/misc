@@ -521,6 +521,7 @@ check_HeUTF8(utf8_key)
                 hv_store(hash, key, klen, newSVpvs("string"), 0);
                 hv_iterinit(hash);
                 ent = hv_iternext(hash);
+                assert(ent);
                 mXPUSHp((HeUTF8(ent) == 0 ? "norm" : "utf8"), 4);
                 hv_undef(hash);
 
