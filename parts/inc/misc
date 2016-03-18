@@ -39,6 +39,8 @@ UTF8_MAXBYTES
 WIDEST_UTYPE
 XSRETURN
 HeUTF8
+C_ARRAY_LENGTH
+C_ARRAY_END
 
 =implementation
 
@@ -308,6 +310,9 @@ __UNDEFINED__ HeUTF8(he)        ((HeKLEN(he) == HEf_SVKEY) ?            \
 
 #endif
 
+__UNDEFINED__ C_ARRAY_LENGTH(a)		(sizeof(a)/sizeof((a)[0]))
+__UNDEFINED__ C_ARRAY_END(a)		((a) + C_ARRAY_LENGTH(a))
+
 =xsmisc
 
 typedef XSPROTO(XSPROTO_test_t);
@@ -549,7 +554,15 @@ check_unused_return(x)
                 PERL_UNUSED_RESULT(returnint(3));
                 mXPUSHp("Yay", 3);
 
-=tests plan => 42
+void
+check_c_array()
+        PREINIT:
+                int x[] = { 10, 11, 12, 13 };
+        PPCODE:
+                mXPUSHi(C_ARRAY_LENGTH(x));  /* 4 */
+                mXPUSHi(*(C_ARRAY_END(x)-1)); /* 13 */
+
+=tests plan => 44
 
 use vars qw($my_sv @my_av %my_hv);
 
@@ -642,3 +655,7 @@ if ($] >= 5.009000) {
 
 # Lame test, just make sure this still works
 ok(&Devel::PPPort::check_unused_return(3), "Yay");
+
+@r = &Devel::PPPort::check_c_array();
+ok($r[0], 4);
+ok($r[1], "13");
