@@ -19,7 +19,7 @@ __UNDEFINED__
 #ifndef gv_fetchpvn_flags
 #if { NEED gv_fetchpvn_flags }
 
-GV* 
+GV*
 gv_fetchpvn_flags(pTHX_ const char* name, STRLEN len, int flags, int types) {
 	char *namepv = savepvn(name, len);
 	GV* stash = gv_fetchpv(namepv, TRUE, SVt_PVHV);
