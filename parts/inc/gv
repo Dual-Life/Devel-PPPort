@@ -93,7 +93,7 @@ get_cvn_flags()
 SV*
 gv_fetchpvn_flags()
         CODE:
-                RETVAL = newRV_inc((SV*)gv_fetchpvn_flags("Devel::PPPort::VERSION", sizeof("Devel::PPPort::VERSION")-1, 0, SVt_PV));
+                RETVAL = newRV_inc((SV*)gv_fetchpvn_flags("Devel::PPPort::VERSIONFAKE", sizeof("Devel::PPPort::VERSIONFAKE")-5, 0, SVt_PV));
         OUTPUT:
                 RETVAL
 
