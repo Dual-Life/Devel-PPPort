@@ -1,3 +1,8 @@
+3.33 - ????-??-??
+
+    * sort files from all_files_in_dir (GH #28, https://bugs.debian.org/801523
+      Thanks to ntyni
+
 3.32 - 2015-09-30
 
     * Lexical topic no longer works as of perl 5.23
