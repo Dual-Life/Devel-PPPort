@@ -16,6 +16,7 @@ PERL_UNUSED_DECL
 PERL_UNUSED_ARG
 PERL_UNUSED_VAR
 PERL_UNUSED_CONTEXT
+PERL_UNUSED_RESULT
 PERL_GCC_BRACE_GROUPS_FORBIDDEN
 PERL_USE_GCC_BRACE_GROUPS
 PERLIO_FUNCS_DECL
@@ -71,6 +72,14 @@ HeUTF8
 #    define PERL_UNUSED_CONTEXT PERL_UNUSED_ARG(my_perl)
 #  else
 #    define PERL_UNUSED_CONTEXT
+#  endif
+#endif
+
+#ifndef PERL_UNUSED_RESULT
+#  if defined(__GNUC__) && defined(HASATTRIBUTE_WARN_UNUSED_RESULT)
+#    define PERL_UNUSED_RESULT(v) STMT_START { __typeof__(v) z = (v); (void)sizeof(z); } STMT_END
+#  else
+#    define PERL_UNUSED_RESULT(v) ((void)(v))
 #  endif
 #endif
 
@@ -333,6 +342,11 @@ XS(XS_Devel__PPPort_dAXMARK)
   XSRETURN(1);
 }
 
+=xsinit
+
+int returnint(int x) __attribute__((warn_unused_result));
+int returnint(int x) { return x * x; }
+
 =xsboot
 
 {
@@ -528,7 +542,14 @@ check_HeUTF8(utf8_key)
 
 #endif
 
-=tests plan => 41
+void
+check_unused_return(x)
+        int x;
+        PPCODE:
+                PERL_UNUSED_RESULT(returnint(3));
+                mXPUSHp("Yay", 3);
+
+=tests plan => 42
 
 use vars qw($my_sv @my_av %my_hv);
 
@@ -618,3 +639,6 @@ if ($] >= 5.009000) {
   ok(1, 1);
   ok(1, 1);
 }
+
+# Lame test, just make sure this still works
+ok(&Devel::PPPort::check_unused_return(3), "Yay");
