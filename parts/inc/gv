@@ -93,7 +93,11 @@ get_cvn_flags()
 SV*
 gv_fetchpvn_flags()
         CODE:
+#if { VERSION < 5.9.2 } || { VERSION > 5.9.3 } /* 5.9.2 and 5.9.3 ignore the length param */
                 RETVAL = newRV_inc((SV*)gv_fetchpvn_flags("Devel::PPPort::VERSIONFAKE", sizeof("Devel::PPPort::VERSIONFAKE")-5, 0, SVt_PV));
+#else
+                RETVAL = newRV_inc((SV*)gv_fetchpvn_flags("Devel::PPPort::VERSION", 0, 0, SVt_PV));
+#endif
         OUTPUT:
                 RETVAL
 
