@@ -12,7 +12,6 @@
 =provides
 
 gv_fetchpvn_flags
-__UNDEFINED__
 
 =implementation
 
@@ -109,6 +108,23 @@ gv_fetchsv(name)
         OUTPUT:
                 RETVAL
 
+void
+gv_init_type(namesv, multi, flags)
+    SV* namesv
+    int multi
+    I32 flags
+    PREINIT:
+        HV *defstash = gv_stashpv("main", 0);
+        STRLEN len;
+        const char * const name = SvPV_const(namesv, len);
+        GV *gv = *(GV**)hv_fetch(defstash, name, len, TRUE);
+    PPCODE:
+        if (SvTYPE(gv) == SVt_PVGV)
+            Perl_croak(aTHX_ "GV is already a PVGV");
+        if (multi) flags |= GV_ADDMULTI;
+        gv_init_pvn(gv, defstash, name, len, flags);
+	XPUSHs( gv ? (SV*)gv : &PL_sv_undef);
+
 =tests plan => 5
 
 ok(Devel::PPPort::GvSVn(), 1);
@@ -120,3 +136,6 @@ ok(Devel::PPPort::get_cvn_flags(), 3);
 ok(Devel::PPPort::gv_fetchpvn_flags(), \*Devel::PPPort::VERSION);
 
 ok(Devel::PPPort::gv_fetchsv("Devel::PPPort::VERSION"), \*Devel::PPPort::VERSION);
+
+ok(Devel::PPPort::gv_init_type("sanity_check", 0, 0), "*main::sanity_check");
+ok($::{sanity_check});
