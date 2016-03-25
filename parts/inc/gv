@@ -125,7 +125,7 @@ gv_init_type(namesv, multi, flags)
         gv_init_pvn(gv, defstash, name, len, flags);
 	XPUSHs( gv ? (SV*)gv : &PL_sv_undef);
 
-=tests plan => 5
+=tests plan => 7
 
 ok(Devel::PPPort::GvSVn(), 1);
 
