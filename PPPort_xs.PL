@@ -44,7 +44,10 @@ for $file (all_files_in_dir('parts/inc')) {
   my $msg = 0;
   for $sec (keys %SECTION) {
     if (exists $spec->{$sec}) {
-      $msg++ or print "adding XS code from $file\n";
+      unless (defined $ENV{MAKEFLAGS}
+              and $ENV{MAKEFLAGS} =~ /\b(s|silent|quiet)\b/) {
+        $msg++ or print "adding XS code from $file\n";
+      }
       if (exists $SECTION{$sec}{header}) {
         my $header = $SECTION{$sec}{header};
         $header =~ s/__FILE__/$file/g;
@@ -66,6 +69,7 @@ for $sec (keys %SECTION) {
   $data =~ s/^__\U$sec\E__$/$code/m;
 }
 
+# backcompat
 open FH, ">RealPPPort.xs" or die "RealPPPort.xs: $!\n";
 print FH $data;
 close FH;
