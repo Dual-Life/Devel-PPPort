@@ -41,8 +41,35 @@ XSRETURN
 HeUTF8
 C_ARRAY_LENGTH
 C_ARRAY_END
+SvRX
+SvRXOK
+PERL_MAGIC_qr
 
 =implementation
+
+__UNDEFINED__ PERL_MAGIC_qr             'r'
+
+#ifndef SvRX
+#if { NEED SvRX }
+
+void *
+SvRX(pTHX_ SV *rv)
+{
+	if (SvROK(rv)) {
+		SV *sv = SvRV(rv);
+		if (SvMAGICAL(sv)) {
+			MAGIC *mg = mg_find(sv, PERL_MAGIC_qr);
+			if (mg && mg->mg_obj) {
+				return mg->mg_obj;
+			}
+		}
+	}
+	return 0;
+}
+#endif
+#endif
+
+__UNDEFINED__ SvRXOK(sv) (!!SvRX(sv))
 
 #ifndef PERL_UNUSED_DECL
 #  ifdef HASATTRIBUTE
@@ -349,6 +376,8 @@ XS(XS_Devel__PPPort_dAXMARK)
 
 =xsinit
 
+#define NEED_SvRX
+
 int returnint(int x) __attribute__((warn_unused_result));
 int returnint(int x) { return x * x; }
 
@@ -361,6 +390,14 @@ int returnint(int x) { return x * x; }
 newXS("Devel::PPPort::dAXMARK", XS_Devel__PPPort_dAXMARK, file);
 
 =xsubs
+
+int
+SvRXOK(sv)
+	SV *sv
+	CODE:
+		RETVAL = SvRXOK(sv);
+	OUTPUT:
+		RETVAL
 
 int
 ptrtests()
@@ -562,7 +599,7 @@ check_c_array()
                 mXPUSHi(C_ARRAY_LENGTH(x));  /* 4 */
                 mXPUSHi(*(C_ARRAY_END(x)-1)); /* 13 */
 
-=tests plan => 44
+=tests plan => 48
 
 use vars qw($my_sv @my_av %my_hv);
 
@@ -659,3 +696,17 @@ ok(&Devel::PPPort::check_unused_return(3), "Yay");
 @r = &Devel::PPPort::check_c_array();
 ok($r[0], 4);
 ok($r[1], "13");
+
+ok(!Devel::PPPort::SvRXOK(""));
+ok(!Devel::PPPort::SvRXOK(bless [], "Regexp"));
+
+if ($] < 5.005) {
+        skip 'no qr// objects in this perl', 0;
+        skip 'no qr// objects in this perl', 0;
+} else {
+        my $qr = eval 'qr/./';
+        ok(Devel::PPPort::SvRXOK($qr));
+        ok(Devel::PPPort::SvRXOK(bless $qr, "Surprise"));
+}
+
+
