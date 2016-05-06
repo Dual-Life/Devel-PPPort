@@ -1,8 +1,10 @@
 3.33 - ????-??-??
 
+    * Add SvRXOK/SvRX/PERL_MAGIC_qr
+      (Thanks to arc)
     * sort files from all_files_in_dir (GH #28, https://bugs.debian.org/801523
       (Thanks to ntyni)
-    * Fix coverity finding in test (GH #
+    * Fix coverity finding in test (GH #25)
       (Thanks to jhi)
     * Add PERL_UNUSED_RESULT and a test (GH #20)
     * Don't redefine MUTABLE_PTR if it's already there (GH #23)
