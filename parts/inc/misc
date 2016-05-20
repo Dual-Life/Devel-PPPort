@@ -44,10 +44,23 @@ C_ARRAY_END
 SvRX
 SvRXOK
 PERL_MAGIC_qr
+cBOOL
+OpHAS_SIBLING
+OpSIBLING
+OpMORESIB_set
+OpLASTSIB_set
+OpMAYBESIB_set
 
 =implementation
 
 __UNDEFINED__ PERL_MAGIC_qr             'r'
+
+__UNDEFINED__ cBOOL(cbool) ((cbool) ? (bool)1 : (bool)0)
+__UNDEFINED__ OpHAS_SIBLING(o)      (cBOOL((o)->op_sibling))
+__UNDEFINED__ OpSIBLING(o)          (0 + (o)->op_sibling)
+__UNDEFINED__ OpMORESIB_set(o, sib) ((o)->op_sibling = (sib))
+__UNDEFINED__ OpLASTSIB_set(o, parent) ((o)->op_sibling = NULL)
+__UNDEFINED__ OpMAYBESIB_set(o, sib, parent) ((o)->op_sibling = (sib))
 
 #ifndef SvRX
 #if { NEED SvRX }
@@ -392,6 +405,87 @@ newXS("Devel::PPPort::dAXMARK", XS_Devel__PPPort_dAXMARK, file);
 =xsubs
 
 int
+OpSIBLING_tests()
+	PREINIT:
+		OP *x;
+		OP *kid;
+		OP *lastkid;
+		int count = 0;
+		int failures = 0;
+		int i;
+	CODE:
+		x = newOP(OP_PUSHMARK, 0);
+
+		/* No siblings yet! */
+		if (OpHAS_SIBLING(x) || OpSIBLING(x)) {
+			failures++; warn("Op should not have had a sib");
+		}
+
+
+		/* Add 2 siblings */
+		kid = x;
+
+		for (i = 0; i < 2; i++) {
+			OP *newsib = newOP(OP_PUSHMARK, 0);
+			OpMORESIB_set(kid, newsib);
+
+			kid = OpSIBLING(kid);
+			lastkid = kid;
+		}
+
+		/* Should now have a sibling */
+		if (! OpHAS_SIBLING(x) || ! OpSIBLING(x) ) {
+			failures++; warn("Op should have had a sib after moresib_set");
+		}
+
+		/* Count the siblings */
+		for (kid = OpSIBLING(x); kid; kid = OpSIBLING(kid)) {
+			count++;
+		}
+
+		if (count != 2) {
+			failures++; warn("Kid had %d sibs, expected 2", count);
+		}
+
+		if (OpHAS_SIBLING(lastkid) || OpSIBLING(lastkid)) {
+			failures++; warn("Last kid should not have a sib");
+		}
+
+		/* Really sets the parent, and says 'no more siblings' */
+		OpLASTSIB_set(x, lastkid);
+
+		if (OpHAS_SIBLING(x) || OpSIBLING(x)) {
+			failures++; warn("OpLASTSIB_set failed?");
+		}
+
+		/* Restore the kid */
+		OpMORESIB_set(x, lastkid);
+
+		/* Try to remove it again */
+		OpLASTSIB_set(x, NULL);
+
+		if (OpHAS_SIBLING(x) || OpSIBLING(x)) {
+			failures++; warn("OpLASTSIB_set with NULL failed?");
+		}
+
+		/* Try to restore with maybesib_set */
+		OpMAYBESIB_set(x, lastkid, NULL);
+
+		if (! OpHAS_SIBLING(x) || ! OpSIBLING(x) ) {
+			failures++; warn("Op should have had a sib after maybesibset");
+		}
+
+		OpMAYBESIB_set(x, NULL, NULL);
+
+		if (OpHAS_SIBLING(x) || OpSIBLING(x)) {
+			failures++; warn("OpMAYBESIB_set with NULL failed?");
+		}
+
+		RETVAL = failures;
+	OUTPUT:
+		RETVAL
+
+int
 SvRXOK(sv)
 	SV *sv
 	CODE:
@@ -599,7 +693,7 @@ check_c_array()
                 mXPUSHi(C_ARRAY_LENGTH(x));  /* 4 */
                 mXPUSHi(*(C_ARRAY_END(x)-1)); /* 13 */
 
-=tests plan => 48
+=tests plan => 49
 
 use vars qw($my_sv @my_av %my_hv);
 
@@ -680,6 +774,8 @@ ok(&Devel::PPPort::Perl_ppaddr_t("FOO"), "foo");
 
 ok(&Devel::PPPort::ptrtests(), 63);
 
+ok(&Devel::PPPort::OpSIBLING_tests(), 0);
+
 if ($] >= 5.009000) {
   eval q{
     ok(&Devel::PPPort::check_HeUTF8("hello"), "norm");
@@ -708,5 +804,3 @@ if ($] < 5.005) {
         ok(Devel::PPPort::SvRXOK($qr));
         ok(Devel::PPPort::SvRXOK(bless $qr, "Surprise"));
 }
-
-

@@ -1,5 +1,6 @@
 3.33 - ????-??-??
 
+    * Add PERL_OP_PARENT related macros, and cBOOL
     * Add SvRXOK/SvRX/PERL_MAGIC_qr
       (Thanks to arc)
     * sort files from all_files_in_dir (GH #28, https://bugs.debian.org/801523
