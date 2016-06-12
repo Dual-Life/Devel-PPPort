@@ -1,7 +1,7 @@
 3.34 - 2016-06-04
 
     * Fix compilation on Windows with certain compilers.
-      (__attribute__ not recognized. (#GH 36)
+      (__attribute__ not recognized. (#GH 36))
 
 3.33 - 2016-06-03
 
