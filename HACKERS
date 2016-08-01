@@ -240,7 +240,7 @@ span multiple lines, like in
                 (((XPVMG*) SvANY(sv))->xmg_magic = (val)); } STMT_END
 
 This usually makes the code more compact and readable. And you
-only have to add C<__UNDEFINED__> to the C<=provided> section.
+only have to add C<__UNDEFINED__> to the C<=provides> section.
 
 Version checking can be tricky if you want to do it correct.
 You can use
