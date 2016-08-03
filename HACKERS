@@ -242,8 +242,8 @@ span multiple lines, like in
 This usually makes the code more compact and readable. And you
 only have to add C<__UNDEFINED__> to the C<=provides> section.
 
-Version checking can be tricky if you want to do it correct.
-You can use
+Version checking can be tricky if you want to do it correctly.
+C<Devel::PPPort> provides a facility to make it easier.  You can use
 
   #if { VERSION < 5.9.3 }
 
