@@ -302,17 +302,98 @@ typedef OP* (CPERLscope(*Perl_check_t)) (pTHX_ OP*);
 
 #endif
 
-__UNDEFINED__ isPSXSPC(c)       (isSPACE(c) || (c) == '\v')
-__UNDEFINED__ isBLANK(c)        ((c) == ' ' || (c) == '\t')
+# ifdef HAS_QUAD
+#  ifdef U64TYPE
+__UNDEFINED__ WIDEST_UTYPE U64TYPE
+#  else
+__UNDEFINED__ WIDEST_UTYPE Quad_t
+#  endif
+# else
+__UNDEFINED__ WIDEST_UTYPE U32
+# endif
+
 #ifdef EBCDIC
-__UNDEFINED__ isALNUMC(c)       isalnum(c)
-__UNDEFINED__ isASCII(c)        isascii(c)
-__UNDEFINED__ isCNTRL(c)        iscntrl(c)
-__UNDEFINED__ isGRAPH(c)        isgraph(c)
-__UNDEFINED__ isPRINT(c)        isprint(c)
-__UNDEFINED__ isPUNCT(c)        ispunct(c)
-__UNDEFINED__ isXDIGIT(c)       isxdigit(c)
-#else
+
+/* This is the first version where these macros are fully correct.  Relying on
+ * the C library functions, as earlier releases did, causes problems with
+ * locales */
+# if { VERSION < 5.22.0 }
+#  undef isALNUM
+#  undef isALNUMC
+#  undef isALPHA
+#  undef isALPHANUMERIC
+#  undef isASCII
+#  undef isBLANK
+#  undef isCNTRL
+#  undef isDIGIT
+#  undef isGRAPH
+#  undef isIDCONT
+#  undef isIDFIRST
+#  undef isLOWER
+#  undef isOCTAL
+#  undef isPRINT
+#  undef isPSXSPC
+#  undef isPUNCT
+#  undef isSPACE
+#  undef isUPPER
+#  undef isWORDCHAR
+#  undef isXDIGIT
+# endif
+
+__UNDEFINED__ isASCII(c)    (isCNTRL(c) || isPRINT(c))
+
+        /* The below is accurate for all EBCDIC code pages supported by
+         * all the versions of Perl overridden by this */
+__UNDEFINED__ isCNTRL(c)    (    (c) == '\0' || (c) == '\a' || (c) == '\b'      \
+                             ||  (c) == '\f' || (c) == '\n' || (c) == '\r'      \
+                             ||  (c) == '\t' || (c) == '\v'                     \
+                             || ((c) <= 3 && (c) >= 1) /* SOH, STX, ETX */      \
+                             ||  (c) == 7    /* U+7F DEL */                     \
+                             || ((c) <= 0x13 && (c) >= 0x0E) /* SO, SI */       \
+                                                      /* DLE, DC[1-3] */        \
+                             ||  (c) == 0x18 /* U+18 CAN */                     \
+                             ||  (c) == 0x19 /* U+19 EOM */                     \
+                             || ((c) <= 0x1F && (c) >= 0x1C) /* [FGRU]S */      \
+                             ||  (c) == 0x26 /* U+17 ETB */                     \
+                             ||  (c) == 0x27 /* U+1B ESC */                     \
+                             ||  (c) == 0x2D /* U+05 ENQ */                     \
+                             ||  (c) == 0x2E /* U+06 ACK */                     \
+                             ||  (c) == 0x32 /* U+16 SYN */                     \
+                             ||  (c) == 0x37 /* U+04 EOT */                     \
+                             ||  (c) == 0x3C /* U+14 DC4 */                     \
+                             ||  (c) == 0x3D /* U+15 NAK */                     \
+                             ||  (c) == 0x3F /* U+1A SUB */                     \
+                            )
+/* The ordering of the tests in this and isUPPER are to exclude most characters
+ * early */
+__UNDEFINED__ isLOWER(c)    (        (c) >= 'a' && (c) <= 'z'                   \
+                             &&  (   (c) <= 'i'                                 \
+                                 || ((c) >= 'j' && (c) <= 'r')                  \
+                                 ||  (c) >= 's'))
+__UNDEFINED__ isUPPER(c)    (        (c) >= 'A' && (c) <= 'Z'                   \
+                             && (    (c) <= 'I'                                 \
+                                 || ((c) >= 'J' && (c) <= 'R')                  \
+                                 ||  (c) >= 'S'))
+
+#else   /* Above is EBCDIC; below is ASCII */
+
+# if { VERSION < 5.4.0 }
+/* The implementation of these in older perl versions can give wrong results if
+ * the C program locale is set to other than the C locale */
+#  undef isALNUM
+#  undef isALPHA
+#  undef isDIGIT
+#  undef isIDFIRST
+#  undef isLOWER
+#  undef isUPPER
+# endif
+
+# if { VERSION < 5.8.0 }
+/* Hint: isCNTRL
+ * Earlier perls omitted DEL */
+#  undef isCNTRL
+# endif
+
 # if { VERSION < 5.10.0 }
 /* Hint: isPRINT
  * The implementation in older perl versions includes all of the
@@ -322,24 +403,75 @@ __UNDEFINED__ isXDIGIT(c)       isxdigit(c)
 #  undef isPRINT
 # endif
 
-#ifdef HAS_QUAD
-# ifdef U64TYPE
-#  define WIDEST_UTYPE U64TYPE
-# else
-#  define WIDEST_UTYPE Quad_t
+# if { VERSION < 5.14.0 }
+/* Hint: isASCII
+ * The implementation in older perl versions always returned true if the
+ * parameter was a signed char
+ */
+#  undef isASCII
 # endif
-#else
-# define WIDEST_UTYPE U32
-#endif
 
-__UNDEFINED__ isALNUMC(c)       (isALPHA(c) || isDIGIT(c))
+# if { VERSION < 5.20.0 }
+/* Hint: isSPACE
+ * The implementation in older perl versions didn't include \v */
+#  undef isSPACE
+# endif
+
 __UNDEFINED__ isASCII(c)        ((WIDEST_UTYPE) (c) <= 127)
 __UNDEFINED__ isCNTRL(c)        ((WIDEST_UTYPE) (c) < ' ' || (c) == 127)
-__UNDEFINED__ isGRAPH(c)        (isALNUM(c) || isPUNCT(c))
-__UNDEFINED__ isPRINT(c)        (((c) >= 32 && (c) < 127))
-__UNDEFINED__ isPUNCT(c)        (((c) >= 33 && (c) <= 47) || ((c) >= 58 && (c) <= 64)  || ((c) >= 91 && (c) <= 96) || ((c) >= 123 && (c) <= 126))
-__UNDEFINED__ isXDIGIT(c)       (isDIGIT(c) || ((c) >= 'a' && (c) <= 'f') || ((c) >= 'A' && (c) <= 'F'))
-#endif
+__UNDEFINED__ isLOWER(c)        ((c) >= 'a' && (c) <= 'z')
+__UNDEFINED__ isUPPER(c)        ((c) <= 'Z' && (c) >= 'A')
+#endif /* Below are definitions common to EBCDIC and ASCII */
+
+__UNDEFINED__ isALNUM(c)        isWORDCHAR(c)
+__UNDEFINED__ isALNUMC(c)       isALPHANUMERIC(c) 
+__UNDEFINED__ isALPHA(c)        (isUPPER(c) || isLOWER(c))
+__UNDEFINED__ isALPHANUMERIC(c) (isALPHA(c) || isDIGIT(c))
+__UNDEFINED__ isBLANK(c)        ((c) == ' ' || (c) == '\t')
+__UNDEFINED__ isDIGIT(c)        ((c) <= '9' && (c) >= '0')
+__UNDEFINED__ isGRAPH(c)        (isWORDCHAR(c) || isPUNCT(c))
+__UNDEFINED__ isIDCONT(c)       isWORDCHAR(c)
+__UNDEFINED__ isIDFIRST(c)      (isALPHA(c) || (c) == '_')
+__UNDEFINED__ isOCTAL(c)        (((WIDEST_UTYPE)((c)) & ~7) == '0')
+__UNDEFINED__ isPRINT(c)        (isGRAPH(c) || (c) == ' ')
+__UNDEFINED__ isPSXSPC(c)       isSPACE(c)
+__UNDEFINED__ isPUNCT(c)    (   (c) == '-' || (c) == '!' || (c) == '"'          \
+                             || (c) == '#' || (c) == '$' || (c) == '%'          \
+                             || (c) == '&' || (c) == '\'' || (c) == '('         \
+                             || (c) == ')' || (c) == '*' || (c) == '+'          \
+                             || (c) == ',' || (c) == '.' || (c) == '/'          \
+                             || (c) == ':' || (c) == ';' || (c) == '<'          \
+                             || (c) == '=' || (c) == '>' || (c) == '?'          \
+                             || (c) == '@' || (c) == '[' || (c) == '\\'         \
+                             || (c) == ']' || (c) == '^' || (c) == '_'          \
+                             || (c) == '`' || (c) == '{' || (c) == '|'          \
+                             || (c) == '}' || (c) == '~')
+__UNDEFINED__ isSPACE(c)        (   isBLANK(c) || (c) == '\n' || (c) == '\r'    \
+                                 || (c) == '\v' || (c) == '\f')
+__UNDEFINED__ isWORDCHAR(c)     (isALPHANUMERIC(c) || (c) == '_')
+__UNDEFINED__ isXDIGIT(c)       (   isDIGIT(c)                                  \
+                                 || ((c) >= 'a' && (c) <= 'f')                  \
+                                 || ((c) >= 'A' && (c) <= 'F'))
+
+__UNDEFINED__ isALNUM_A         isALNUM
+__UNDEFINED__ isALNUMC_A        isALNUMC
+__UNDEFINED__ isALPHA_A         isALPHA
+__UNDEFINED__ isALPHANUMERIC_A  isALPHANUMERIC
+__UNDEFINED__ isASCII_A         isASCII
+__UNDEFINED__ isBLANK_A         isBLANK
+__UNDEFINED__ isCNTRL_A         isCNTRL
+__UNDEFINED__ isDIGIT_A         isDIGIT
+__UNDEFINED__ isGRAPH_A         isGRAPH
+__UNDEFINED__ isIDCONT_A        isIDCONT
+__UNDEFINED__ isIDFIRST_A       isIDFIRST
+__UNDEFINED__ isLOWER_A         isLOWER
+__UNDEFINED__ isOCTAL_A         isOCTAL
+__UNDEFINED__ isPRINT_A         isPRINT
+__UNDEFINED__ isPSXSPC_A        isPSXSPC
+__UNDEFINED__ isPUNCT_A         isPUNCT
+__UNDEFINED__ isSPACE_A         isSPACE
+__UNDEFINED__ isUPPER_A         isUPPER
+__UNDEFINED__ isWORDCHAR_A      isWORDCHAR
 
 /* Until we figure out how to support this in older perls... */
 #if { VERSION >= 5.8.0 }
