@@ -620,6 +620,8 @@ __DATA__
 
 %include memory
 
+%include magic_defs
+
 %include misc
 
 %include variables
