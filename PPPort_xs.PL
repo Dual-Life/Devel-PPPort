@@ -38,7 +38,7 @@ END
 my $file;
 my $sec;
 
-for $file (all_files_in_dir('parts/inc')) {
+for $file (sort(all_files_in_dir('parts/inc'))) {
   my $spec = parse_partspec($file);
 
   my $msg = 0;
