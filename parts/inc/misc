@@ -424,7 +424,7 @@ __UNDEFINED__ isUPPER(c)        ((c) <= 'Z' && (c) >= 'A')
 #endif /* Below are definitions common to EBCDIC and ASCII */
 
 __UNDEFINED__ isALNUM(c)        isWORDCHAR(c)
-__UNDEFINED__ isALNUMC(c)       isALPHANUMERIC(c) 
+__UNDEFINED__ isALNUMC(c)       isALPHANUMERIC(c)
 __UNDEFINED__ isALPHA(c)        (isUPPER(c) || isLOWER(c))
 __UNDEFINED__ isALPHANUMERIC(c) (isALPHA(c) || isDIGIT(c))
 __UNDEFINED__ isBLANK(c)        ((c) == ' ' || (c) == '\t')
