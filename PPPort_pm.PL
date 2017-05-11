@@ -15,7 +15,7 @@
 
 use strict;
 $^W = 1;
-require "parts/ppptools.pl";
+require "./parts/ppptools.pl";
 
 my $INCLUDE = 'parts/inc';
 my $DPPP = 'DPPP_';
