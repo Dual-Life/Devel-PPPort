@@ -193,7 +193,7 @@ section.
 
 =item *
 
-The code required to add to PPPort.xs for testing the implementation.
+The code required to add to F<PPPort.xs> for testing the implementation.
 This code goes into the C<=xshead>, C<=xsinit>, C<=xsmisc>, C<=xsboot>
 and C<=xsubs> section. Have a look at the template at the bottom
 of F<PPPort_xs.PL> to see where the code ends up.
