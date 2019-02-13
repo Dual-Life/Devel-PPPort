@@ -322,6 +322,7 @@ __UNDEFINED__ isXDIGIT(c)       isxdigit(c)
 #  undef isPRINT
 # endif
 
+#ifndef WIDEST_UTYPE
 #ifdef HAS_QUAD
 # ifdef U64TYPE
 #  define WIDEST_UTYPE U64TYPE
@@ -330,6 +331,7 @@ __UNDEFINED__ isXDIGIT(c)       isxdigit(c)
 # endif
 #else
 # define WIDEST_UTYPE U32
+#endif
 #endif
 
 __UNDEFINED__ isALNUMC(c)       (isALPHA(c) || isDIGIT(c))
