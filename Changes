@@ -1,25 +1,33 @@
-3.36_01 - 2017-05-15
+3.43 - 2018-09-19
 
-    * Merge cperl improvements
+    * Fix Devel::PPPort with Visual Studio by quoting $0.
+
+3.42 - 2018-04-21
+
+    * Include 'Changes' (this file) in the distribution.
+
+3.41 - 2018-04-21
+
+    * Fix security problem: CWE-134: Use of Externally-Controlled Format String.
+    * Fix WIDEST_UTYPE.
+    * Add the following functions:
+      croak_sv, die_sv, mess_sv, warn_sv, mess, vmess, warn_nocontext,
+      croak_nocontext, croak_no_modify, croak_memory_wrap, croak_xs_usage.
+    * Delist functions listed as deprecated or unstable.
+    * (perl #132876) define API macros on if the NEED_ macro is defined.
+    * (perl #132876) only define croak_xs_usage()'s assert macro if cxu requested.
+    * (perl #132761) updates for older perls.
+    * Do not define PERL_MAGIC_qr more times.
+    * Do not mask Perl_warn_nocontext and Perl_croak_nocontext.
+      (Fixes compile errors on older threaded Perl versions.)
+    * Skip ASCII tests on non-ASCII platforms.
+    * Skip tests invalid on EBCDIC.
+    * Will now compile under C++11.
+    * Documentation improvements.
 
 3.36 - 2017-05-14
 
     * Support Perl 5.26.* which no longer has '.' in @INC
-
-3.35_03 - Sun May 14 2017 cperl-5.27.0
-
-    * Fix for . in @INC
-    * fix strict hashpairs
-
-3.35_02 - Sun Nov 20 2016 cperl-5.26.0
-
-    * Fix -Wc11-compat warning
-
-3.35_01 - Thu Oct 13 2016 cperl-5.24.1
-
-    * Merge cperl improvements
-    * make -s support
-    * fix for non-gcc 3.33_02
 
 3.35 - 2016-06-17
 
@@ -46,17 +54,6 @@
       (Thanks to leont)
     * Fix compiler warnings
       (Thanks to Dave M.)
-
-3.32_02 - 2016-04-14
-
-    * Support silencing via make -s
-    * Support -Dfortify_inc, no . in @INC
-
-3.32_01 - 2015-03-31
-
-    * Add HvNAMELEN, HvNAMEUTF8, HvENAME, HvENAMELEN, HvENAMEUTF8
-      and gv_fetchpvn, gv_fetchmethod_flags, gv_init_pv, gv_init_pvn,
-      gv_init_sv (Reini Urban)    
 
 3.32 - 2015-09-30
 

@@ -26,7 +26,7 @@ unless ($ENV{'PERL_CORE'}) {
 
 @ARGV = map { /^--with-(apicheck)$/ && ++$opt{$1} ? () : $_ } @ARGV;
 
-WriteMakefile(
+my %mf = (
   NAME          => 'Devel::PPPort',
   VERSION_FROM  => 'PPPort_pm.PL',
   PM            => { 'PPPort.pm' => '$(INST_LIBDIR)/PPPort.pm' },
@@ -40,16 +40,18 @@ WriteMakefile(
     },
     resources => {
       bugtracker => {
-        web => 'https://github.com/mhx/Devel-PPPort/issues/',
+        web => 'https://rt.perl.org/rt3/',
       },
       repository => {
         type => 'git',
-        url  => 'git://github.com/mhx/Devel-PPPort.git',
-        web  => 'https://github.com/mhx/Devel-PPPort/',
+        url  => 'git://perl5.git.perl.org/perl.git',
+        web  => 'https://perl5.git.perl.org/perl.git',
       },
     },
   },
 );
+delete $mf{META_MERGE} unless eval { ExtUtils::MakeMaker->VERSION (6.46) };
+WriteMakefile(%mf);
 
 sub configure
 {
@@ -116,16 +118,16 @@ purge_all: realclean
 	@$(RM_F) PPPort.pm t/*.t
 
 regen_pm:
-	$(PERL) -I. -I$(INST_ARCHLIB) -I$(INST_LIB) -I$(PERL_ARCHLIB) -I$(PERL_LIB) PPPort_pm.PL
+	$(PERL) -I$(INST_ARCHLIB) -I$(INST_LIB) -I$(PERL_ARCHLIB) -I$(PERL_LIB) PPPort_pm.PL
 
 regen_xs:
-	$(PERL) -I. -I$(INST_ARCHLIB) -I$(INST_LIB) -I$(PERL_ARCHLIB) -I$(PERL_LIB) PPPort_xs.PL
+	$(PERL) -I$(INST_ARCHLIB) -I$(INST_LIB) -I$(PERL_ARCHLIB) -I$(PERL_LIB) PPPort_xs.PL
 
 regen_tests:
-	$(PERL) -I. -I$(INST_ARCHLIB) -I$(INST_LIB) -I$(PERL_ARCHLIB) -I$(PERL_LIB) mktests.PL
+	$(PERL) -I$(INST_ARCHLIB) -I$(INST_LIB) -I$(PERL_ARCHLIB) -I$(PERL_LIB) mktests.PL
 
 regen_h:
-	$(PERL) -I. -I$(INST_ARCHLIB) -I$(INST_LIB) -I$(PERL_ARCHLIB) -I$(PERL_LIB) ppport_h.PL
+	$(PERL) -I$(INST_ARCHLIB) -I$(INST_LIB) -I$(PERL_ARCHLIB) -I$(PERL_LIB) ppport_h.PL
 
 regen: regen_pm regen_xs regen_tests regen_h
 
