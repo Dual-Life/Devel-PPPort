@@ -1,3 +1,7 @@
+These changes contain some PRs merged from GitHub
+on an old version of Devel::PPPort wheras the source
+is blead and this repo should only be used for releases.
+
 3.36_01 - 2017-05-15
 
     * Merge cperl improvements
