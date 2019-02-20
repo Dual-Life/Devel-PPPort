@@ -47,7 +47,6 @@ get_context                    # U
 get_ppaddr                     # E
 gv_dump                        # U
 magic_dump                     # U
-mess                           # E (Perl_mess)
 my_atof                        # U
 my_fflush_all                  # U
 newANONATTRSUB                 # U
