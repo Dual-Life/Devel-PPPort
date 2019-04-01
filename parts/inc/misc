@@ -199,6 +199,9 @@ __UNDEFINED__  DEFSV_set(sv) (DEFSV = (sv))
 /* Older perls (<=5.003) lack AvFILLp */
 __UNDEFINED__  AvFILLp      AvFILL
 
+__UNDEFINED__  av_tindex    AvFILL
+__UNDEFINED__  av_top_index AvFILL
+
 __UNDEFINED__  ERRSV        get_sv("@",FALSE)
 
 /* Hint: gv_stashpvn
