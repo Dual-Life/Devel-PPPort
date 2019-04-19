@@ -13,6 +13,7 @@
 
 __UNDEFINED__
 SvUOK
+my_strnlen
 
 =implementation
 
@@ -55,6 +56,21 @@ __UNDEFINED__  UTF8_SAFE_SKIP(s, e)  (__ASSERT_((e) >= (s))                     
                                       : (((e) - (s)) >= UTF8SKIP(s))            \
                                          ? ((e) - (s))                          \
                                          : UTF8SKIP(s))
+#endif
+
+#if !defined(my_strnlen)
+
+Size_t
+my_strnlen(const char *str, Size_t maxlen)
+{
+    const char *p = str;
+
+    while(maxlen-- && *p)
+        p++;
+
+    return p - str;
+}
+
 #endif
 
 =xsubs
@@ -144,7 +160,16 @@ UTF8_SAFE_SKIP
         OUTPUT:
             RETVAL
 
-=tests plan => 14
+STRLEN
+my_strnlen(s, max)
+        char * s
+        STRLEN max
+        CODE:
+            RETVAL= my_strnlen(s, max)
+        OUTPUT:
+            RETVAL
+
+=tests plan => 15
 
 ok(&Devel::PPPort::sv_setuv(42), 42);
 ok(&Devel::PPPort::newSVuv(123), 123);
@@ -160,3 +185,4 @@ ok(&Devel::PPPort::av_top_index([1,2,3], 2);
 ok(&Devel::PPPort::av_tindex([1,2,3,4], 3);
 ok(&Devel::PPPort::UTF8_SAFE_SKIP("A", 0), 1);
 ok(&Devel::PPPort::UTF8_SAFE_SKIP("A", -1), 0);
+ok(&Devel::PPPort::strnlen("abc\0def", 7), 3);
