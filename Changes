@@ -1,4 +1,4 @@
-3.46 - 2019-04-XX
+ 3.46 - 2019-04-XX
 
    * Fix the isFOO character type classification macros to work properly on
       all versions, as follows:
@@ -19,6 +19,7 @@
           macros
    * Provide LIKELY/UNLIKELY branch prediction
    * Provide av_tindex/av_top_index
+   * Provide __ASSERT_ for assertions inside macros
 
  3.35 - 2016-06-17
 
