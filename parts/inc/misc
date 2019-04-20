@@ -314,25 +314,45 @@ typedef OP* (CPERLscope(*Perl_check_t)) (pTHX_ OP*);
  * locales */
 # if { VERSION < 5.22.0 }
 #  undef isALNUM
+#  undef isALNUM_A
 #  undef isALNUMC
+#  undef isALNUMC_A
 #  undef isALPHA
+#  undef isALPHA_A
 #  undef isALPHANUMERIC
+#  undef isALPHANUMERIC_A
 #  undef isASCII
+#  undef isASCII_A
 #  undef isBLANK
+#  undef isBLANK_A
 #  undef isCNTRL
+#  undef isCNTRL_A
 #  undef isDIGIT
+#  undef isDIGIT_A
 #  undef isGRAPH
+#  undef isGRAPH_A
 #  undef isIDCONT
+#  undef isIDCONT_A
 #  undef isIDFIRST
+#  undef isIDFIRST_A
 #  undef isLOWER
+#  undef isLOWER_A
 #  undef isOCTAL
+#  undef isOCTAL_A
 #  undef isPRINT
+#  undef isPRINT_A
 #  undef isPSXSPC
+#  undef isPSXSPC_A
 #  undef isPUNCT
+#  undef isPUNCT_A
 #  undef isSPACE
+#  undef isSPACE_A
 #  undef isUPPER
+#  undef isUPPER_A
 #  undef isWORDCHAR
+#  undef isWORDCHAR_A
 #  undef isXDIGIT
+#  undef isXDIGIT_A
 # endif
 
 __UNDEFINED__ isASCII(c)    (isCNTRL(c) || isPRINT(c))
@@ -376,11 +396,17 @@ __UNDEFINED__ isUPPER(c)    (        (c) >= 'A' && (c) <= 'Z'                   
 /* The implementation of these in older perl versions can give wrong results if
  * the C program locale is set to other than the C locale */
 #  undef isALNUM
+#  undef isALNUM_A
 #  undef isALPHA
+#  undef isALPHA_A
 #  undef isDIGIT
+#  undef isDIGIT_A
 #  undef isIDFIRST
+#  undef isIDFIRST_A
 #  undef isLOWER
+#  undef isLOWER_A
 #  undef isUPPER
+#  undef isUPPER_A
 # endif
 
 # if { VERSION < 5.8.0 }
@@ -396,6 +422,7 @@ __UNDEFINED__ isUPPER(c)    (        (c) >= 'A' && (c) <= 'Z'                   
  * Devel::PPPort always overrides a present buggy version.
  */
 #  undef isPRINT
+#  undef isPRINT_A
 # endif
 
 # if { VERSION < 5.14.0 }
@@ -404,12 +431,14 @@ __UNDEFINED__ isUPPER(c)    (        (c) >= 'A' && (c) <= 'Z'                   
  * parameter was a signed char
  */
 #  undef isASCII
+#  undef isASCII_A
 # endif
 
 # if { VERSION < 5.20.0 }
 /* Hint: isSPACE
  * The implementation in older perl versions didn't include \v */
 #  undef isSPACE
+#  undef isSPACE_A
 # endif
 
 __UNDEFINED__ isASCII(c)        ((WIDEST_UTYPE) (c) <= 127)
@@ -466,6 +495,8 @@ __UNDEFINED__ isPSXSPC_A        isPSXSPC
 __UNDEFINED__ isPUNCT_A         isPUNCT
 __UNDEFINED__ isSPACE_A         isSPACE
 __UNDEFINED__ isUPPER_A         isUPPER
+__UNDEFINED__ isWORDCHAR_A	isWORDCHAR
+__UNDEFINED__ isXDIGIT_A	isXDIGIT
 
 /* Until we figure out how to support this in older perls... */
 #if { VERSION >= 5.8.0 }

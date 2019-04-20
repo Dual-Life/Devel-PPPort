@@ -103,6 +103,7 @@ __UNDEFINED__  utf8_to_uvchr(s, lp)                                             
 =xsinit
 
 #define NEED_my_strnlen
+#include "utf8.h"
 
 =xsubs
 
