@@ -78,13 +78,13 @@ my_strnlen(const char *str, Size_t maxlen)
 
 __UNDEFINED__  utf8_to_uvchr_buf(s,e,lp)  (__ASSERT_(e >= s)                \
                        utf8n_to_uvchr((s), ((e)-(s)), (lp),                 \
-                                    (UTF8_ALLOW_ANY_UV & ~UTF8_ALLOW_LONG)))
+                                    (UTF8_ALLOW_ANYUV & ~UTF8_ALLOW_LONG)))
 
 #elif defined(utf8_to_uv)
 
 __UNDEFINED__  utf8_to_uvchr_buf(s,e,lp)  (__ASSERT_(e >= s)                \
                        utf8_to_uv((s), ((e)-(s)), (lp),                     \
-                                    (UTF8_ALLOW_ANY_UV & ~UTF8_ALLOW_LONG)))
+                                    (UTF8_ALLOW_ANYUV & ~UTF8_ALLOW_LONG)))
 #endif
 
 #undef utf8_to_uvchr
@@ -103,7 +103,6 @@ __UNDEFINED__  utf8_to_uvchr(s, lp)                                             
 =xsinit
 
 #define NEED_my_strnlen
-#include "utf8.h"
 
 =xsubs
 
