@@ -59,6 +59,7 @@ __UNDEFINED__  UTF8_SAFE_SKIP(s, e)  (__ASSERT_((e) >= (s))                     
 #endif
 
 #if !defined(my_strnlen)
+#if { NEED my_strnlen }
 
 STRLEN
 my_strnlen(const char *str, Size_t maxlen)
@@ -71,6 +72,7 @@ my_strnlen(const char *str, Size_t maxlen)
     return p - str;
 }
 
+#endif
 #endif
 #if defined(utf8n_to_uvchr)
 
@@ -97,6 +99,10 @@ __UNDEFINED__  utf8_to_uvchr(s, lp)                                             
     ((*(s) == '\0')                                                             \
     ? utf8_to_uvchr_buf(s,((s)+1), lp) /* Handle single NUL specially */        \
     : utf8_to_uvchr_buf(s, (s) + my_strnlen((char *) (s), UTF8SKIP(s)), (lp)))
+
+=xsinit
+
+#define NEED_my_strnlen
 
 =xsubs
 
