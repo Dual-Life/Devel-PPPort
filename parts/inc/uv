@@ -159,10 +159,9 @@ XPUSHu()
                 XSRETURN(1);
 
 STRLEN
-UTF8_SAFE_SKIP(s)
+UTF8_SAFE_SKIP(s, adjustment)
         unsigned char * s
-        PREINIT:
-            int adjustment;
+        int adjustment
         CODE:
             /* Instead of passing in an 'e' ptr, use the real end, adjusted */
             RETVAL = UTF8_SAFE_SKIP(s, s + UTF8SKIP(s) + adjustment);
