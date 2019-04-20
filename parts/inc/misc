@@ -306,7 +306,6 @@ typedef OP* (CPERLscope(*Perl_check_t)) (pTHX_ OP*);
 #  define WIDEST_UTYPE U32
 # endif
 #endif
-#endif
 
 #ifdef EBCDIC
 
@@ -480,8 +479,8 @@ __UNDEFINED__ HeUTF8(he)        ((HeKLEN(he) == HEf_SVKEY) ?            \
 __UNDEFINED__ C_ARRAY_LENGTH(a)		(sizeof(a)/sizeof((a)[0]))
 __UNDEFINED__ C_ARRAY_END(a)		((a) + C_ARRAY_LENGTH(a))
 
-__UNDEFINED LIKELY(x) (x)
-__UNDEFINED UNLIKELY(x) (x)
+__UNDEFINED__ LIKELY(x) (x)
+__UNDEFINED__ UNLIKELY(x) (x)
 
 #ifndef MUTABLE_PTR
 #if defined(__GNUC__) && !defined(PERL_GCC_BRACE_GROUPS_FORBIDDEN)
@@ -1083,7 +1082,23 @@ test_isPSXSPC_A(UV ord)
     OUTPUT:
         RETVAL
 
-=tests plan => 126
+STRLEN
+av_tindex(av)
+        AV *av
+        CODE:
+                RETVAL = av_tindex(av);
+        OUTPUT:
+                RETVAL
+
+STRLEN
+av_top_index(av)
+        AV *av
+        CODE:
+                RETVAL = av_top_index(av);
+        OUTPUT:
+                RETVAL
+
+=tests plan => 128
 
 use vars qw($my_sv @my_av %my_hv);
 
@@ -1317,3 +1332,6 @@ ok(! Devel::PPPort::test_isPSXSPC(ord("k")));
 
 ok(  Devel::PPPort::test_isPSXSPC_A(ord("\cK")));
 ok(! Devel::PPPort::test_isPSXSPC_A(0xFC));
+
+ok(&Devel::PPPort::av_top_index([1,2,3], 2);
+ok(&Devel::PPPort::av_tindex([1,2,3,4], 3);

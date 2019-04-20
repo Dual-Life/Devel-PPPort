@@ -3127,6 +3127,7 @@ ApoP	|bool	|ckwarn_d	|U32 w
 XEopMR	|STRLEN *|new_warnings_bitfield|NULLOK STRLEN *buffer \
 				|NN const char *const bits|STRLEN size
 
+Apnod   |int    |my_sprintf     |NN char *buffer|NN const char *pat|...
 Apnodf	|int	|my_snprintf	|NN char *buffer|const Size_t len|NN const char *format|...
 Apnod	|int	|my_vsnprintf	|NN char *buffer|const Size_t len|NN const char *format|va_list ap
 #ifdef USE_QUADMATH

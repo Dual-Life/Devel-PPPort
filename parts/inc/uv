@@ -12,8 +12,8 @@
 =provides
 
 __UNDEFINED__
-SvUOK
 my_strnlen
+SvUOK
 
 =implementation
 
@@ -159,29 +159,13 @@ XPUSHu()
                 XSRETURN(1);
 
 STRLEN
-av_tindex(av)
-        AV *av
-        CODE:
-                RETVAL = av_tindex(av);
-        OUTPUT:
-                RETVAL
-                XSRETURN(1);
-
-STRLEN
-av_top_index(av)
-        AV *av
-        CODE:
-                RETVAL = av_top_index(av);
-        OUTPUT:
-                RETVAL
-
-STRLEN
-UTF8_SAFE_SKIP
+UTF8_SAFE_SKIP(s)
         unsigned char * s
-        int adjustment
+        PREINIT:
+            int adjustment;
         CODE:
             /* Instead of passing in an 'e' ptr, use the real end, adjusted */
-            RETVAL = UTF8_SAFE_SKIP(s, s + UTF8SKIP(s) + adjustment)
+            RETVAL = UTF8_SAFE_SKIP(s, s + UTF8SKIP(s) + adjustment);
         OUTPUT:
             RETVAL
 
@@ -190,11 +174,11 @@ my_strnlen(s, max)
         char * s
         STRLEN max
         CODE:
-            RETVAL= my_strnlen(s, max)
+            RETVAL= my_strnlen(s, max);
         OUTPUT:
             RETVAL
 
-UV
+AV *
 utf8_to_uvchr_buf(s)
         unsigned char *s
         PREINIT:
@@ -202,13 +186,13 @@ utf8_to_uvchr_buf(s)
             STRLEN len;
         CODE:
             av = newAV();
-            av_push(utf8_to_uvchr_buf(s, s + UTF8SKIP(s), &len);
-            av_push(len)
+            av_push(av, newSVuv(utf8_to_uvchr_buf(s, s + UTF8SKIP(s), &len)));
+            av_push(av, newSVuv(len));
             RETVAL = av;
         OUTPUT:
                 RETVAL
 
-UV
+AV *
 utf8_to_uvchr(s)
         unsigned char *s
         PREINIT:
@@ -216,13 +200,13 @@ utf8_to_uvchr(s)
             STRLEN len;
         CODE:
             av = newAV();
-            av_push(utf8_to_uvchr(s, &len);
-            av_push(len)
+            av_push(av, newSVuv(utf8_to_uvchr(s, &len)));
+            av_push(av, newSVuv(len));
             RETVAL = av;
         OUTPUT:
                 RETVAL
 
-=tests plan => 23
+=tests plan => 21
 
 ok(&Devel::PPPort::sv_setuv(42), 42);
 ok(&Devel::PPPort::newSVuv(123), 123);
@@ -234,8 +218,6 @@ ok(&Devel::PPPort::SvUVx(0xdeadbeef), 0xdeadbeef);
 ok(&Devel::PPPort::XSRETURN_UV(), 42);
 ok(&Devel::PPPort::PUSHu(), 42);
 ok(&Devel::PPPort::XPUSHu(), 43);
-ok(&Devel::PPPort::av_top_index([1,2,3], 2);
-ok(&Devel::PPPort::av_tindex([1,2,3,4], 3);
 ok(&Devel::PPPort::UTF8_SAFE_SKIP("A", 0), 1);
 ok(&Devel::PPPort::UTF8_SAFE_SKIP("A", -1), 0);
 ok(&Devel::PPPort::strnlen("abc\0def", 7), 3);
