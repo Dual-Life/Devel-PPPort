@@ -513,6 +513,8 @@ __UNDEFINED__ C_ARRAY_END(a)		((a) + C_ARRAY_LENGTH(a))
 __UNDEFINED__ LIKELY(x) (x)
 __UNDEFINED__ UNLIKELY(x) (x)
 
+__UNDEFINED__ UNICODE_REPLACEMENT  0xFFFD
+
 #ifndef MUTABLE_PTR
 #if defined(__GNUC__) && !defined(PERL_GCC_BRACE_GROUPS_FORBIDDEN)
 #  define MUTABLE_PTR(p) ({ void *_p = (p); _p; })
