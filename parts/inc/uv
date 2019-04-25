@@ -60,10 +60,10 @@ __UNDEFINED__  XPUSHu(u)       STMT_START { sv_setuv(TARG, (UV)(u)); XPUSHTARG; 
 /* Don't use official version because it uses MIN, which may not be available */
 #undef UTF8_SAFE_SKIP
 
-__UNDEFINED__  UTF8_SAFE_SKIP(s, e)  (__ASSERT_((e) >= (s))                     \
-                                      ((e) - (s)) <= 0                          \
+__UNDEFINED__  UTF8_SAFE_SKIP(s, e)  (                                          \
+                                      ((((e) - (s)) <= 0)                       \
                                       ? 0                                       \
-                                      : _ppport_MIN(((e) - (s)), UTF8SKIP(s)))
+                                      : _ppport_MIN(((e) - (s)), UTF8SKIP(s))))
 #endif
 
 #if !defined(my_strnlen)
