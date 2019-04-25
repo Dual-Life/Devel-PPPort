@@ -15,7 +15,13 @@ __UNDEFINED__
 my_strnlen
 SvUOK
 
+=dontwarn
+
+_ppport_MIN
+
 =implementation
+
+#define _ppport_MIN(a,b) (((a) <= (b)) ? (a) : (b))
 
 __UNDEFINED__  sv_setuv(sv, uv)                     \
                STMT_START {                         \
@@ -57,9 +63,7 @@ __UNDEFINED__  XPUSHu(u)       STMT_START { sv_setuv(TARG, (UV)(u)); XPUSHTARG; 
 __UNDEFINED__  UTF8_SAFE_SKIP(s, e)  (__ASSERT_((e) >= (s))                     \
                                       ((e) - (s)) <= 0                          \
                                       ? 0                                       \
-                                      : (((e) - (s)) >= UTF8SKIP(s))            \
-                                         ? ((e) - (s))                          \
-                                         : UTF8SKIP(s))
+                                      : _ppport_MIN(((e) - (s)), UTF8SKIP(s)))
 #endif
 
 #if !defined(my_strnlen)
