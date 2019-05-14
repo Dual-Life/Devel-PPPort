@@ -628,6 +628,8 @@ __DATA__
 
 %include limits
 
+%include magic_defs
+
 %include misc
 
 %include warn
@@ -635,8 +637,6 @@ __DATA__
 %include uv
 
 %include memory
-
-%include magic_defs
 
 %include mess
 

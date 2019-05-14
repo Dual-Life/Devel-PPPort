@@ -33,6 +33,14 @@ STMT_END
 STMT_START
 SvRX
 UTF8_MAXBYTES
+UTF8_ALLOW_ANYUV
+UTF8_ALLOW_EMPTY
+UTF8_ALLOW_CONTINUATION
+UTF8_ALLOW_NON_CONTINUATION
+UTF8_ALLOW_SHORT
+UTF8_ALLOW_LONG
+UTF8_ALLOW_OVERFLOW
+UTF8_ALLOW_ANY
 WIDEST_UTYPE
 XSRETURN
 
@@ -259,6 +267,19 @@ __UNDEFINED__  dVAR            dNOOP
 __UNDEFINED__  SVf             "_"
 
 __UNDEFINED__  UTF8_MAXBYTES   UTF8_MAXLEN
+
+__UNDEFINED__  UTF8_ALLOW_ANYUV                 0
+__UNDEFINED__  UTF8_ALLOW_EMPTY            0x0001
+__UNDEFINED__  UTF8_ALLOW_CONTINUATION     0x0002
+__UNDEFINED__  UTF8_ALLOW_NON_CONTINUATION 0x0004
+__UNDEFINED__  UTF8_ALLOW_SHORT            0x0008
+__UNDEFINED__  UTF8_ALLOW_LONG             0x0010
+__UNDEFINED__  UTF8_ALLOW_OVERFLOW         0x0080
+__UNDEFINED__  UTF8_ALLOW_ANY            ( UTF8_ALLOW_CONTINUATION      \
+                                          |UTF8_ALLOW_NON_CONTINUATION  \
+                                          |UTF8_ALLOW_SHORT             \
+                                          |UTF8_ALLOW_LONG              \
+                                          |UTF8_ALLOW_OVERFLOW)
 
 __UNDEFINED__  CPERLscope(x)   x
 
@@ -1122,17 +1143,17 @@ test_isPSXSPC_A(UV ord)
 
 STRLEN
 av_tindex(av)
-        AV *av
+        SV *av
         CODE:
-                RETVAL = av_tindex(av);
+                RETVAL = av_tindex((AV*)SvRV(av));
         OUTPUT:
                 RETVAL
 
 STRLEN
 av_top_index(av)
-        AV *av
+        SV *av
         CODE:
-                RETVAL = av_top_index(av);
+                RETVAL = av_top_index((AV*)SvRV(av));
         OUTPUT:
                 RETVAL
 

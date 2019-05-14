@@ -109,8 +109,10 @@ my_strnlen(const char *str, Size_t maxlen)
 #  if defined(utf8n_to_uvchr) || defined(utf8_to_uv)
 #    if defined(utf8n_to_uvchr)   /* This is the preferred implementation */
 #      define _ppport_utf8_to_uvchr_buf_callee utf8n_to_uvchr
-#    else
+#    elif { VERSION >= 5.6.1 }
 #      define _ppport_utf8_to_uvchr_buf_callee utf8_to_uv
+#    else
+#      define _ppport_utf8_to_uvchr_buf_callee(s, curlen, retlen, flags) utf8_to_uv(s, retlen)
 #    endif
 
 #  endif
