@@ -94,6 +94,5 @@ utf8_distance                  # U
 utf8_hop                       # U
 vcroak                         # U
 vform                          # U
-vmess                          # U
 vwarn                          # U
 vwarner                        # U
