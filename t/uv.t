@@ -30,9 +30,9 @@ BEGIN {
     require 'testutil.pl' if $@;
   }
 
-  if (52) {
+  if (62) {
     load();
-    plan(tests => 52);
+    plan(tests => 62);
   }
 }
 
@@ -82,7 +82,7 @@ ok($ret->[0], 0);
 ok($ret->[1], 1);
 
 if (ord("A") != 65) {   # tests not valid for EBCDIC
-    ok(1, 1) for 1 .. (2 + 4 + (5 * 5));
+    ok(1, 1) for 1 .. (2 + 4 + (7 * 5));
 }
 else {
     $ret = &Devel::PPPort::utf8_to_uvchr_buf("\xc4\x80", 0);
@@ -129,6 +129,18 @@ else {
             warning    => qr/overlong|2 bytes, need 1/,
             no_warnings_returned_length => 2,
         },
+        {
+            input      => "\xe0\x80\x81",
+            adjustment => 0,
+            warning    => qr/overlong|3 bytes, need 1/,
+            no_warnings_returned_length => 3,
+        },
+        {
+            input      => "\xf0\x80\x80\x81",
+            adjustment => 0,
+            warning    => qr/overlong|4 bytes, need 1/,
+            no_warnings_returned_length => 4,
+        },
         {                 # Old algorithm supposedly failed to detect this
             input      => "\xff\x80\x90\x90\x90\xbf\xbf\xbf\xbf\xbf\xbf\xbf\xbf",
             adjustment => 0,
@@ -164,7 +176,8 @@ else {
         ok($ret->[1], -1, "returned length $display; warnings enabled");
         my $all_warnings = join "; ", @warnings;
         my $contains = grep { $_ =~ $warning } $all_warnings;
-        ok($contains, 1, $display . "; '$all_warnings' contains '$warning'");
+        ok($contains, 1, $display
+                    . "; Got: '$all_warnings', which should contain '$warning'");
 
         undef @warnings;
         no warnings 'utf8';
