@@ -158,10 +158,10 @@ Ams||dXCPT
 Ams||dXSARGS
 Ams||dXSI32
 Ams||ENTER
-Ams||ENTER_with_name(name)
+Ams||ENTER_with_name|char* name
 Ams||FREETMPS
 Ams||LEAVE
-Ams||LEAVE_with_name(name)
+Ams||LEAVE_with_name|char* name
 Ams||MULTICALL
 Ams||POP_MULTICALL
 Ams||PUSH_MULTICALL
