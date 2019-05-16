@@ -159,7 +159,7 @@ utf8_to_uvchr_buf(pTHX_ D_PPP_CU8 *s, const U8 *send, STRLEN *retlen)
      * problematic in. */
 
     PerlIO_printf(Perl_debug_log, "%s:%d: curlen=%d, *s=%x\n", __FILE__, __LINE__, curlen, *s);
-    if (curlen > 0 && UNLIKELY(*s) >= 0xFE) {
+    if (curlen > 0 && UNLIKELY(*s >= 0xFE)) {
         PerlIO_printf(Perl_debug_log, "%s:%d: maybe overflow\n", __FILE__, __LINE__);
 
         /* First, on a 32-bit machine the first byte being at least \xFE
@@ -197,7 +197,7 @@ utf8_to_uvchr_buf(pTHX_ D_PPP_CU8 *s, const U8 *send, STRLEN *retlen)
         }
     }
 
-    if (UNLIKELY (overflows)) {
+    if (UNLIKELY(overflows)) {
         ret = 0;
 
         if (! do_warnings && retlen) {
