@@ -132,7 +132,6 @@ utf8_to_uvchr_buf(pTHX_ D_PPP_CU8 *s, const U8 *send, STRLEN *retlen)
     const bool do_warnings = ckWARN_d(WARN_UTF8);
     STRLEN overflow_length = 0;
 
-    PerlIO_printf(Perl_debug_log, "%s:%d: version=%x, entering: %02x\n", __FILE__, __LINE__, PERL_BCDVERSION, *s);
     if (send > s) {
         curlen = send - s;
     }
@@ -146,9 +145,7 @@ utf8_to_uvchr_buf(pTHX_ D_PPP_CU8 *s, const U8 *send, STRLEN *retlen)
     }
 
 #    if { VERSION < 5.26.0 }
-    PerlIO_printf(Perl_debug_log, "%s:%d: version=%x, is in version: %02x\n", __FILE__, __LINE__, PERL_BCDVERSION);
 #      ifndef EBCDIC
-    PerlIO_printf(Perl_debug_log, "%s:%d: version=%x, is'nt ebcdic: %02x\n", __FILE__, __LINE__, PERL_BCDVERSION);
 
     /* Perl did not properly detect overflow for much of its history on
      * non-EBCDIC platforms, often returning an overlong value which may or may
@@ -158,9 +155,7 @@ utf8_to_uvchr_buf(pTHX_ D_PPP_CU8 *s, const U8 *send, STRLEN *retlen)
      * parameters.  Therefore detect it ourselves in  releases it was
      * problematic in. */
 
-    PerlIO_printf(Perl_debug_log, "%s:%d: curlen=%d, *s=%x\n", __FILE__, __LINE__, curlen, *s);
     if (curlen > 0 && UNLIKELY(*s >= 0xFE)) {
-        PerlIO_printf(Perl_debug_log, "%s:%d: maybe overflow\n", __FILE__, __LINE__);
 
         /* First, on a 32-bit machine the first byte being at least \xFE
          * automatically is overflow, as it indicates something requiring more
@@ -184,7 +179,6 @@ utf8_to_uvchr_buf(pTHX_ D_PPP_CU8 *s, const U8 *send, STRLEN *retlen)
                  * than (as we handled the equality case above), and so the
                  * sequence doesn't overflow */
                 overflows = *cur_s > *cur_h;
-                PerlIO_printf(Perl_debug_log, "%s:%d: YES overflow\n", __FILE__, __LINE__);
                 break;
 
             }
@@ -202,7 +196,6 @@ utf8_to_uvchr_buf(pTHX_ D_PPP_CU8 *s, const U8 *send, STRLEN *retlen)
 
         if (! do_warnings && retlen) {
             *retlen = overflow_length;
-            PerlIO_printf(Perl_debug_log, "%s:%d: retlen=%d\n", __FILE__, __LINE__, *retlen);
         }
     }
     else
@@ -220,7 +213,6 @@ utf8_to_uvchr_buf(pTHX_ D_PPP_CU8 *s, const U8 *send, STRLEN *retlen)
                 s, curlen, retlen,   (UTF8_ALLOW_ANYUV
                                   & ~(UTF8_ALLOW_LONG|UTF8_ALLOW_EMPTY)));
 
-    PerlIO_printf(Perl_debug_log, "%s:%d: done with initial ret=%ld\n", __FILE__, __LINE__, ret);
 #    if { VERSION >= 5.26.0 } && { VERSION < 5.28.0 }
 
     /* But actually, more modern versions restrict the UV to being no more than
@@ -237,7 +229,6 @@ utf8_to_uvchr_buf(pTHX_ D_PPP_CU8 *s, const U8 *send, STRLEN *retlen)
             if (retlen) {
                 *retlen = D_PPP_MIN(*retlen, UTF8SKIP(s));
                 *retlen = D_PPP_MIN(*retlen, curlen);
-                PerlIO_printf(Perl_debug_log, "%s:%d: retlen=%d\n", __FILE__, __LINE__, *retlen);
             }
             return UNICODE_REPLACEMENT;
         }
