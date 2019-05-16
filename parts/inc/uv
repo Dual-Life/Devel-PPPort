@@ -160,6 +160,9 @@ utf8_to_uvchr_buf(pTHX_ D_PPP_CU8 *s, const U8 *send, STRLEN *retlen)
          * than 31 bits */
         if (sizeof(ret) < 8) {
             overflows = 1;
+            if (retlen) {
+                *retlen = 7;
+            }
         }
         else {
             const U8 highest[] =    /* 2*63-1 */
@@ -183,6 +186,9 @@ utf8_to_uvchr_buf(pTHX_ D_PPP_CU8 *s, const U8 *send, STRLEN *retlen)
             /* Here, either we set the bool and broke out of the loop, or got
              * to the end and all bytes are the same which indicates it doesn't
              * overflow. */
+            if (overflows && retlen) {
+                *retlen = 13;
+            }
         }
     }
 
@@ -263,9 +269,10 @@ utf8_to_uvchr_buf(pTHX_ D_PPP_CU8 *s, const U8 *send, STRLEN *retlen)
              * what the first byte indicates the length is, nor past the
              * continuation characters */
             if (retlen && *retlen >= 0) {
+                unsigned int i = 1;
+
                 *retlen = D_PPP_MIN(*retlen, curlen);
                 *retlen = D_PPP_MIN(*retlen, UTF8SKIP(s));
-                unsigned int i = 1;
                 do {
                     if (s[i] < 0x80 || s[i] > 0xBF) {
                         *retlen = i;
