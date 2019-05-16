@@ -132,7 +132,7 @@ utf8_to_uvchr_buf(pTHX_ D_PPP_CU8 *s, const U8 *send, STRLEN *retlen)
     const bool do_warnings = ckWARN_d(WARN_UTF8);
     STRLEN overflow_length = 0;
 
-    PerlIO_printf(Perl_debug_log, "%s:%d: entering: %02x\n", __FILE__, __LINE__, *s);
+    PerlIO_printf(Perl_debug_log, "%s:%d: version=%x, entering: %02x\n", __FILE__, __LINE__, PERL_BCDVERSION, *s);
     if (send > s) {
         curlen = send - s;
     }
