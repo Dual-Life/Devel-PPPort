@@ -93,6 +93,7 @@ my_strnlen(const char *str, Size_t maxlen)
  * The reason they're here is that a module that intends to play with the
  * latest perls should be able to work the same in all releases.  An example is
  * that perl no longer accepts any UV for a code point, but limits them to
+ * XXX
  * IV_MAX or below.  This is for future internal use of the larger code points.
  * If it turns out that some of these changes are breaking code that isn't
  * intended to work with modern perls, the tighter restrictions could be
@@ -155,6 +156,7 @@ utf8_to_uvchr_buf(pTHX_ D_PPP_CU8 *s, const U8 *send, STRLEN *retlen)
      * problematic in. */
 
     if (curlen > 0 && UNLIKELY(*s) >= 0xFE) {
+        PerlIO_printf(Perl_debug_log, "%s:%d: maybe overflow\n", __FILE__, __LINE__);
 
         /* First, on a 32-bit machine the first byte being at least \xFE
          * automatically is overflow, as it indicates something requiring more
@@ -178,6 +180,7 @@ utf8_to_uvchr_buf(pTHX_ D_PPP_CU8 *s, const U8 *send, STRLEN *retlen)
                  * than (as we handled the equality case above), and so the
                  * sequence doesn't overflow */
                 overflows = *cur_s > *cur_h;
+                PerlIO_printf(Perl_debug_log, "%s:%d: YES overflow\n", __FILE__, __LINE__);
                 break;
 
             }
@@ -195,6 +198,7 @@ utf8_to_uvchr_buf(pTHX_ D_PPP_CU8 *s, const U8 *send, STRLEN *retlen)
 
         if (! do_warnings && retlen) {
             *retlen = overflow_length;
+            PerlIO_printf(Perl_debug_log, "%s:%d: retlen=%d\n", __FILE__, __LINE__, *retlen);
         }
     }
     else
@@ -228,6 +232,7 @@ utf8_to_uvchr_buf(pTHX_ D_PPP_CU8 *s, const U8 *send, STRLEN *retlen)
             if (retlen) {
                 *retlen = D_PPP_MIN(*retlen, UTF8SKIP(s));
                 *retlen = D_PPP_MIN(*retlen, curlen);
+                PerlIO_printf(Perl_debug_log, "%s:%d: retlen=%d\n", __FILE__, __LINE__, *retlen);
             }
             return UNICODE_REPLACEMENT;
         }
@@ -547,10 +552,10 @@ else {
             warning    => qr/overlong|4 bytes, need 1/,
             no_warnings_returned_length => 4,
         },
-        {                 # Old algorithm supposedly failed to detect this
+        {                 # Old algorithm failed to detect this
             input      => "\xff\x80\x90\x90\x90\xbf\xbf\xbf\xbf\xbf\xbf\xbf\xbf",
             adjustment => 0,
-            warning    => ("$]" le 5.008006) ? qr/Malformed UTF-8 character/ : qr/overflow/,
+            warning    => qr/overflow/,
             no_warnings_returned_length => 13,
         },
     );
