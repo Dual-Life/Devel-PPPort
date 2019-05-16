@@ -129,6 +129,7 @@ utf8_to_uvchr_buf(pTHX_ D_PPP_CU8 *s, const U8 *send, STRLEN *retlen)
     bool overflows = 0;
     const U8 *cur_s = s;
     const bool do_warnings = ckWARN_d(WARN_UTF8);
+    STRLEN overflow_length = 0;
 
     if (send > s) {
         curlen = send - s;
@@ -160,9 +161,7 @@ utf8_to_uvchr_buf(pTHX_ D_PPP_CU8 *s, const U8 *send, STRLEN *retlen)
          * than 31 bits */
         if (sizeof(ret) < 8) {
             overflows = 1;
-            if (retlen) {
-                *retlen = 7;
-            }
+            overflow_length = 7;
         }
         else {
             const U8 highest[] =    /* 2*63-1 */
@@ -185,15 +184,18 @@ utf8_to_uvchr_buf(pTHX_ D_PPP_CU8 *s, const U8 *send, STRLEN *retlen)
 
             /* Here, either we set the bool and broke out of the loop, or got
              * to the end and all bytes are the same which indicates it doesn't
-             * overflow. */
-            if (overflows && retlen) {
-                *retlen = 13;
-            }
+             * overflow.  If it did overflow, it would be this number of bytes
+             * */
+            overflow_length = 13;
         }
     }
 
     if (UNLIKELY (overflows)) {
         ret = 0;
+
+        if (! do_warnings && retlen) {
+            *retlen = overflow_length;
+        }
     }
     else
 
