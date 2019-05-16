@@ -186,7 +186,7 @@ utf8_to_uvchr_buf(pTHX_ D_PPP_CU8 *s, const U8 *send, STRLEN *retlen)
         }
     }
 
-    if (UNLIKELY (overflows))
+    if (UNLIKELY (overflows)) {
         ret = 0;
     }
     else
