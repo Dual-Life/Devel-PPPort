@@ -17,6 +17,7 @@ require 5.003;
 
 use strict;
 use ExtUtils::MakeMaker;
+use Config;
 
 use vars '%opt';  # needs to be global, and we can't use 'our'
 
@@ -37,6 +38,7 @@ my %mf = (
 );
 delete $mf{META_MERGE} unless eval { ExtUtils::MakeMaker->VERSION (6.46) };
 WriteMakefile(%mf);
+system({$Config{make}} $Config{make}, 'regen');
 
 sub configure
 {
