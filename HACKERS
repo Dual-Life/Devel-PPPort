@@ -160,7 +160,7 @@ hints, dependency information, XS code and tests.
 The files are in a POD-like format that is parsed using the
 functions in F<parts/ppptools.pl>.
 
-The scripts F<PPPort_pm.PL>, F<PPPort_xs.PL> and F<mktests.PL> all
+The scripts F<PPPort_pm.PL>, F<RealPPPort_xs.PL> and F<mktests.PL> all
 use the information in F<parts/inc/> to generate the main module
 F<PPPort.pm>, the XS code in F<RealPPPort.xs> and various test files
 in F<t/>.
@@ -196,7 +196,7 @@ section.
 The code required to add to PPPort.xs for testing the implementation.
 This code goes into the C<=xshead>, C<=xsinit>, C<=xsmisc>, C<=xsboot>
 and C<=xsubs> section. Have a look at the template at the bottom
-of F<PPPort_xs.PL> to see where the code ends up.
+of F<RealPPPort_xs.PL> to see where the code ends up.
 
 =item *
 
@@ -239,8 +239,10 @@ span multiple lines, like in
                 STMT_START { assert(SvTYPE(sv) >= SVt_PVMG); \
                 (((XPVMG*) SvANY(sv))->xmg_magic = (val)); } STMT_END
 
-This usually makes the code more compact and readable. And you
-only have to add C<__UNDEFINED__> to the C<=provided> section.
+This usually makes the code more compact and readable. And you only have to add
+the line C<__UNDEFINED__> to the C<=provides> section to get all macros
+implemented this way to be imported into this section, so they all get
+documented as being provided.
 
 Version checking can be tricky if you want to do it correct.
 You can use

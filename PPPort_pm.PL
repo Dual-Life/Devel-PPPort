@@ -121,7 +121,7 @@ $data =~ s{^__UNSUPPORTED_API__(\s*?)^}
           {join "\n", @todo}gem;
 
 $data =~ s{__MIN_PERL__}{5.003}g;
-$data =~ s{__MAX_PERL__}{5.20}g;
+$data =~ s{__MAX_PERL__}{5.30}g;
 
 open FH, ">PPPort.pm" or die "PPPort.pm: $!\n";
 print FH $data;
@@ -551,7 +551,7 @@ package Devel::PPPort;
 use strict;
 use vars qw($VERSION $data);
 
-$VERSION = '3.45';
+$VERSION = '3.52';
 
 sub _init_data
 {
@@ -628,13 +628,21 @@ __DATA__
 
 %include limits
 
-%include uv
-
-%include memory
-
 %include magic_defs
 
 %include misc
+
+%include sv_xpvf
+
+%include SvPV
+
+%include warn
+
+%include format
+
+%include uv
+
+%include memory
 
 %include mess
 
@@ -650,27 +658,19 @@ __DATA__
 
 %include MY_CXT
 
-%include format
-
 %include SvREFCNT
 
 %include newSV_type
 
 %include newSVpv
 
-%include SvPV
-
 %include Sv_set
-
-%include sv_xpvf
 
 %include shared_pv
 
 %include HvNAME
 
 %include gv
-
-%include warn
 
 %include pvs
 
