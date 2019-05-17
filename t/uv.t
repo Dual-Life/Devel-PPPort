@@ -63,7 +63,10 @@ ok(&Devel::PPPort::UTF8_SAFE_SKIP("A", -1), 0);
 ok(&Devel::PPPort::my_strnlen("abc\0def", 7), 3);
 
 # skip tests on 5.6.0 and earlier
-BEGIN { if ("$]" le '5.006') { skip 'skip: broken utf8 support', 0 for 1..49; exit; } }
+if ("$]" le '5.006') {
+    skip 'skip: broken utf8 support', 0 for 1..49;
+    exit;
+}
 
 my $ret = &Devel::PPPort::utf8_to_uvchr("A");
 ok($ret->[0], ord("A"));
