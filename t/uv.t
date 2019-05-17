@@ -51,6 +51,9 @@ package main;
 # skip tests on 5.6.0 and earlier
 BEGIN { if ("$]" le '5.006') { skip 'skip: broken utf8 support', 0 for 1..52; exit; } }
 
+# skip tests on 5.6.0 and earlier
+BEGIN { if ("$]" le '5.006') { skip 'skip: broken utf8 support', 0 for 1..52; exit; } }
+
 ok(&Devel::PPPort::sv_setuv(42), 42);
 ok(&Devel::PPPort::newSVuv(123), 123);
 ok(&Devel::PPPort::sv_2uv("4711"), 4711);
