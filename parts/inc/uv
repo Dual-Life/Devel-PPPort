@@ -113,10 +113,7 @@ my_strnlen(const char *str, Size_t maxlen)
 #      define D_PPP_utf8_to_uvchr_buf_callee utf8n_to_uvchr
 #    elif { VERSION >= 5.6.1 }
 #      define D_PPP_utf8_to_uvchr_buf_callee utf8_to_uv
-#    else
-#      error utf8_to_uvchr_buf() not available until Perl 5.6.1
 #    endif
-
 #  endif
 
 #ifdef D_PPP_utf8_to_uvchr_buf_callee
@@ -314,7 +311,8 @@ __UNDEFINED__  utf8_to_uvchr(s, lp)                                             
 =xsinit
 
 #define NEED_my_strnlen
-#define NEED_utf8_to_uvchr_buf
+
+#  define NEED_utf8_to_uvchr_buf
 
 =xsubs
 
@@ -452,12 +450,6 @@ utf8_to_uvchr(s)
 
 =tests plan => 62
 
-# skip tests on 5.6.0 and earlier
-BEGIN { if ("$]" le '5.006') { skip 'skip: broken utf8 support', 0 for 1..52; exit; } }
-
-# skip tests on 5.6.0 and earlier
-BEGIN { if ("$]" le '5.006') { skip 'skip: broken utf8 support', 0 for 1..52; exit; } }
-
 ok(&Devel::PPPort::sv_setuv(42), 42);
 ok(&Devel::PPPort::newSVuv(123), 123);
 ok(&Devel::PPPort::sv_2uv("4711"), 4711);
@@ -471,6 +463,9 @@ ok(&Devel::PPPort::XPUSHu(), 43);
 ok(&Devel::PPPort::UTF8_SAFE_SKIP("A", 0), 1);
 ok(&Devel::PPPort::UTF8_SAFE_SKIP("A", -1), 0);
 ok(&Devel::PPPort::my_strnlen("abc\0def", 7), 3);
+
+# skip tests on 5.6.0 and earlier
+BEGIN { if ("$]" le '5.006') { skip 'skip: broken utf8 support', 0 for 1..49; exit; } }
 
 my $ret = &Devel::PPPort::utf8_to_uvchr("A");
 ok($ret->[0], ord("A"));
