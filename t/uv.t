@@ -30,9 +30,9 @@ BEGIN {
     require 'testutil.pl' if $@;
   }
 
-  if (52) {
+  if (62) {
     load();
-    plan(tests => 52);
+    plan(tests => 62);
   }
 }
 
@@ -48,9 +48,6 @@ bootstrap Devel::PPPort;
 
 package main;
 
-# skip tests on 5.6.0 and earlier
-BEGIN { if ("$]" le '5.006') { skip 'skip: broken utf8 support', 0 for 1..52; exit; } }
-
 ok(&Devel::PPPort::sv_setuv(42), 42);
 ok(&Devel::PPPort::newSVuv(123), 123);
 ok(&Devel::PPPort::sv_2uv("4711"), 4711);
@@ -64,6 +61,12 @@ ok(&Devel::PPPort::XPUSHu(), 43);
 ok(&Devel::PPPort::UTF8_SAFE_SKIP("A", 0), 1);
 ok(&Devel::PPPort::UTF8_SAFE_SKIP("A", -1), 0);
 ok(&Devel::PPPort::my_strnlen("abc\0def", 7), 3);
+
+# skip tests on 5.6.0 and earlier
+if ("$]" le '5.006') {
+    skip 'skip: broken utf8 support', 0 for 1..49;
+    exit;
+}
 
 my $ret = &Devel::PPPort::utf8_to_uvchr("A");
 ok($ret->[0], ord("A"));
@@ -82,7 +85,7 @@ ok($ret->[0], 0);
 ok($ret->[1], 1);
 
 if (ord("A") != 65) {   # tests not valid for EBCDIC
-    ok(1, 1) for 1 .. (2 + 4 + (5 * 5));
+    ok(1, 1) for 1 .. (2 + 4 + (7 * 5));
 }
 else {
     $ret = &Devel::PPPort::utf8_to_uvchr_buf("\xc4\x80", 0);
@@ -129,10 +132,22 @@ else {
             warning    => qr/overlong|2 bytes, need 1/,
             no_warnings_returned_length => 2,
         },
-        {                 # Old algorithm supposedly failed to detect this
+        {
+            input      => "\xe0\x80\x81",
+            adjustment => 0,
+            warning    => qr/overlong|3 bytes, need 1/,
+            no_warnings_returned_length => 3,
+        },
+        {
+            input      => "\xf0\x80\x80\x81",
+            adjustment => 0,
+            warning    => qr/overlong|4 bytes, need 1/,
+            no_warnings_returned_length => 4,
+        },
+        {                 # Old algorithm failed to detect this
             input      => "\xff\x80\x90\x90\x90\xbf\xbf\xbf\xbf\xbf\xbf\xbf\xbf",
             adjustment => 0,
-            warning    => ("$]" le 5.008006) ? qr/Malformed UTF-8 character/ : qr/overflow/,
+            warning    => qr/overflow/,
             no_warnings_returned_length => 13,
         },
     );
@@ -164,7 +179,8 @@ else {
         ok($ret->[1], -1, "returned length $display; warnings enabled");
         my $all_warnings = join "; ", @warnings;
         my $contains = grep { $_ =~ $warning } $all_warnings;
-        ok($contains, 1, $display . "; '$all_warnings' contains '$warning'");
+        ok($contains, 1, $display
+                    . "; Got: '$all_warnings', which should contain '$warning'");
 
         undef @warnings;
         no warnings 'utf8';
