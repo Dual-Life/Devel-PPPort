@@ -103,26 +103,20 @@ my_strnlen(const char *str, Size_t maxlen)
  * implementation is very different from later ones, without the later
  * safeguards, so would require extra work to deal with */
 #if { VERSION >= 5.6.1 } && ! defined(utf8_to_uvchr_buf)
-#  if { VERSION < 5.10.0 }  /* Was non-const before this */
-#    define D_PPP_CU8 U8
-#  else
-#    define D_PPP_CU8 const U8
-#  endif
-
    /* Choose which underlying implementation to use.  At least one must be
     * present or the perl is too early to handle this function */
 #  if defined(utf8n_to_uvchr) || defined(utf8_to_uv)
 #    if defined(utf8n_to_uvchr)   /* This is the preferred implementation */
 #      define D_PPP_utf8_to_uvchr_buf_callee utf8n_to_uvchr
 #    else     /* Must be at least 5.6.1 from #if above */
-#      define D_PPP_utf8_to_uvchr_buf_callee utf8_to_uv
+#      define D_PPP_utf8_to_uvchr_buf_callee(s, curlen, retlen, flags) utf8_to_uv((U8 *)(s), (curlen), (retlen), (flags))
 #    endif
 #  endif
 
 #  if { NEED utf8_to_uvchr_buf }
 
 UV
-utf8_to_uvchr_buf(pTHX_ D_PPP_CU8 *s, const U8 *send, STRLEN *retlen)
+utf8_to_uvchr_buf(pTHX_ const U8 *s, const U8 *send, STRLEN *retlen)
 {
     UV ret;
     STRLEN curlen;
@@ -372,19 +366,22 @@ XPUSHu()
                 XPUSHu(43);
                 XSRETURN(1);
 
+#if defined(UTF8_SAFE_SKIP) && defined(UTF8SKIP)
+
 STRLEN
 UTF8_SAFE_SKIP(s, adjustment)
-        unsigned char * s
+        char * s
         int adjustment
+        PREINIT:
+            const char *const_s;
         CODE:
+            const_s = s;
             /* Instead of passing in an 'e' ptr, use the real end, adjusted */
-#if defined(UTF8_SAFE_SKIP) && defined(UTF8SKIP)
-            RETVAL = UTF8_SAFE_SKIP(s, s + UTF8SKIP(s) + adjustment);
-#else
-            RETVAL = 0;
-#endif
+            RETVAL = UTF8_SAFE_SKIP(const_s, s + UTF8SKIP(s) + adjustment);
         OUTPUT:
             RETVAL
+
+#endif
 
 STRLEN
 my_strnlen(s, max)
@@ -395,6 +392,8 @@ my_strnlen(s, max)
         OUTPUT:
             RETVAL
 
+#ifdef utf8_to_uvchr_buf
+
 AV *
 utf8_to_uvchr_buf(s, adjustment)
         unsigned char *s
@@ -402,16 +401,13 @@ utf8_to_uvchr_buf(s, adjustment)
         PREINIT:
             AV *av;
             STRLEN len;
+            const char *const_s;
         CODE:
             av = newAV();
-#ifdef utf8_to_uvchr_buf
-            av_push(av, newSVuv(utf8_to_uvchr_buf(s,
+            const_s = s;
+            av_push(av, newSVuv(utf8_to_uvchr_buf(const_s,
                                                   s + UTF8SKIP(s) + adjustment,
                                                   &len)));
-#else
-            av_push(av, newSVuv(0));
-            len = (STRLEN) -1;
-#endif
             if (len == (STRLEN) -1) {
                 av_push(av, newSViv(-1));
             }
@@ -421,6 +417,10 @@ utf8_to_uvchr_buf(s, adjustment)
             RETVAL = av;
         OUTPUT:
                 RETVAL
+
+#endif
+
+#ifdef utf8_to_uvchr
 
 AV *
 utf8_to_uvchr(s)
@@ -428,14 +428,11 @@ utf8_to_uvchr(s)
         PREINIT:
             AV *av;
             STRLEN len;
+            const char *const_s;
         CODE:
             av = newAV();
-#ifdef utf8_to_uvchr
-            av_push(av, newSVuv(utf8_to_uvchr(s, &len)));
-#else
-            av_push(av, newSVuv(0));
-            len = (STRLEN) -1;
-#endif
+            const_s = s;
+            av_push(av, newSVuv(utf8_to_uvchr(const_s, &len)));
             if (len == (STRLEN) -1) {
                 av_push(av, newSViv(-1));
             }
@@ -446,7 +443,11 @@ utf8_to_uvchr(s)
         OUTPUT:
                 RETVAL
 
+#endif
+
 =tests plan => 62
+
+BEGIN { require warnings if "$]" gt '5.006' }
 
 ok(&Devel::PPPort::sv_setuv(42), 42);
 ok(&Devel::PPPort::newSVuv(123), 123);
@@ -458,15 +459,16 @@ ok(&Devel::PPPort::SvUVx(0xdeadbeef), 0xdeadbeef);
 ok(&Devel::PPPort::XSRETURN_UV(), 42);
 ok(&Devel::PPPort::PUSHu(), 42);
 ok(&Devel::PPPort::XPUSHu(), 43);
-ok(&Devel::PPPort::UTF8_SAFE_SKIP("A", 0), 1);
-ok(&Devel::PPPort::UTF8_SAFE_SKIP("A", -1), 0);
 ok(&Devel::PPPort::my_strnlen("abc\0def", 7), 3);
 
 # skip tests on 5.6.0 and earlier
 if ("$]" le '5.006') {
-    skip 'skip: broken utf8 support', 0 for 1..49;
+    skip 'skip: broken utf8 support', 0 for 1..51;
     exit;
 }
+
+ok(&Devel::PPPort::UTF8_SAFE_SKIP("A", 0), 1);
+ok(&Devel::PPPort::UTF8_SAFE_SKIP("A", -1), 0);
 
 my $ret = &Devel::PPPort::utf8_to_uvchr("A");
 ok($ret->[0], ord("A"));
@@ -496,12 +498,12 @@ else {
     local $SIG{__WARN__} = sub { push @warnings, @_; };
 
     {
-        use warnings 'utf8';
+        BEGIN { 'warnings'->import('utf8') if "$]" gt '5.006' }
         $ret = &Devel::PPPort::utf8_to_uvchr("\xe0\0\x80");
         ok($ret->[0], 0);
         ok($ret->[1], -1);
 
-        no warnings;
+        BEGIN { 'warnings'->unimport() if "$]" gt '5.006' }
         $ret = &Devel::PPPort::utf8_to_uvchr("\xe0\0\x80");
         ok($ret->[0], 0xFFFD);
         ok($ret->[1], 1);
@@ -573,7 +575,7 @@ else {
         my $warning = $test->{'warning'};
 
         undef @warnings;
-        use warnings 'utf8';
+        BEGIN { 'warnings'->import('utf8') if "$]" gt '5.006' }
         $ret = &Devel::PPPort::utf8_to_uvchr_buf($input, $adjustment);
         ok($ret->[0], 0,  "returned value $display; warnings enabled");
         ok($ret->[1], -1, "returned length $display; warnings enabled");
@@ -583,7 +585,7 @@ else {
                     . "; Got: '$all_warnings', which should contain '$warning'");
 
         undef @warnings;
-        no warnings 'utf8';
+        BEGIN { 'warnings'->unimport('utf8') if "$]" gt '5.006' }
         $ret = &Devel::PPPort::utf8_to_uvchr_buf($input, $adjustment);
         ok($ret->[0], 0xFFFD,  "returned value $display; warnings disabled");
         ok($ret->[1], $test->{'no_warnings_returned_length'},
