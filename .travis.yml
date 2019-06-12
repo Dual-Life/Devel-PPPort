@@ -247,10 +247,7 @@ before_install:
   - if [ "$TRAVIS_OS_NAME" = "windows" ]; then cinst StrawberryPerl $([ "$PLATFORM" = "x86" ] && echo --forcex86) --version "$TRAVIS_PERL_VERSION"; export PATH="/c/Strawberry/perl/site/bin:/c/Strawberry/perl/bin:/c/Strawberry/c/bin:$PATH"; perl -MConfig -e 'print "#!/bin/sh\n$Config{make} \"\$@\"\n"' > /c/Strawberry/perl/site/bin/make; chmod +x /c/Strawberry/perl/site/bin/make; fi
 
 install:
-  - perl Makefile.PL
-  - make regen
-# ensure allfiles are git up-to-date [fail if make regen alters some files]
-  - git diff --quiet
+  - true
 
 script:
   - perl Makefile.PL
