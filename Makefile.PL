@@ -207,6 +207,23 @@ TESTS_IN_T
   return $updated;
 }
 
+sub MY::dist_basics
+{
+  package MY;
+  my $original = shift->SUPER::dist_basics(@_);
+
+  my $updated = '';
+  my @rules = split( m{^\s*$}m, $original );
+  foreach my $rule ( @rules ) {
+    if ( $rule =~ m{^\s*^manifest\s+:}m ) {
+      $rule =~ s{^(\s*^manifest\s+:.*)}{$1 $t_01_test}m; # make sure we regenerate tests
+    }
+    $updated .= $rule;
+  }
+
+  return $updated;
+}
+
 sub MY::dist_core
 {
   package MY;
