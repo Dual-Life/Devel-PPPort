@@ -10,7 +10,7 @@
 
 :
 : This file lists all API functions/macros that are documented in the Perl
-: source code, but are not contained in F<embed.fnc>.
+: source code.
 :
 
 : This line needs to be in this file for things to work, even though it's been
