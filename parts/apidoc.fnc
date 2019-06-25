@@ -17,6 +17,9 @@
 : removed from later embed.fnc versions
 ApTod   |int    |my_sprintf     |NN char *buffer|NN const char *pat|...
 
+ADmnU||Nullav
+ADmnU||Nullcv
+ADmnU||Nullhv
 Ama|char*|savepvs|"literal string" s
 Ama|char*|savesharedpvs|"literal string" s
 Ama|SV*|newSVpvs_flags|"literal string" s|U32 flags
@@ -70,6 +73,7 @@ Am|bool|SvRXOK|SV* sv
 Am|bool|SvTAINTED|SV* sv
 Am|bool|SvTRUE_nomg|SV* sv
 Am|bool|SvTRUE|SV* sv
+Am|bool|SvTRUEx|SV* sv
 Am|bool|SvUOK|SV* sv
 Am|bool|SvVOK|SV* sv
 Am|bool|UTF8_IS_INVARIANT|char c
@@ -145,7 +149,6 @@ Amns||FREETMPS
 Amns||LEAVE
 Amns||MULTICALL
 Amns||POP_MULTICALL
-Amns||PUSH_MULTICALL
 Amns||PUTBACK
 Amns||SAVETMPS
 Amns||SPAGAIN
@@ -164,14 +167,66 @@ Amns||XSRETURN_YES
 Amns||XS_VERSION_BOOTCHECK
 Amn|U32|GIMME
 Amn|U32|GIMME_V
+AmnU|const char *|BOM_UTF8
+AmnU|const char *|REPLACEMENT_CHARACTER_UTF8
+AmnU||G_ARRAY
+AmnU||G_DISCARD
+AmnU||G_EVAL
+AmnU||G_NOARGS
+AmnU||G_SCALAR
+AmnU||G_VOID
+AmnU||HEf_SVKEY
+AmnU||MARK
+AmnU||Nullch
+AmnU||Nullsv
+AmnU||ORIGMARK
+AmnU|Perl_check_t *|PL_check
+AmnU||SP
+AmnU||SVt_INVLIST
+AmnU||SVt_IV
+AmnU||SVt_NULL
+AmnU||SVt_NV
+AmnU||SVt_PV
+AmnU||SVt_PVAV
+AmnU||SVt_PVCV
+AmnU||SVt_PVFM
+AmnU||SVt_PVGV
+AmnU||SVt_PVHV
+AmnU||SVt_PVIO
+AmnU||SVt_PVIV
+AmnU||SVt_PVLV
+AmnU||SVt_PVMG
+AmnU||SVt_PVNV
+AmnU||SVt_REGEXP
+AmnU||svtype
+AmnU|U8 *|BOM_UTF8
+AmnU|U8 *|REPLACEMENT_CHARACTER_UTF8
+AmnU||UNDERBAR
 Amn|UV|POPu
+AmnU||XCPT_CATCH
+AmnU||XCPT_TRY_END
+AmnU||XCPT_TRY_START
+AmnUx|Perl_keyword_plugin_t|PL_keyword_plugin
+AmnU||XS
+AmnU||XS_EXTERNAL
+AmnU||XS_VERSION
+AmnU|yy_parser *|PL_parser
 Amn|void|DECLARATION_FOR_LC_NUMERIC_MANIPULATION
+Amn|void|PUSHmortal
+Amn|void|XPUSHmortal
 Am|NV|SvNV_nomg|SV* sv
 Am|NV|SvNV|SV* sv
 Am|NV|SvNVx|SV* sv
 Am|NV|SvNVX|SV* sv
 Amn|(whatever)|RETVAL
 Amn|(whatever)|THIS
+AmnxUN|char *|PL_parser-E<gt>bufend
+AmnxUN|char *|PL_parser-E<gt>bufptr
+AmnxUN|char *|PL_parser-E<gt>linestart
+AmnxUN|SV *|PL_parser-E<gt>linestr
+AmnxU|PADNAMELIST *|PL_comppad_name
+AmnxU|PAD *|PL_comppad
+AmnxU|SV **|PL_curpad
 Am|OP*|LINKLIST|OP *o
 Am|OP*|OpSIBLING|OP *o
 Am|PADOFFSET|pad_add_name_pvs|"literal string" name|U32 flags|HV *typestash|HV *ourstash
@@ -179,6 +234,7 @@ Am|PADOFFSET|pad_findmy_pvs|"literal string" name|U32 flags
 Am|REGEXP *|SvRX|SV *sv
 Ams||ENTER_with_name|const char * name
 Ams||LEAVE_with_name|const char * name
+Ams||PUSH_MULTICALL|CV* the_cv
 Am|STRLEN|HeKLEN|HE* he
 Am|STRLEN|HvENAMELEN|HV *stash
 Am|STRLEN|HvNAMELEN|HV *stash
@@ -208,7 +264,7 @@ Am|SV*|SvREFCNT_inc_simple_NN|SV* sv
 Am|SV*|SvREFCNT_inc_simple|SV* sv
 Am|SV*|SvREFCNT_inc|SV* sv
 Am|SV*|SvRV|SV* sv
-Am|SV *|sv_setref_pvs|"literal string" s
+Am|SV *|sv_setref_pvs|SV *const rv|const char *const classname|"literal string" s
 Am|svtype|SvTYPE|SV* sv
 Am|U32|HeHASH|HE* he
 Am|U32|HeUTF8|HE* he
@@ -239,45 +295,9 @@ Am|U8|toLOWER_LC|U8 ch
 Am|U8|toLOWER|U8 ch
 Am|U8|toTITLE|U8 ch
 Am|U8|toUPPER|U8 ch
-AmU||G_ARRAY
-AmU||G_DISCARD
-AmU||G_EVAL
-AmU||G_NOARGS
-AmU||G_SCALAR
-AmU||G_VOID
-AmU||HEf_SVKEY
-AmU||MARK
 AmU||newXSproto|char* name|XSUBADDR_t f|char* filename|const char *proto
 Am|unsigned char|HvENAMEUTF8|HV *stash
 Am|unsigned char|HvNAMEUTF8|HV *stash
-AmU||Nullav
-AmU||Nullch
-AmU||Nullcv
-AmU||Nullhv
-AmU||Nullsv
-AmU||ORIGMARK
-AmU|Perl_check_t *|PL_check
-AmU|placeholder|BOM_UTF8
-AmU|placeholder|REPLACEMENT_CHARACTER_UTF8
-AmU||SP
-AmU||SVt_INVLIST
-AmU||SVt_IV
-AmU||SVt_NULL
-AmU||SVt_NV
-AmU||SVt_PV
-AmU||SVt_PVAV
-AmU||SVt_PVCV
-AmU||SVt_PVFM
-AmU||SVt_PVGV
-AmU||SVt_PVHV
-AmU||SVt_PVIO
-AmU||SVt_PVIV
-AmU||SVt_PVLV
-AmU||SVt_PVMG
-AmU||SVt_PVNV
-AmU||SVt_REGEXP
-AmU||svtype
-AmU||UNDERBAR
 Am|UV|SvUV_nomg|SV* sv
 Am|UV|SvUV|SV* sv
 Am|UV|SvUVx|SV* sv
@@ -294,15 +314,7 @@ Am|UV|toTITLE_uvchr|UV cp|U8* s|STRLEN* lenp
 Am|UV|toUPPER_utf8_safe|U8* p|U8* e|U8* s|STRLEN* lenp
 Am|UV|toUPPER_utf8|U8* p|U8* s|STRLEN* lenp
 Am|UV|toUPPER_uvchr|UV cp|U8* s|STRLEN* lenp
-AmU||XCPT_CATCH
-AmU||XCPT_TRY_END
-AmU||XCPT_TRY_START
-AmUx|Perl_keyword_plugin_t|PL_keyword_plugin
-AmU||XS
-AmU||XS_EXTERNAL
 AmU||XS_INTERNAL
-AmU||XS_VERSION
-AmU|yy_parser *|PL_parser
 Am|void *|CopyD|void* src|void* dest|int nitems|type
 Am|void|Copy|void* src|void* dest|int nitems|type
 Am|void|EXTEND|SP|SSize_t nitems
@@ -334,7 +346,6 @@ Am|void|Poison|void* dest|int nitems|type
 Am|void|PoisonWith|void* dest|int nitems|type|U8 byte
 Am|void|PUSHi|IV iv
 Am|void|PUSHMARK|SP
-Am|void|PUSHmortal
 Am|void|PUSHn|NV nv
 Am|void|PUSHp|char* str|STRLEN len
 Am|void|PUSHs|SV* sv
@@ -405,7 +416,6 @@ Am|void|XopDISABLE|XOP *xop|which
 Am|void|XopENABLE|XOP *xop|which
 Am|void|XopENTRY_set|XOP *xop|which|value
 Am|void|XPUSHi|IV iv
-Am|void|XPUSHmortal
 Am|void|XPUSHn|NV nv
 Am|void|XPUSHp|char* str|STRLEN len
 Am|void|XPUSHs|SV* sv
@@ -458,13 +468,6 @@ Amx|SV*|newSVpadname|PADNAME *pn
 Amx|SV **|PadARRAY|PAD pad
 Amx|SV *|PadnameSV|PADNAME pn
 Amx|U32|PadlistREFCNT|PADLIST padlist
-AmxUN|char *|PL_parser-E<gt>bufend
-AmxUN|char *|PL_parser-E<gt>bufptr
-AmxUN|char *|PL_parser-E<gt>linestart
-AmxUN|SV *|PL_parser-E<gt>linestr
-AmxU|PADNAMELIST *|PL_comppad_name
-AmxU|PAD *|PL_comppad
-AmxU|SV **|PL_curpad
 Amx|void|BhkDISABLE|BHK *hk|which
 Amx|void|BhkENABLE|BHK *hk|which
 Amx|void|BhkENTRY_set|BHK *hk|which|void *ptr
@@ -488,6 +491,7 @@ mn|SV *|PL_DBsingle
 mn|SV *|PL_DBtrace
 mn|SV*|PL_rs
 mn|U8|PL_dowarn
+mnU||LVRET
 ms||djSP
 m|STRLEN|PAD_COMPNAME_GEN|PADOFFSET po
 m|STRLEN|PAD_COMPNAME_GEN_set|PADOFFSET po|int gen
@@ -500,7 +504,6 @@ m|SV *|PAD_SV	|PADOFFSET po
 m|SV *|refcounted_he_fetch_pvs|const struct refcounted_he *chain|"literal string" key|U32 flags
 m|U32|PAD_COMPNAME_FLAGS|PADOFFSET po
 m|U32|SvTHINKFIRST|SV *sv
-mU||LVRET
 m|void|CX_CURPAD_SAVE|struct context
 m|void|PAD_CLONE_VARS|PerlInterpreter *proto_perl|CLONE_PARAMS* param
 m|void|PAD_RESTORE_LOCAL|PAD *opad
