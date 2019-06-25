@@ -81,6 +81,7 @@ EOF
   | grep '|'                                                                \
   | sort                                                                    \
   | uniq                                                                    \
+  | sort -f -t'|' -k3                                                       \
   | perl -e '$f=pop;
              open(F,$f) || die "$f:$!";
              while (<F>) {
