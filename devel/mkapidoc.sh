@@ -89,6 +89,7 @@ EOF
                 $h{$1}++
             }
             while (<>) {
+                s/"literal string"/const char * const/g;    # Fix-up special token
                 s/[ \t]+$//;
                 (  split /\s*\|\s*/  ) [2] =~ /(\w+)/;
                 $h{$1} || print

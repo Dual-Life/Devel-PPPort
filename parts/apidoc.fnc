@@ -41,22 +41,22 @@ Amx|HV *|cophh_2hv|const COPHH *cophh|U32 flags
 Amx|COPHH *|cophh_copy|COPHH *cophh
 Amx|COPHH *|cophh_delete_pv|const COPHH *cophh|const char *key|U32 hash|U32 flags
 Amx|COPHH *|cophh_delete_pvn|COPHH *cophh|const char *keypv|STRLEN keylen|U32 hash|U32 flags
-Amx|COPHH *|cophh_delete_pvs|const COPHH *cophh|"literal string" key|U32 flags
+Amx|COPHH *|cophh_delete_pvs|const COPHH *cophh|const char * const key|U32 flags
 Amx|COPHH *|cophh_delete_sv|const COPHH *cophh|SV *key|U32 hash|U32 flags
 Amx|SV *|cophh_fetch_pv|const COPHH *cophh|const char *key|U32 hash|U32 flags
 Amx|SV *|cophh_fetch_pvn|const COPHH *cophh|const char *keypv|STRLEN keylen|U32 hash|U32 flags
-Amx|SV *|cophh_fetch_pvs|const COPHH *cophh|"literal string" key|U32 flags
+Amx|SV *|cophh_fetch_pvs|const COPHH *cophh|const char * const key|U32 flags
 Amx|SV *|cophh_fetch_sv|const COPHH *cophh|SV *key|U32 hash|U32 flags
 Amx|void|cophh_free|COPHH *cophh
 Amx|COPHH *|cophh_new_empty
 Amx|COPHH *|cophh_store_pv|const COPHH *cophh|const char *key|U32 hash|SV *value|U32 flags
 Amx|COPHH *|cophh_store_pvn|COPHH *cophh|const char *keypv|STRLEN keylen|U32 hash|SV *value|U32 flags
-Amx|COPHH *|cophh_store_pvs|const COPHH *cophh|"literal string" key|SV *value|U32 flags
+Amx|COPHH *|cophh_store_pvs|const COPHH *cophh|const char * const key|SV *value|U32 flags
 Amx|COPHH *|cophh_store_sv|const COPHH *cophh|SV *key|U32 hash|SV *value|U32 flags
 Am|HV *|cop_hints_2hv|const COP *cop|U32 flags
 Am|SV *|cop_hints_fetch_pv|const COP *cop|const char *key|U32 hash|U32 flags
 Am|SV *|cop_hints_fetch_pvn|const COP *cop|const char *keypv|STRLEN keylen|U32 hash|U32 flags
-Am|SV *|cop_hints_fetch_pvs|const COP *cop|"literal string" key|U32 flags
+Am|SV *|cop_hints_fetch_pvs|const COP *cop|const char * const key|U32 flags
 Am|SV *|cop_hints_fetch_sv|const COP *cop|SV *key|U32 hash|U32 flags
 Am|void *|CopyD|void* src|void* dest|int nitems|type
 Am|void|Copy|void* src|void* dest|int nitems|type
@@ -94,7 +94,7 @@ Am|AV*|GvAV|GV* gv
 Am|CV*|GvCV|GV* gv
 Am|HV*|GvHV|GV* gv
 AmnU||G_VOID
-Am|HV*|gv_stashpvs|"literal string" name|I32 create
+Am|HV*|gv_stashpvs|const char * const name|I32 create
 Am|SV*|GvSV|GV* gv
 AmnU||HEf_SVKEY
 Am|U32|HeHASH|HE* he
@@ -109,11 +109,11 @@ Am|SV*|HeVAL|HE* he
 Am|char*|HvENAME|HV* stash
 Am|STRLEN|HvENAMELEN|HV *stash
 Am|unsigned char|HvENAMEUTF8|HV *stash
-Am|SV**|hv_fetchs|HV* tb|"literal string" key|I32 lval
+Am|SV**|hv_fetchs|HV* tb|const char * const key|I32 lval
 Am|char*|HvNAME|HV* stash
 Am|STRLEN|HvNAMELEN|HV *stash
 Am|unsigned char|HvNAMEUTF8|HV *stash
-Am|SV**|hv_stores|HV* tb|"literal string" key|SV* val
+Am|SV**|hv_stores|HV* tb|const char * const key|SV* val
 Am|bool|isALPHA|char ch
 Am|bool|isALPHANUMERIC|char ch
 Am|bool|isASCII|char ch
@@ -137,7 +137,7 @@ Amn|I32|items
 Amn|I32|ix
 Amns||LEAVE
 Ams||LEAVE_with_name|const char * name
-Amx|void|lex_stuff_pvs|"literal string" pv|U32 flags
+Amx|void|lex_stuff_pvs|const char * const pv|U32 flags
 Am|OP*|LINKLIST|OP *o
 mnU||LVRET
 AmnU||MARK
@@ -159,9 +159,9 @@ Am|void|mXPUSHu|UV uv
 Am|SV*|newRV_inc|SV* sv
 Amx|SV*|newSVpadname|PADNAME *pn
 Am|SV*|newSVpvn_utf8|const char* s|STRLEN len|U32 utf8
-Ama|SV*|newSVpvs_flags|"literal string" s|U32 flags
-Ama|SV*|newSVpvs|"literal string" s
-Ama|SV*|newSVpvs_share|"literal string" s
+Ama|SV*|newSVpvs_flags|const char * const s|U32 flags
+Ama|SV*|newSVpvs|const char * const s
+Ama|SV*|newSVpvs_share|const char * const s
 Am|void|Newxc|void* ptr|int nitems|type|cast
 AmU||newXSproto|char* name|XSUBADDR_t f|char* filename|const char *proto
 Am|void|Newx|void* ptr|int nitems|type
@@ -182,7 +182,7 @@ Am|OP*|OpSIBLING|OP *o
 Am|bool|OP_TYPE_IS|OP *o|Optype type
 Am|bool|OP_TYPE_IS_OR_WAS|OP *o|Optype type
 AmnU||ORIGMARK
-Am|PADOFFSET|pad_add_name_pvs|"literal string" name|U32 flags|HV *typestash|HV *ourstash
+Am|PADOFFSET|pad_add_name_pvs|const char * const name|U32 flags|HV *typestash|HV *ourstash
 Amx|SV **|PadARRAY|PAD pad
 m|SV *|PAD_BASE_SV	|PADLIST padlist|PADOFFSET po
 m|void|PAD_CLONE_VARS|PerlInterpreter *proto_perl|CLONE_PARAMS* param
@@ -192,7 +192,7 @@ m|STRLEN|PAD_COMPNAME_GEN_set|PADOFFSET po|int gen
 m|HV *|PAD_COMPNAME_OURSTASH|PADOFFSET po
 m|char *|PAD_COMPNAME_PV|PADOFFSET po
 m|HV *|PAD_COMPNAME_TYPE|PADOFFSET po
-Am|PADOFFSET|pad_findmy_pvs|"literal string" name|U32 flags
+Am|PADOFFSET|pad_findmy_pvs|const char * const name|U32 flags
 Amx|PAD **|PadlistARRAY|PADLIST padlist
 Amx|SSize_t|PadlistMAX|PADLIST padlist
 Amx|PADNAME **|PadlistNAMESARRAY|PADLIST padlist
@@ -276,8 +276,8 @@ Am|void|PUSHs|SV* sv
 Am|void|PUSHu|UV uv
 Amns||PUTBACK
 Am|U8|READ_XDIGIT|char str*
-m|SV *|refcounted_he_fetch_pvs|const struct refcounted_he *chain|"literal string" key|U32 flags
-m|struct refcounted_he *|refcounted_he_new_pvs|struct refcounted_he *parent|"literal string" key|SV *value|U32 flags
+m|SV *|refcounted_he_fetch_pvs|const struct refcounted_he *chain|const char * const key|U32 flags
+m|struct refcounted_he *|refcounted_he_new_pvs|struct refcounted_he *parent|const char * const key|SV *value|U32 flags
 Am|void|Renewc|void* ptr|int nitems|type|cast
 Am|void|Renew|void* ptr|int nitems|type
 AmnU|const char *|REPLACEMENT_CHARACTER_UTF8
@@ -288,8 +288,8 @@ Am|void|Safefree|void* ptr
 m|void|SAVECLEARSV	|SV **svp
 m|void|SAVECOMPPAD
 m|void|SAVEPADSV	|PADOFFSET po
-Ama|char*|savepvs|"literal string" s
-Ama|char*|savesharedpvs|"literal string" s
+Ama|char*|savepvs|const char * const s
+Ama|char*|savesharedpvs|const char * const s
 Amns||SAVETMPS
 AmnU||SP
 Amns||SPAGAIN
@@ -307,10 +307,10 @@ Am|bool|strnNE|char* s1|char* s2|STRLEN len
 Am|void|StructCopy|type *src|type *dest|type
 Am|void|sv_catpvn_nomg|SV* sv|const char* ptr|STRLEN len
 Am|void|sv_catpv_nomg|SV* sv|const char* ptr
-Am|void|sv_catpvs_flags|SV* sv|"literal string" s|I32 flags
-Am|void|sv_catpvs_mg|SV* sv|"literal string" s
-Am|void|sv_catpvs_nomg|SV* sv|"literal string" s
-Am|void|sv_catpvs|SV* sv|"literal string" s
+Am|void|sv_catpvs_flags|SV* sv|const char * const s|I32 flags
+Am|void|sv_catpvs_mg|SV* sv|const char * const s
+Am|void|sv_catpvs_nomg|SV* sv|const char * const s
+Am|void|sv_catpvs|SV* sv|const char * const s
 Am|void|sv_catsv_nomg|SV* dsv|SV* ssv
 Am|void|SvCUR_set|SV* sv|STRLEN len
 Am|STRLEN|SvCUR|SV* sv
@@ -403,9 +403,9 @@ Am|REGEXP *|SvRX|SV *sv
 Am|void|SvSetMagicSV_nosteal|SV* dsv|SV* ssv
 Am|void|SvSETMAGIC|SV* sv
 Am|void|SvSetMagicSV|SV* dsv|SV* ssv
-Am|void|sv_setpvs_mg|SV* sv|"literal string" s
-Am|void|sv_setpvs|SV* sv|"literal string" s
-Am|SV *|sv_setref_pvs|SV *const rv|const char *const classname|"literal string" s
+Am|void|sv_setpvs_mg|SV* sv|const char * const s
+Am|void|sv_setpvs|SV* sv|const char * const s
+Am|SV *|sv_setref_pvs|SV *const rv|const char *const classname|const char * const s
 Am|void|sv_setsv_nomg|SV* dsv|SV* ssv
 Am|void|SvSetSV_nosteal|SV* dsv|SV* ssv
 Am|void|SvSetSV|SV* dsv|SV* ssv
