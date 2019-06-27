@@ -245,7 +245,7 @@ install:
   - perl Makefile.PL
   - make regen
 # ensure allfiles are git up-to-date [fail if make regen alters some files]
-  - test "$TRAVIS_OS_NAME" = "windows" || git diff --quiet
+  - git diff --quiet
 
 script:
   - perl Makefile.PL
