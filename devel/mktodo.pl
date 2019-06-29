@@ -84,7 +84,8 @@ retry:
   my(@new, @tmp, %seen);
 
   my $r = run(qw(make));
-  $r->{didnotrun} and die "couldn't run make: $!\n";
+  $r->{didnotrun} and die "couldn't run make: $!\n" .
+        join('', @{$r->{stdout}})."\n---\n".join('', @{$r->{stderr}});
 
   for my $l (@{$r->{stderr}}) {
     if ($l =~ /_DPPP_test_(\w+)/) {
@@ -112,7 +113,8 @@ retry:
 
     unless (@u) {
       $r = run(qw(make test));
-      $r->{didnotrun} and die "couldn't run make test: $!\n";
+      $r->{didnotrun} and die "couldn't run make test: $!\n" .
+        join('', @{$r->{stdout}})."\n---\n".join('', @{$r->{stderr}});
       $r->{status} == 0 and last;
 
       for my $l (@{$r->{stderr}}) {
@@ -191,7 +193,8 @@ if ($opt{check}) {
 
     my $r = run(qw(make test));
 
-    $r->{didnotrun} and die "couldn't run make test: $!\n";
+    $r->{didnotrun} and die "couldn't run make test: $!\n" .
+        join('', @{$r->{stdout}})."\n---\n".join('', @{$r->{stderr}});
 
     if ($r->{status} == 0) {
       sym('del', $sym, $cur);
@@ -208,7 +211,7 @@ run(qw(make realclean));
 
 exit 0;
 
-sub sym
+sub sym     # Display a symbol
 {
   my($what, $sym, $reason, $extra) = @_;
   $extra ||= '';
@@ -230,15 +233,19 @@ sub regen_all
 
   # just to be sure
   run(qw(make realclean));
-  run($fullperl, "Makefile.PL", @mf_arg)->{status} == 0
-      or die "cannot run Makefile.PL: $!\n";
+  my $r = run($fullperl, "Makefile.PL", @mf_arg);
+  unless ($r->{status} == 0) {
+      die "cannot run Makefile.PL: $!\n" .
+          join('', @{$r->{stdout}})."\n---\n".join('', @{$r->{stderr}});
+  }
 }
 
 sub regen_apicheck
 {
   unlink qw(apicheck.c apicheck.o);
   runtool({ out => '/dev/null' }, $fullperl, 'apicheck_c.PL', map { "--api=$_" } @_)
-      or die "cannot regenerate apicheck.c\n";
+      or die "cannot regenerate apicheck.c\n" .
+          join('', @{$r->{stdout}})."\n---\n".join('', @{$r->{stderr}});
 }
 
 sub load_todo
@@ -308,7 +315,8 @@ sub read_sym
   my $r = run($Config{nm}, @{$opt{options}}, $opt{file});
 
   if ($r->{didnotrun} or $r->{status}) {
-    die "cannot run $Config{nm}";
+    die "cannot run $Config{nm}" .
+          join('', @{$r->{stdout}})."\n---\n".join('', @{$r->{stderr}});
   }
 
   my %sym;
@@ -329,10 +337,14 @@ sub get_apicheck_symbol_map
   my $r;
 
   while (1) {
+
+    # Create apicheck.i
     $r = run(qw(make apicheck.i));
 
+    # Quit the loop if it succeeded
     last unless $r->{didnotrun} or $r->{status};
 
+    # Get the list of macros that it failed on
     my %sym = map { /error: macro "(\w+)" (?:requires|passed) \d+ argument/ ? ($1 => 'A') : () }
               @{$r->{stderr}};
 
@@ -344,7 +356,7 @@ sub get_apicheck_symbol_map
       write_todo($opt{todo}, $opt{version}, \%all);
       regen_apicheck();
     }
-    else {
+    else {  # It failed for some other reason: give up
       die "cannot run make apicheck.i ($r->{didnotrun} / $r->{status}):\n".
           join('', @{$r->{stdout}})."\n---\n".join('', @{$r->{stderr}});
     }
