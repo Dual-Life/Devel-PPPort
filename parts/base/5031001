@@ -1,0 +1,6 @@
+5.031001
+POP_MULTICALL                  # E
+PUSH_MULTICALL                 # E
+UTF8_SAFE_SKIP                 # U
+XS_APIVERSION_BOOTCHECK        # E
+XS_VERSION_BOOTCHECK           # E
