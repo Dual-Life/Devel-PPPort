@@ -479,8 +479,8 @@ in threaded and non-threaded configurations.
 =head2 Provided Perl compatibility API
 
 The header file written by this module, typically F<ppport.h>, provides
-access to the following elements of the Perl API that is not available
-in older Perl releases:
+access to the following elements of the Perl API that is not otherwise
+available in older Perl releases:
 
     __PROVIDED_API__
 
@@ -523,7 +523,7 @@ Version 3.x was ported back to CPAN by Marcus Holland-Moritz.
 
 =item * 
 
-Versions >= 3.22 are maintained with support from Matthew Horsfall (alh).
+Versions >= 3.22 are maintained by perl5 porters
 
 =back
 
@@ -551,7 +551,7 @@ package Devel::PPPort;
 use strict;
 use vars qw($VERSION $data);
 
-$VERSION = '3.52';
+$VERSION = '3.54';
 
 sub _init_data
 {
