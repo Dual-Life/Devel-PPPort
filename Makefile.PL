@@ -16,6 +16,8 @@
 require 5.003;
 
 use strict;
+BEGIN { $^W = 1; }
+
 use ExtUtils::MakeMaker;
 use Config;
 
@@ -36,13 +38,15 @@ my %mf = (
   XSPROTOARG    => '-noprototypes',
   CONFIGURE     => \&configure,
 );
-delete $mf{META_MERGE} unless eval { ExtUtils::MakeMaker->VERSION (6.46) };
 WriteMakefile(%mf);
 
 sub configure
 {
   my @clean    = qw{ $(H_FILES) RealPPPort.xs RealPPPort.c PPPort.pm };
-  my %depend   = ('$(OBJECT)' => '$(H_FILES)');
+  my %depend   = (
+    '$(OBJECT)' => '$(H_FILES)',
+    'Makefile' => '$(VERSION_FROM)',
+  );
   my @C_FILES  = qw{ module2.c module3.c },
   my %PL_FILES = (
     'ppport_h.PL'  => 'ppport.h',
@@ -52,14 +56,44 @@ sub configure
   );
   my @moreopts;
 
-  if (eval $ExtUtils::MakeMaker::VERSION >= 6) {
+  if (eval { ExtUtils::MakeMaker->VERSION(6) }) {
     push @moreopts, AUTHOR => 'Marcus Holland-Moritz <mhx@cpan.org>';
     push @moreopts, ABSTRACT_FROM => 'PPPort_pm.PL';
   }
 
-  if (eval $ExtUtils::MakeMaker::VERSION >= 6.30_01) {
+  if (eval { ExtUtils::MakeMaker->VERSION(6.30_01) }) {
     print "Setting license tag...\n";
     push @moreopts, LICENSE => 'perl';
+  }
+
+  if (eval { ExtUtils::MakeMaker->VERSION (6.46) }) {
+    open FH, '<PPPort_pm.PL' or die "cannot open PPPort_pm.PL for reading: $!";
+    my $version;
+    while (my $line = <FH>) {
+      ($version) = $line =~ /^\$VERSION = '([\d.]+)';$/ and last;
+    };
+    die 'failed to extract $VERSION from PPPort_pm.PL' if not $version;
+    close FH;
+    print "Adding META_MERGE...\n";
+    push @moreopts, META_MERGE => {
+      'meta-spec' => { version => 2 },
+      provides => {
+        'Devel::PPPort' => {
+          file    => 'PPPort_pm.PL',
+          version => $version,
+        },
+      },
+      resources => {
+        bugtracker => {
+          web => 'https://rt.perl.org/rt3/',
+        },
+        repository => {
+          type => 'git',
+          url  => 'git://perl5.git.perl.org/perl.git',
+          web  => 'https://perl5.git.perl.org/perl.git',
+        },
+      },
+    };
   }
 
   if (not $ENV{'PERL_CORE'}) {
@@ -79,14 +113,6 @@ sub configure
     $depend{'apicheck.i'} = 'ppport.h';
   }
 
-  open FH, '<PPPort_pm.PL' or die "cannot open PPPort_pm.PL for reading: $!";
-  my $version;
-  while (my $line = <FH>) {
-    ($version) = $line =~ /^\$VERSION = '([\d.]+)';$/ and last;
-  };
-  die 'failed to extract $VERSION from PPPort_pm.PL' if not $version;
-  close FH;
-
   if ($Config{gccversion}) {
     my $define = '-W -Wall';
     $define .= ' -Wdeclaration-after-statement' if $Config{gccversion} =~ /^(\d+\.\d+)\./ && $1 >= 3.4;
@@ -99,25 +125,6 @@ sub configure
     PL_FILES => \%PL_FILES,
     depend   => \%depend,
     clean    => { FILES => "@clean" },
-    META_MERGE    => {
-      'meta-spec' => { version => 2 },
-      provides => {
-        'Devel::PPPort' => {
-          file    => 'PPPort_pm.PL',
-          version => $version,
-        },
-      },
-      resources => {
-        bugtracker => {
-          web => 'https://rt.perl.org/rt3/',
-        },
-        repository => {
-          type => 'git',
-          url  => 'git://perl5.git.perl.org/perl.git',
-          web  => 'https://perl5.git.perl.org/perl.git',
-        },
-      },
-    },
     @moreopts,
   };
 }
