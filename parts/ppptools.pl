@@ -231,6 +231,8 @@ sub trim_arg
 
   $in eq '...' and return ($in);
 
+  $in =~ s/"literal string"/const char */;
+
   local $_ = $in;
   my $id;
 
