@@ -20,7 +20,18 @@ use Data::Dumper;
 use IO::File;
 use IO::Select;
 use Config;
-use Time::HiRes qw( gettimeofday tv_interval );
+
+BEGIN {
+  eval {
+    require Time::HiRes;
+    Time::HiRes->import('gettimeofday');
+    1;
+  } or do {
+    *gettimeofday = sub() {
+      return wantarray ? (time(), 0) : time();
+    };
+  }
+}
 
 require './devel/devtools.pl';
 
