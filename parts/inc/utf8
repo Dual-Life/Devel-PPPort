@@ -35,6 +35,13 @@ __UNDEFINED__  UTF8_SAFE_SKIP(s, e)  (                                          
                                       : D_PPP_MIN(((e) - (s)), UTF8SKIP(s))))
 #endif
 
+#if defined(is_utf8_string) && defined(UTF8SKIP)
+__UNDEFINED__ isUTF8_CHAR(s0, e)    (                                           \
+    (e) <= (s0) || ! is_utf8_string(s0, D_PPP_MIN(UTF8SKIP(s0), (e) - (s0)))    \
+    ? 0                                                                         \
+    : UTF8SKIP(s0))
+#endif
+
 #if { VERSION < 5.31.3 }
         /* Versions prior to this accepted things that are now considered
          * malformations, and didn't return -1 on error with warnings enabled
@@ -281,6 +288,25 @@ UTF8_SAFE_SKIP(s, adjustment)
 
 #endif
 
+#ifdef isUTF8_CHAR
+
+STRLEN
+isUTF8_CHAR(s, adjustment)
+        unsigned char * s
+        int adjustment
+        PREINIT:
+            const unsigned char *const_s;
+            const unsigned char *const_e;
+        CODE:
+            const_s = s;
+            /* Instead of passing in an 'e' ptr, use the real end, adjusted */
+            const_e = const_s + UTF8SKIP(const_s) + adjustment;
+            RETVAL = isUTF8_CHAR(const_s, const_e);
+        OUTPUT:
+            RETVAL
+
+#endif
+
 #ifdef utf8_to_uvchr_buf
 
 AV *
@@ -334,18 +360,23 @@ utf8_to_uvchr(s)
 
 #endif
 
-=tests plan => 51
+=tests plan => 55
 
 BEGIN { require warnings if "$]" gt '5.006' }
 
 # skip tests on 5.6.0 and earlier
 if ("$]" le '5.006') {
-    skip 'skip: broken utf8 support', 0 for 1..51;
+    skip 'skip: broken utf8 support', 0 for 1..55;
     exit;
 }
 
 ok(&Devel::PPPort::UTF8_SAFE_SKIP("A", 0), 1);
 ok(&Devel::PPPort::UTF8_SAFE_SKIP("A", -1), 0);
+
+ok(&Devel::PPPort::isUTF8_CHAR("A", -1), 0);
+ok(&Devel::PPPort::isUTF8_CHAR("A",  0), 1);
+ok(&Devel::PPPort::isUTF8_CHAR("\x{100}",  -1), 0);
+ok(&Devel::PPPort::isUTF8_CHAR("\x{100}",  0), 2);
 
 my $ret = &Devel::PPPort::utf8_to_uvchr("A");
 ok($ret->[0], ord("A"));
