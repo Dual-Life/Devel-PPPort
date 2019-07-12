@@ -30,9 +30,9 @@ BEGIN {
     require 'testutil.pl' if $@;
   }
 
-  if (58) {
+  if (61) {
     load();
-    plan(tests => 58);
+    plan(tests => 61);
   }
 }
 
@@ -52,7 +52,7 @@ BEGIN { require warnings if "$]" > '5.006' }
 
 # skip tests on 5.6.0 and earlier, plus 7.0
 if ("$]" <= '5.006' || "$]" == '5.007' ) {
-    for (1..58) {
+    for (1..61) {
         skip 'skip: broken utf8 support', 0;
     }
     exit;
@@ -65,6 +65,10 @@ ok(&Devel::PPPort::isUTF8_CHAR("A", -1), 0);
 ok(&Devel::PPPort::isUTF8_CHAR("A",  0), 1);
 ok(&Devel::PPPort::isUTF8_CHAR("\x{100}",  -1), 0);
 ok(&Devel::PPPort::isUTF8_CHAR("\x{100}",  0), 2);
+
+ok(&Devel::PPPort::UVCHR_IS_INVARIANT(ord("A")), 1);
+ok(! &Devel::PPPort::UVCHR_IS_INVARIANT(0xb6));
+ok(! &Devel::PPPort::UVCHR_IS_INVARIANT(0x100));
 
 if ("$]" < '5.008') {
     for (1 ..3) {
