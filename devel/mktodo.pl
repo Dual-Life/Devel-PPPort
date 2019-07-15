@@ -27,6 +27,7 @@ use Time::HiRes qw( gettimeofday tv_interval );
 require './devel/devtools.pl';
 
 our %opt = (
+  blead     => 0,     # ? Is this perl blead
   debug   => 0,     # Adding --verbose increases the detail
   base    => 0,     # Don't use ppport.h when generating
   verbose => 0,
@@ -40,6 +41,13 @@ perl=s todo=s blead version=s shlib=s debug base verbose check!
           )) or die;
 
 identify();
+
+my $todo_file;
+my $todo_version;
+if ($opt{todo}) {
+    $todo_file = "$opt{$opt{todo}";
+    $todo_version = $opt{version};
+}
 
 print "\n", ident_str(), "\n\n";
 
@@ -85,7 +93,7 @@ keys %sym >= 50 or die "less than 50 symbols found in $fullperl\n";
 # }
 #
 # The values are the outputs from nm, plus 'E' from us, for Error
-my %todo = %{load_todo($opt{todo}, $opt{version})} if $opt{todo};
+my %todo = %{load_todo($todo_file, $todo_version)} if $opt{todo};
 
 my @recheck;
 
@@ -241,7 +249,7 @@ retry:
 
   # Write the revised todo, so that apicheck.c when generated in the next
   # iteration will have these #ifdef'd out
-  write_todo($opt{todo}, $opt{version}, \%todo);
+  write_todo($todo_file, $todo_version, \%todo);
 } # End of loop
 
 # If we are to check our work, do so.  This verifies that each symbol
@@ -269,7 +277,7 @@ if ($opt{check}) {
 
     # Write out the todo file without this symbol, meaning it will be enabled
     # in the generated apicheck.c file
-    write_todo($opt{todo}, $opt{version}, \%todo);
+    write_todo($todo_file, $todo_version, \%todo);
 
     # E is not an nm symbol, but was added by us to indicate 'Error'
     if ($cur eq "E (Perl_$sym)") {
@@ -318,11 +326,12 @@ if ($opt{check}) {
     }
     else { # Revert to this symbol is bad in this version
       $todo{$sym} = $cur;
+      write_todo($todo_file, $todo_version, \%todo);
     }
   }
 } # End of checking our work
 
-write_todo($opt{todo}, $opt{version}, \%todo);
+write_todo($todo_file, $todo_version, \%todo);
 
 # Clean up after ourselves
 run(qw(make realclean));
@@ -341,7 +350,7 @@ sub display_sym
   $what = colored("$what symbol", $col{$what});
 
   printf "[%s] %s %-30s # %s%s\n",
-         $opt{version}, $what, $sym, $reason, $extra;
+         $todo_version, $what, $sym, $reason, $extra;
 }
 
 sub regen_Makefile
@@ -504,7 +513,7 @@ sub get_apicheck_symbol_map
       }
 
       # And rewrite the todo file, including these new symbols.
-      write_todo($opt{todo}, $opt{version}, \%todo);
+      write_todo($todo_file, $todo_version, \%todo);
 
       # Regenerate apicheck.c for the next iteration
       regen_apicheck();
