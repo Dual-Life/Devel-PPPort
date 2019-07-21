@@ -11,6 +11,259 @@ lying around in this distribution.
 
 =head1 DESCRIPTION
 
+=head2 How to backport something
+
+First, make sure that what you want to backport is documented.  If it's worth
+backporting, it surely is worth documenting.  Send a documentation patch to 
+L<perlbug@perl.org|mailto:perlbug@perl.org> if necessary.  Also,
+C<Devel::PPPort> cannot automatically generate proper information about the
+item without at least knowing its API prototype.  It can get this from
+F<embed.fnc> if the item is a function, but if it is a macro, there needs to be
+at least a S<C<=for apidoc>> line for C<Devel::PPPort> to be able to figure
+things out on its own.
+
+Next, figure out where to place your implementation.  Look at all the files in
+F<parts/inc/> for one that fits what you're planning.  If there isn't one,
+just start a new one and remember to include it from within F<PPPort_pm.PL>.
+If you do create a new file, its usually the best approach to just copy an
+existing file and use it as a template.
+
+Each file holds all relevant data for implementing a certain part
+of the API:
+
+=over 2
+
+=item *
+
+A list of the provided API in the C<=provides> section.
+
+=item *
+
+The optional C<=dontwarn> section is used to suppress warnings about particular
+API elements.  Don't use this unless you get such a warning, and be sure to
+think about using other other alternatives before resorting to adding something
+in this section.
+
+=item *
+
+The implementation to add to F<ppport.h> in the C<=implementation>
+section.  See L</Implementation Section Details>.
+
+=item *
+
+The code required to add to PPPort.xs for testing the implementation.
+This code goes into the C<=xshead>, C<=xsinit>, C<=xsmisc>, C<=xsboot>
+and C<=xsubs> section. Have a look at the template at the bottom
+of F<RealPPPort_xs.PL> to see where the code ends up.
+
+=item *
+
+The tests in the C<=tests> section. Remember not to use any fancy
+modules or syntax elements, as the test code needs to be able to run
+with Perl 5.003.  (This is because Devel::PPPort itself will run all test files
+in the process of generating the information about when a feature came into
+existence.)  This means, for example
+
+=over
+
+=item C<my> isn't supported in C<for>-loops
+
+    for my $x (1, 2, 3) { }    # won't work with 5.003
+
+Instead declare C<$x> just before the statement
+
+=item The postfix C<for> statement modifier isn't supported
+
+    foo for 1..2
+
+won't compile.  Instead enclose C<foo> in a loop.
+
+=item You can't use plain C<qr//>
+
+Instead, wrap it in a string eval C<eval "qr//">, and be sure it's skipped at
+execution time on perls earlier than 5.005
+
+=back
+
+You can use C<ok()> to report success or failure:
+
+ ok($got, $expected, 'name');
+ ok($got == 42);     # Doesn't give good runtime diagnostics
+
+ ok($got, eval "qr/foo/", 'name') # But don't execute this statement
+                                  # on perls earlier than 5.005
+
+=back
+
+=head2 Implementation Section Details
+
+=over
+
+=item __UNDEFINED__
+
+If you add the line C<__UNDEFINED__> to the C<=provides> section, you can use
+lines like this in the C<=implementation> section:
+
+  __UNDEFINED__ macro    some definition
+
+to both define C<macro> and indicate that it is provided by F<ppport.h>.  This
+replaces these C<=implementation> section lines:
+
+  #ifndef macro
+  #  define macro    some definition
+  #endif
+
+besides automagically making it be considered to be provided.  C<macro> can
+have optional arguments and the definition can even span multiple lines, like
+in
+
+  __UNDEFINED__ SvMAGIC_set(sv, val) \
+                STMT_START { assert(SvTYPE(sv) >= SVt_PVMG); \
+                (((XPVMG*) SvANY(sv))->xmg_magic = (val)); } STMT_END
+
+This usually makes the code more compact and readable.
+
+But you should only use this on things that you plan to publicly provide.  If
+something, such as a mnemonic for a constant needs to be defined but isn't
+really needed for a distribution to know about, you should use
+
+ __UNDEF_NO_PROV macro   some definition
+
+instead.  To avoid name space conflicts, follow what's in L</Helper macros>,
+below.
+
+=item Helper macros
+
+If you need to define a helper macro which is not part of C<Devel::PPPort> API
+and its usage is only for the definition of other C<Devel::PPPort> macros, then
+use the C<D_PPP_> prefix for this macro name (e.g. C<D_PPP_SVPV_NOLEN_LP_ARG>).
+This suppresses any warnings when a macro is defined which is not part of Perl
+public API.
+
+=item Version numbers
+
+Version checking can be tricky to get correct.
+You can use
+
+  #if { VERSION < 5.9.3 }
+
+instead of
+
+  #if ((PERL_VERSION < 9) || (PERL_VERSION == 9 && PERL_SUBVERSION < 3))
+
+The version number can be either of the new form C<5.x.x> or the older
+form C<5.00x_yy>. Both are translated into the correct preprocessor
+statements. It is also possible to combine this with other statements:
+
+  #if { VERSION >= 5.004 } && !defined(sv_vcatpvf)
+    /* a */
+  #elif { VERSION < 5.004_63 } && { VERSION != 5.004_05 }
+    /* b */
+  #endif
+
+This not only works in the C<=implementation> section, but also in
+the C<=xsubs>, C<=xsinit>, C<=xsmisc>, C<=xshead> and C<=xsboot> sections.
+
+=item Hints
+
+If you add a comment like so:
+
+ /* Hint: PL_expect, PL_copline, PL_rsfp
+    paragraphs of stuff about foo you want to have
+    shown when ppport.h outputs something about PL_expect or
+    PL_copline or PL_rsfp
+ */
+
+Earlier versions of F<ppport.h> required an asterisk at the beginning of every
+continuation line, or else the content would be silently dropped.
+
+=item Warnings
+
+A more serious caution about C<foo> can be displayed by instead saying
+
+ /* Warning: PL_expect, PL_copline, PL_rsfp
+    paragraphs of stuff about foo you want to have
+    shown when ppport.h outputs something about PL_expect or
+    PL_copline or PL_rsfp
+ */
+
+Earlier versions of F<ppport.h> required an asterisk at the beginning of every
+continuation line, or else the content would be silently dropped.
+
+=item Replace
+
+When F<ppport.h> is run on a file(s), you can cause it to automatically flag
+occurrences of the constructs you specify, encouraging the author to replace
+them with different (presumably better) ones.  These also are used in any
+suggested edits and generated patches.
+
+There are three ways to do this
+
+=over 4
+
+=item in-line comment
+
+You can add a trailing comment like so:
+
+ #define bar foo    /* Replace */
+ __UNDEFINED__ bar foo  /* Replace */
+
+These say that C<foo> should be replaced by C<bar>.  NOT the other way around.
+
+=item separate comment
+
+For situations not amenable to the above, you can say
+
+ /* Replace foo with bar */
+
+=item define a replacement region
+
+It you have several replacements, you can group them together like so:
+
+ /* Replace: 1 */
+ #define foo bar
+ #define bat baz
+ /* Replace: 0 */
+
+These replace C<foo> with C<bar>; C<bat> with C<baz>.
+
+=back
+
+=item Dependencies
+
+F<ppport.h> automatically gathers information as to what functions are
+dependent on what other things from inspecting the source, but if this is
+insufficient for you, you can add lines like the following:
+
+ /* foo, bar depends on baz, bat */
+
+Each of C<foo>, C<bar> depends on each of C<baz>, C<bat>.
+
+=back
+
+=head2 Testing
+
+After you have furnished your implementation, you need to test it.
+
+=head2 Special Makefile targets
+
+You can use
+
+    make regen
+
+to regenerate all of the autogenerated files. To get rid of all
+generated files (except for F<parts/todo/*> and F<parts/base/*>),
+use
+
+    make purge_all
+
+That's it.
+
+
+To automatically test C<Devel::PPPort> with lots of different Perl
+versions, you can use the F<soak> script. Just pass it a list of
+all Perl binaries you want to test.
+
 =head2 How to build 366 versions of Perl
 
 C<Devel::PPPort> supports Perl versions between 5.003 and bleadperl.
@@ -51,44 +304,56 @@ The required information is derived from F<parts/embed.fnc> (just
 a copy of bleadperl's F<embed.fnc>), F<parts/apidoc.fnc> (which
 is generated by F<devel/mkapidoc.sh> and simply collects the rest
 of the apidoc entries spread over the Perl source code) and
-F<parts/ppport.fnc> (which lists all API provided purely by
-Devel::PPPort).
-The generated C file F<apicheck.c> is currently about 500k in size
-and takes quite a while to compile.
+F<parts/ppport.fnc> (which lists the API provided purely by
+Devel::PPPort, along with other elements that are tested only using
+F<ppport.h>).
 
-Usually, F<apicheck.c> won't compile with older perls. And even if
-it compiles, there's still a good chance of the dynamic linker
-failing at C<make test> time. But that's on purpose!
+The generated C file F<apicheck.c> usually, F<apicheck.c> won't compile as-is
+with older perls. And even if it compiles, there's still a good chance of the
+dynamic linker failing at C<make test> time. But that's on purpose!
 
 We can use these failures to find changes in the API automatically.
-The two Perl scripts F<devel/mktodo> and F<devel/mktodo.pl>
-repeatedly run C<Devel::PPPort> with the apicheck code through
-all different versions of perl. Scanning the output of the compiler
-and the dynamic linker for errors, the files in F<parts/todo/> are
-generated. These files list all parts of the public API that don't
-work with less than a certain version of Perl.
+The Perl script F<devel/mktodo> calls another script F<devel/mktodo.pl>
+repeatedly to run C<Devel::PPPort> on version after version of perl, in
+decreasing version order, so we start with blead and work backwards.  The
+latter script generates an F<apicheck.c>.  It starts with the code that
+successfully worked in the previously tested Perl version, which should be the
+version one higher than the current one.  Call the current one I<n>, and the
+previous one I<n+1>.  The items that fail to compile in I<n>, but did so in
+I<n+1> must have become available in I<n+1>.  We run the Linux command C<nm> to
+find those undefined symbols in I<n>.  We change F<apicheck.c> to ignore
+(through C<#ifdef>'s) those and recompile, repeating until F<apicheck.c>
+successfully compiles, the dynamic linker is happy, and C<make test> runs on
+this version.  Then we repeat the process for I<n-1>, and so on.  (Actually,
+this process may generate false positives, so by default each failing API call
+is checked again.  If possible, this is done by generating an F<apicheck.c> for
+just the one failing API.)
 
-This information is in turn used by F<parts/apicheck.pl> to mask
-API calls in the generated C file for these versions, so the
-process can be stopped by the time F<apicheck.c> compiles cleanly
-and the dynamic linker is happy. (Actually, this process may generate
-false positives, so by default each API call is checked once more
-afterwards.)
+Running F<devel/mktodo> currently takes a couple hours on dromedary.
+If you run it with the C<--nocheck> option, it won't recheck the API calls
+that failed in the compilation stage and it'll take significantly less time.
+No one currently associated with maintaining this module understands under what
+circumstances it is safe to run with C<--nocheck>.
 
-Running F<devel/mktodo> takes about an hour, depending of course
-on the machine you're running it on. If you run it with
-the C<--nocheck> option, it won't recheck the API calls that failed
-in the compilation stage and it'll take significantly less time.
-Running with C<--nocheck> should usually be safe.
+By repeating the process over and over, we build up information on when an
+element first became supported.  This information is stored in files in the
+F<parts/todo> directory, one file per version.  The file for version I<n+1> is
+generated by running version I<n> of perl.
 
-When running F<devel/mktodo> with the C<--base> option, it will
-generate the I<baseline> todo files by disabling all functionality
-provided by C<Devel::PPPort>. These are required for implementing
-the C<--compat-version> option of the F<ppport.h> script. The
-baseline todo files hold the information about which version of
-Perl lacks a certain part of the API.
+We actually want a second piece of information, which is how much F<ppport.h>
+buys you.  What happens when regenerating is two entire runs through all the
+perls.  The first is accomplished by calling F<devel/mktodo> with the C<--base>
+option.  It automically will call F<devel/mktodo.pl> with each version of perl,
+and not using anything in F<ppport.h>.  When done it tells when each API
+element became available in stock perl, without using F<ppport.h>.
+These files are then moved from F<parts/todo/> to F<parts/todo/>.
+And the whole process is repeated, but this time F<ppport.h> is included.  The
+files remain in F<parts/todo>.  Thus, at the end, 
 
-However, only the documented public API can be checked this way.
+However, only the public API that is implemented as functions (and must appear
+in F<embed.fnc>) plus macros that   funccan be checked this way.
+
+
 And since C<Devel::PPPort> provides more macros, these would not be
 affected by C<--compat-version>. It's the job of F<devel/scanprov>
 to figure out the baseline information for all remaining provided
@@ -99,34 +364,62 @@ The whole process isn't platform independent. It has currently been
 tested only under Linux, and it definitely requires at least C<gcc> and
 the C<nm> utility.
 
-It's not very often that one has to regenerate the baseline and todo
-files. If you have to, you can either run F<devel/regenerate> or just
-execute the following steps by hand:
+Ideally, the baseline and todo files should be regenerated before every release
+that includes new backporting and/or blead has added new public API.  At a
+minimum, it should be done as the next major Perl release comes out.
+
+Before starting the regeneration, you need to have gathered certain data.
+(Options listed apply to the tools that eventually will use the data).
 
 =over 4
 
 =item *
 
-You need a whole bunch of different Perls. The more, the better.
-You can use F<devel/buildperl.pl> to build them. I keep my perls
-in F</tmp/perl>, so most of the tools take this as a default.
+You will first need a whole bunch of different Perls, the more, the better, but
+only one per version tag (which one is random) will actually get used.  They
+should all have the same Configure options with respect to what functions and
+macros are enabled.  For example, they should all be threaded, or all
+non-threaded.  A mixture will screw up the results.  Similarly, they should all
+or none have quad math (at least as far back as that became available).  You
+can use F<devel/buildperl.pl> to build them.
+
+Previous maintainers of this module kept those perls in
+F</tmp/perl/install/default>, so most of the tools use this as a default, but
+you'll likely simply use the C<--install=> option to specify where.  This
+should be a path where a S<C<make install>> has been done, so has immediate
+subdirectories of C</bin> and C</lib>.  C</bin> should contain the binaries.
+It will use all files in this directory whose names begin with C<perl5>.
+
+Actually, not all the binaries need be in this directory.  You can specify
+additional places to look since C<--install=> takes a comma separated list of
+directories.
 
 =item *
 
-You also need a freshly built bleadperl that is in the path under
-exactly this name. (The name of the executable is currently hardcoded
-in F<devel/mktodo> and F<devel/scanprov>.)
+You also need a freshly built bleadperl.  The C<--blead=I<path>> option should
+be used to specify it.  (Some of the tools have a default of C<bleadperl-debug>
+if this option is omitted.  Again, it needs the same Configure options as the
+earlier versions had.
+
+=item *
+
+And you will need updated API information. Copy the latest F<embed.fnc> file
+from bleadperl to the F<parts> directory and run F<devel/mkapidoc.sh> to
+collect the remaining information in F<parts/apidoc.fnc>.
+
+=back
+
+Having done this, run F<devel/regenerate> which wraps the following steps
+(which you could instead do by hand, but it's easy to forget things):
+
+=over
 
 =item *
 
 Remove all existing todo files in the F<parts/base> and
 F<parts/todo> directories.
 
-=item *
-
-Update the API information. Copy the latest F<embed.fnc> file from
-bleadperl to the F<parts> directory and run F<devel/mkapidoc.sh> to
-collect the remaining information in F<parts/apidoc.fnc>.
+This is crtical to getting accurate results.
 
 =item *
 
@@ -136,6 +429,9 @@ Build the new baseline by running
 
 in the root directory of the distribution. When it's finished,
 move all files from the F<parts/todo> directory to F<parts/base>.
+
+You need to examine the output of the blead build to make sure it is working
+properly.  If it didn't compile, then the results will be inaccurate.
 
 =item *
 
@@ -176,167 +472,6 @@ TEST/harness in the core. Not having F<PPPort.pm> will be bad for
 viewing the docs on C<search.cpan.org>. So unfortunately, it's
 unavoidable to put some redundancy into the package.
 
-=head2 Adding stuff to Devel::PPPort
-
-First, check if the code you plan to add fits into one of the
-existing files in F<parts/inc/>. If not, just start a new one and
-remember to include it from within F<PPPort_pm.PL>.
-
-Each file holds all relevant data for implementing a certain part
-of the API:
-
-=over 2
-
-=item *
-
-A list of the provided API in the C<=provides> section.
-
-=item *
-
-The implementation to add to F<ppport.h> in the C<=implementation>
-section.
-
-Here you can add additional information for a given item that will be displayed
-when F<ppport.h> is run.  If your item is named C<foo>, you add a
-comment like so:
-
- /* Hint: foo
-    paragraphs of stuff about foo you want to have
-    shown when ppport.h outputs something about foo
- */
-
-This will cause S<C<perl ppport.h>> to display this hint when it outputs
-something about C<foo>.
-
-A more serious caution about C<foo> can be displayed by instead saying
-
- /* Warning: foo
-    paragraphs of stuff about foo you want to have
-    shown when ppport.h outputs something about foo
- */
-
-=item *
-
-The code required to add to PPPort.xs for testing the implementation.
-This code goes into the C<=xshead>, C<=xsinit>, C<=xsmisc>, C<=xsboot>
-and C<=xsubs> section. Have a look at the template at the bottom
-of F<RealPPPort_xs.PL> to see where the code ends up.
-
-=item *
-
-The tests in the C<=tests> section. Remember not to use any fancy
-modules or syntax elements, as the test code needs to be able to run
-with Perl 5.003.  (This is because Devel::PPPort itself will run all test files
-in the process of generating the information about when a feature came into
-existence.)  This means, for example
-
-=over
-
-=item C<my> isn't supported in C<for>-loops
-
-    for my $x (1, 2, 3) { }    # won't work with 5.003
-
-Instead declare C<$x> just before the statement
-
-=item The postfix for statement modifier isn't supported
-
-    foo for 1..2
-
-won't compile.  Instead enclose C<foo> in a loop.
-
-=item You can't use plain C<qr//>
-
-Instead, wrap it in a string eval C<eval "qr//">, and be sure it's skipped at
-execution time on perls earlier than 5.005
-
-=back
-
-You can use C<ok()> to report success or failure:
-
- ok($got, $expected, 'name');
- ok($got == 42);     # Doesn't give good runtime diagnostics
-
- ok($got, eval "qr/foo/", 'name') # But don't execute this statement
-                                  # on perls earlier than 5.005
-
-=back
-
-It's usually the best approach to just copy an existing file and
-use it as a template.
-
-=head2 Implementation Hints
-
-In the C<=implementation> section, you can use
-
-  __UNDEFINED__ macro    some definition
-
-instead of
-
-  #ifndef macro
-  #  define macro    some definition
-  #endif
-
-The macro can have optional arguments and the definition can even
-span multiple lines, like in
-
-  __UNDEFINED__ SvMAGIC_set(sv, val) \
-                STMT_START { assert(SvTYPE(sv) >= SVt_PVMG); \
-                (((XPVMG*) SvANY(sv))->xmg_magic = (val)); } STMT_END
-
-This usually makes the code more compact and readable. And you only have to add
-the line C<__UNDEFINED__> to the C<=provides> section to get all macros
-implemented this way to be imported into this section, so they all get
-documented as being provided.
-
-If you need to define a helper macro which is not part of C<Devel::PPPort> API
-and its usage is only for definition of other C<Devel::PPPort> macros then use
-the C<D_PPP_> prefix for this macro name (e.g. C<D_PPP_SVPV_NOLEN_LP_ARG>).
-Some C<Devel::PPPort> scripts would report a warning when there is defined a
-macro which is not part of Perl public API, except those macros which start
-with the C<D_PPP_> prefix.
-
-Version checking can be tricky to get correct.
-You can use
-
-  #if { VERSION < 5.9.3 }
-
-instead of
-
-  #if ((PERL_VERSION < 9) || (PERL_VERSION == 9 && PERL_SUBVERSION < 3))
-
-The version number can be either of the new form C<5.x.x> or of the older
-form C<5.00x_yy>. Both are translated into the correct preprocessor
-statements. It is also possible to combine this with other statements:
-
-  #if { VERSION >= 5.004 } && !defined(sv_vcatpvf)
-    /* a */
-  #elif { VERSION < 5.004_63 } && { VERSION != 5.004_05 }
-    /* b */
-  #endif
-
-This not only works in the C<=implementation> section, but also in
-the C<=xsubs>, C<=xsinit>, C<=xsmisc>, C<=xshead> and C<=xsboot> sections.
-
-=head2 Testing
-
-To automatically test C<Devel::PPPort> with lots of different Perl
-versions, you can use the F<soak> script. Just pass it a list of
-all Perl binaries you want to test.
-
-=head2 Special Makefile targets
-
-You can use
-
-    make regen
-
-to regenerate all of the autogenerated files. To get rid of all
-generated files (except for F<parts/todo/*> and F<parts/base/*>),
-use
-
-    make purge_all
-
-That's it.
-
 =head2 Submitting Patches
 
 If you've added some functionality to C<Devel::PPPort>, please
@@ -358,6 +493,8 @@ module in the core:
   MANIFEST
   META.yml
   PPPort.pm
+
+=head1 BUGS
 
 =head1 COPYRIGHT
 
