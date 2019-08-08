@@ -239,7 +239,8 @@ for $f (@f) {   # Loop through all the tests to add
   # want them to be tested even if non-public.
   $f->{'flags'}{'A'} or $f->{'ppport_fnc'} or next;
 
-  $f->{'flags'}{'c'} and next; # not marked as core-only;
+  # Don't test unorthodox things that we aren't set up to do
+  $f->{'flags'}{'u'} and next;
 
   $ignore{$unique} = 1; # ignore duplicates
 
