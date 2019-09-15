@@ -47,6 +47,7 @@ __UNDEFINED__  SvUVx(sv)       ((PL_Sv = (sv)), SvUV(PL_Sv))
 /* Hint: sv_uv
  * Always use the SvUVx() macro instead of sv_uv().
  */
+/* Replace sv_uv with SvUVx */
 __UNDEFINED__  sv_uv(sv)       SvUVx(sv)
 
 #if !defined(SvUOK) && defined(SvIOK_UV)
@@ -62,7 +63,7 @@ __UNDEFINED__  XPUSHu(u)       STMT_START { sv_setuv(TARG, (UV)(u)); XPUSHTARG; 
 #if !defined(my_strnlen)
 #if { NEED my_strnlen }
 
-STRLEN
+Size_t
 my_strnlen(const char *str, Size_t maxlen)
 {
     const char *p = str;
@@ -151,7 +152,7 @@ my_strnlen(s, max)
 
 =tests plan => 11
 
-BEGIN { require warnings if "$]" gt '5.006' }
+BEGIN { require warnings if "$]" > '5.006' }
 
 ok(&Devel::PPPort::sv_setuv(42), 42);
 ok(&Devel::PPPort::newSVuv(123), 123);

@@ -68,7 +68,7 @@ __UNDEFINED__ PERL_LOADMOD_IMPORT_OPS   0x4
 #if { NEED eval_pv }
 
 SV*
-eval_pv(char *p, I32 croak_on_error)
+eval_pv(const char *p, I32 croak_on_error)
 {
     dSP;
     SV* errsv;
@@ -94,7 +94,7 @@ eval_pv(char *p, I32 croak_on_error)
 #endif
 #endif
 
-#ifndef vload_module
+#if ! defined(vload_module) && defined(start_subparse)
 #if { NEED vload_module }
 
 void
@@ -137,16 +137,11 @@ vload_module(U32 flags, SV *name, SV *ver, va_list *args)
         COP * const ocurcop = PL_curcop;
         const int oexpect = PL_expect;
 
-#if { VERSION >= 5.004 }
         utilize(!(flags & PERL_LOADMOD_DENY), start_subparse(FALSE, 0),
-                veop, modname, imop);
-#elif { VERSION > 5.003 }
-        utilize(!(flags & PERL_LOADMOD_DENY), start_subparse(),
-                veop, modname, imop);
-#else
-        utilize(!(flags & PERL_LOADMOD_DENY), start_subparse(),
-                modname, imop);
+#if { VERSION > 5.003 }
+                veop,
 #endif
+                modname, imop);
         PL_expect = oexpect;
         PL_copline = ocopline;
         PL_curcop = ocurcop;
@@ -390,7 +385,7 @@ ok(eval { $@ = 'string1'; Devel::PPPort::eval_pv('$@ = "string2"; die "string3"'
 ok(!eval { $@ = 'string1'; Devel::PPPort::eval_pv('$@ = "string2"; die "string3"', 1); 1 });
 ok($@ =~ /^string3 at \(eval [0-9]+\) line 1\.\n$/);
 
-if ($] ge '5.007003' or ($] ge '5.006001' and $] lt '5.007')) {
+if ("$]" >= '5.007003' or ("$]" >= '5.006001' and "$]" < '5.007')) {
     my $hashref = { key => 'value' };
     ok(eval { Devel::PPPort::eval_pv('die $hashref', 1); 1 }, undef, 'check plain hashref is rethrown');
     ok(ref($@), 'HASH', 'check $@ is hashref') and
@@ -402,7 +397,9 @@ if ($] ge '5.007003' or ($] ge '5.006001' and $] lt '5.007')) {
     ok(ref($@), 'False', 'check that $@ contains False object');
     ok("$@", "$false", 'check we got the expected object');
 } else {
-    skip 'skip: no support for references in $@', 0 for 1..7;
+    for (1..7) {
+        skip 'skip: no support for references in $@', 0;
+    }
 }
 
 {

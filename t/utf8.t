@@ -30,9 +30,9 @@ BEGIN {
     require 'testutil.pl' if $@;
   }
 
-  if (81) {
+  if (93) {
     load();
-    plan(tests => 81);
+    plan(tests => 93);
   }
 }
 
@@ -48,11 +48,13 @@ bootstrap Devel::PPPort;
 
 package main;
 
-BEGIN { require warnings if "$]" gt '5.006' }
+BEGIN { require warnings if "$]" > '5.006' }
 
-# skip tests on 5.6.0 and earlier
-if ("$]" le '5.006') {
-    skip 'skip: broken utf8 support', 0 for 1..81;
+# skip tests on 5.6.0 and earlier, plus 7.0
+if ("$]" <= '5.006' || "$]" == '5.007' ) {
+    for (1..93) {
+        skip 'skip: broken utf8 support', 0;
+    }
     exit;
 }
 
@@ -64,8 +66,36 @@ ok(&Devel::PPPort::isUTF8_CHAR("A",  0), 1);
 ok(&Devel::PPPort::isUTF8_CHAR("\x{100}",  -1), 0);
 ok(&Devel::PPPort::isUTF8_CHAR("\x{100}",  0), 2);
 
-if ("$]" lt '5.008') {
-    ok(1, 1) for 1 ..3
+ok(&Devel::PPPort::UVCHR_IS_INVARIANT(ord("A")), 1);
+ok(! &Devel::PPPort::UVCHR_IS_INVARIANT(0xb6));
+ok(! &Devel::PPPort::UVCHR_IS_INVARIANT(0x100));
+
+if ("$]" < '5.006') {
+    for (1 ..9) {
+        ok(1, 1)
+    }
+}
+else {
+    ok(&Devel::PPPort::UVCHR_SKIP(ord("A")), 1);
+    ok(&Devel::PPPort::UVCHR_SKIP(0xb6),     2, "This is a test");
+    ok(&Devel::PPPort::UVCHR_SKIP(0x3FF),    2);
+    ok(&Devel::PPPort::UVCHR_SKIP(0x3FFF),   3);
+    ok(&Devel::PPPort::UVCHR_SKIP(0x3FFFF),  4);
+    ok(&Devel::PPPort::UVCHR_SKIP(0x3FFFFF), 5);
+    ok(&Devel::PPPort::UVCHR_SKIP(0x3FFFFFF), ord("A") == 65 ? 5 : 6);
+    ok(&Devel::PPPort::UVCHR_SKIP(0x4000000), ord("A") == 65 ? 6 : 7);
+    if (ord("A") != 65) {
+        ok(1, 1)
+    }
+    else {
+        ok(&Devel::PPPort::UVCHR_SKIP(0xFFFFFFFF), 7);
+    }
+}
+
+if ("$]" < '5.008') {
+    for (1 ..3) {
+        ok(1, 1)
+    }
 }
 else {
     ok(&Devel::PPPort::foldEQ_utf8("A\x{100}", 3, 1, "a\x{101}", 3, 1), 1);
@@ -90,7 +120,9 @@ ok($ret->[0], 0);
 ok($ret->[1], 1);
 
 if (ord("A") != 65) {   # tests not valid for EBCDIC
-    ok(1, 1) for 1 .. (2 + 4 + (7 * 5));
+    for (1 .. (2 + 4 + (7 * 5))) {
+        ok(1, 1);
+    }
 }
 else {
     $ret = &Devel::PPPort::utf8_to_uvchr_buf("\xc4\x80", 0);
@@ -101,12 +133,12 @@ else {
     local $SIG{__WARN__} = sub { push @warnings, @_; };
 
     {
-        BEGIN { 'warnings'->import('utf8') if "$]" gt '5.006' }
+        BEGIN { 'warnings'->import('utf8') if "$]" > '5.006' }
         $ret = &Devel::PPPort::utf8_to_uvchr("\xe0\0\x80");
         ok($ret->[0], 0);
         ok($ret->[1], -1);
 
-        BEGIN { 'warnings'->unimport() if "$]" gt '5.006' }
+        BEGIN { 'warnings'->unimport() if "$]" > '5.006' }
         $ret = &Devel::PPPort::utf8_to_uvchr("\xe0\0\x80");
         ok($ret->[0], 0xFFFD);
         ok($ret->[1], 1);
@@ -116,43 +148,43 @@ else {
         {
             input      => "A",
             adjustment => -1,
-            warning    => qr/empty/,
+            warning    => eval "qr/empty/",
             no_warnings_returned_length => 0,
         },
         {
             input      => "\xc4\xc5",
             adjustment => 0,
-            warning    => qr/non-continuation/,
+            warning    => eval "qr/non-continuation/",
             no_warnings_returned_length => 1,
         },
         {
             input      => "\xc4\x80",
             adjustment => -1,
-            warning    => qr/short|1 byte, need 2/,
+            warning    => eval "qr/short|1 byte, need 2/",
             no_warnings_returned_length => 1,
         },
         {
             input      => "\xc0\x81",
             adjustment => 0,
-            warning    => qr/overlong|2 bytes, need 1/,
+            warning    => eval "qr/overlong|2 bytes, need 1/",
             no_warnings_returned_length => 2,
         },
         {
             input      => "\xe0\x80\x81",
             adjustment => 0,
-            warning    => qr/overlong|3 bytes, need 1/,
+            warning    => eval "qr/overlong|3 bytes, need 1/",
             no_warnings_returned_length => 3,
         },
         {
             input      => "\xf0\x80\x80\x81",
             adjustment => 0,
-            warning    => qr/overlong|4 bytes, need 1/,
+            warning    => eval "qr/overlong|4 bytes, need 1/",
             no_warnings_returned_length => 4,
         },
         {                 # Old algorithm failed to detect this
             input      => "\xff\x80\x90\x90\x90\xbf\xbf\xbf\xbf\xbf\xbf\xbf\xbf",
             adjustment => 0,
-            warning    => qr/overflow/,
+            warning    => eval "qr/overflow/",
             no_warnings_returned_length => 13,
         },
     );
@@ -163,14 +195,18 @@ else {
     use vars '%Config';
     if ($Config{ccflags} =~ /-DDEBUGGING/) {
         shift @buf_tests;
-        ok(1, 1) for 1..5;
+        for (1..5) {
+            ok(1, 1);
+        }
     }
 
-    for my $test (@buf_tests) {
+    my $test;
+    for $test (@buf_tests) {
         my $input = $test->{'input'};
         my $adjustment = $test->{'adjustment'};
         my $display = 'utf8_to_uvchr_buf("';
-        for (my $i = 0; $i < length($input) + $adjustment; $i++) {
+        my $i;
+        for ($i = 0; $i < length($input) + $adjustment; $i++) {
             $display .= sprintf "\\x%02x", ord substr($input, $i, 1);
         }
 
@@ -178,7 +214,7 @@ else {
         my $warning = $test->{'warning'};
 
         undef @warnings;
-        BEGIN { 'warnings'->import('utf8') if "$]" gt '5.006' }
+        BEGIN { 'warnings'->import('utf8') if "$]" > '5.006' }
         $ret = &Devel::PPPort::utf8_to_uvchr_buf($input, $adjustment);
         ok($ret->[0], 0,  "returned value $display; warnings enabled");
         ok($ret->[1], -1, "returned length $display; warnings enabled");
@@ -188,7 +224,7 @@ else {
                     . "; Got: '$all_warnings', which should contain '$warning'");
 
         undef @warnings;
-        BEGIN { 'warnings'->unimport('utf8') if "$]" gt '5.006' }
+        BEGIN { 'warnings'->unimport('utf8') if "$]" > '5.006' }
         $ret = &Devel::PPPort::utf8_to_uvchr_buf($input, $adjustment);
         ok($ret->[0], 0xFFFD,  "returned value $display; warnings disabled");
         ok($ret->[1], $test->{'no_warnings_returned_length'},
@@ -232,7 +268,9 @@ if ("$]" ge '5.008') {
     ok(tied($scalar)->{fetch}, 3);
     ok(tied($scalar)->{store}, 0);
 } else {
-    skip 'skip: no SV_NOSTEAL support', 0 for 1..23;
+    for (1..23) {
+        skip 'skip: no SV_NOSTEAL support', 0;
+    }
 }
 
 package TieScalarCounter;
