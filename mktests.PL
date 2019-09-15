@@ -48,6 +48,7 @@ sub generate_tests
       $tmpl =~ s/^__TESTS__$/$spec->{tests}/mg;
 
       open FH, ">$testfile" or die "$testfile: $!\n";
+      binmode FH;
       print FH $tmpl;
       close FH;
 
