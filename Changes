@@ -1,5 +1,9 @@
 Revision history for Devel-PPPort
 
+ 3.55 - {{NEXT}}
+
+  * ...
+
  3.54 - 2019-09-27
 
   * Fix Unix-format path in Devel::PPPort's Makefile.PL
