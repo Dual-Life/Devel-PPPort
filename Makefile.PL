@@ -58,7 +58,7 @@ sub configure
 
   if (eval { ExtUtils::MakeMaker->VERSION(6) }) {
     push @moreopts, AUTHOR => 'Marcus Holland-Moritz <mhx@cpan.org>';
-    push @moreopts, ABSTRACT_FROM => 'PPPort_pm.PL';
+    push @moreopts, ABSTRACT_FROM => 'PPPort.pm';
   }
 
   if (eval { ExtUtils::MakeMaker->VERSION(6.30_01) }) {
