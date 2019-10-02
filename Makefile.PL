@@ -198,13 +198,23 @@ sub MY::dist_core
   my $rule;
   foreach $rule ( @rules ) {
     if ( $rule =~ m{^\s*^dist\s+:}m ) {
-        $rule =~ s{:}{: manifest PPPort.pm}; # make sure we regenerate the manifest
-        $rule .= qq[\t].q[mv PPPort.pm Abstract.pm].qq[\n];
-        $rule .= qq[\t].q[echo Abstract.pm >> MANIFEST].qq[\n];
+        $rule =~ s{:}{: xmanifest}; # make sure we regenerate the manifest
         $rule .= qq[\t].q[$(NOECHO) $(ECHO) "Warning: Please check '__MAX_PERL__' value in PPPort_pm.PL"].qq[\n];
     }
     $updated .= $rule;
   }
+
+  # generate a file which contains our updated documentation
+   my $xmanifest = <<'EOS';
+
+xmanifest : manifest PPPort.pm
+  mv PPPort.pm Abstract.pm
+  echo Abstract.pm >> MANIFEST
+EOS
+
+  $xmanifest =~ s{^ +}{\t}gm;
+
+  $updated .= $xmanifest;
 
   return $updated;
 }
