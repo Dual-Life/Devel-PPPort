@@ -50,6 +50,34 @@ __UNDEFINED__ __ASSERT_(statement)  assert(statement),
 __UNDEFINED__ __ASSERT_(statement)
 #endif
 
+/* These could become provided when they become part of the public API */
+__UNDEF_NOT_PROVIDED__ withinCOUNT(c, l, n)                                 \
+   (((WIDEST_UTYPE) (((c)) - ((l) | 0))) <= (((WIDEST_UTYPE) ((n) | 0))))
+__UNDEF_NOT_PROVIDED__ inRANGE(c, l, u)                                    \
+   (  (sizeof(c) == sizeof(U8))  ? withinCOUNT(((U8)  (c)), (l), ((u) - (l)))  \
+    : (sizeof(c) == sizeof(U16)) ? withinCOUNT(((U16) (c)), (l), ((u) - (l)))  \
+    : (sizeof(c) == sizeof(U32)) ? withinCOUNT(((U32) (c)), (l), ((u) - (l)))  \
+    : (withinCOUNT(((WIDEST_UTYPE) (c)), (l), ((u) - (l)))))
+
+/* Create the macro for "is'macro'_utf8_safe(s, e)".  For code points below
+ * 256, it calls the equivalent _L1 macro by converting the UTF-8 to code
+ * point.  That is so that it can automatically get the bug fixes done in this
+ * file. */
+#define D_PPP_IS_GENERIC_UTF8_SAFE(s, e, macro)                             \
+   (((e) - (s)) <= 0                                                        \
+     ? 0                                                                    \
+     : UTF8_IS_INVARIANT((s)[0])                                            \
+       ? is ## macro ## _L1((s)[0])                                         \
+       : (((e) - (s)) < UTF8SKIP(s))                                        \
+          ? 0                                                               \
+          : UTF8_IS_DOWNGRADEABLE_START((s)[0])                             \
+              /* The cast in the line below is only to silence warnings */  \
+            ? is ## macro ## _L1((WIDEST_UTYPE) LATIN1_TO_NATIVE(           \
+                                  UTF8_ACCUMULATE(NATIVE_UTF8_TO_I8((s)[0]) \
+                                                     & UTF_START_MASK(2),   \
+                                                  (s)[1])))                 \
+            : is ## macro ## _utf8(s))
+
 __UNDEFINED__ SvRX(rv) (SvROK((rv)) ? (SvMAGICAL(SvRV((rv))) ? (mg_find(SvRV((rv)), PERL_MAGIC_qr) ? mg_find(SvRV((rv)), PERL_MAGIC_qr)->mg_obj : NULL) : NULL) : NULL)
 __UNDEFINED__ SvRXOK(sv) (!!SvRX(sv))
 
@@ -284,22 +312,39 @@ typedef OP* (CPERLscope(*Perl_check_t)) (pTHX_ OP*);
 # endif
 #endif
 
-/* On versions without this, only ASCII is supported */
-#ifdef NATIVE_TO_ASCII
+/* On versions without NATIVE_TO_ASCII, only ASCII is supported */
+#if defined(EBCDIC) && defined(NATIVE_TO_ASCI)
 __UNDEFINED__ NATIVE_TO_LATIN1(c) NATIVE_TO_ASCII(c)
+__UNDEFINED__ LATIN1_TO_NATIVE(c) ASCII_TO_NATIVE(c)
+__UNDEFINED__ NATIVE_TO_UNI(c) ((c) > 255 ? (c) : NATIVE_TO_LATIN1(c))
+__UNDEFINED__ UNI_TO_NATIVE(c) ((c) > 255 ? (c) : LATIN1_TO_NATIVE(c))
 #else
 __UNDEFINED__ NATIVE_TO_LATIN1(c) (c)
-#endif
-
-#ifdef ASCII_TO_NATIVE
-__UNDEFINED__ LATIN1_TO_NATIVE(c) ASCII_TO_NATIVE(c)
-#else
 __UNDEFINED__ LATIN1_TO_NATIVE(c) (c)
+__UNDEFINED__ NATIVE_TO_UNI(c) (c)
+__UNDEFINED__ UNI_TO_NATIVE(c) (c)
 #endif
 
-/* Warning: LATIN1_TO_NATIVE, NATIVE_TO_LATIN1
+/* Warning: LATIN1_TO_NATIVE, NATIVE_TO_LATIN1 NATIVE_TO_UNI UNI_TO_NATIVE
    EBCDIC is not supported on versions earlier than 5.7.1
  */
+
+/* The meaning of this changed; use the modern version */
+#undef isPSXSPC
+#undef isPSXSPC_A
+#undef isPSXSPC_L1
+
+/* Hint: isPSXSPC, isPSXSPC_A, isPSXSPC_L1, isPSXSPC_utf8_safe
+    This is equivalent to the corresponding isSPACE-type macro.  On perls
+    before 5.18, this matched a vertical tab and SPACE didn't.  But the
+    ppport.h SPACE version does match VT in all perl releases.  Since VT's are
+    extremely rarely found in real-life files, this difference effectively
+    doesn't matter */
+
+/* Hint: isSPACE, isSPACE_A, isSPACE_L1, isSPACE_utf8_safe
+    Until Perl 5.18, this did not match the vertical tab (VT).  The ppport.h
+    version does match it in all perl releases. Since VT's are extremely rarely
+    found in real-life files, this difference effectively doesn't matter */
 
 #ifdef EBCDIC
 
@@ -349,9 +394,6 @@ __UNDEFINED__ LATIN1_TO_NATIVE(c) (c)
 #  undef isPRINT
 #  undef isPRINT_A
 #  undef isPRINT_L1
-#  undef isPSXSPC
-#  undef isPSXSPC_A
-#  undef isPSXSPC_L1
 #  undef isPUNCT
 #  undef isPUNCT_A
 #  undef isPUNCT_L1
@@ -433,6 +475,10 @@ __UNDEFINED__ isUPPER(c)    (        (c) >= 'A' && (c) <= 'Z'                   
 #  undef isUPPER_A
 # endif
 
+#  if { VERSION == 5.7.0 } /* this perl made space GRAPH */
+#    undef isGRAPH
+#  endif
+
 # if { VERSION < 5.8.0 } /* earlier perls omitted DEL */
 #  undef isCNTRL
 # endif
@@ -490,7 +536,9 @@ __UNDEFINED__ isBLANK_L1(c) (    isBLANK(c)                                    \
 __UNDEFINED__ isDIGIT(c)        ((c) <= '9' && (c) >= '0')
 __UNDEFINED__ isDIGIT_L1(c)     isDIGIT(c)
 __UNDEFINED__ isGRAPH(c)        (isWORDCHAR(c) || isPUNCT(c))
-__UNDEFINED__ isGRAPH_L1(c)     (isPRINT_L1(c) && (c) != ' ')
+__UNDEFINED__ isGRAPH_L1(c)     (   isPRINT_L1(c)                              \
+                                 && (c) != ' '                                 \
+                                 && NATIVE_TO_LATIN1((U8) c) != 0xA0)
 __UNDEFINED__ isIDCONT(c)       isWORDCHAR(c)
 __UNDEFINED__ isIDCONT_L1(c)	isWORDCHAR_L1(c)
 __UNDEFINED__ isIDFIRST(c)      (isALPHA(c) || (c) == '_')
@@ -566,6 +614,275 @@ __UNDEFINED__ isSPACE_A(c)         isSPACE(c)
 __UNDEFINED__ isUPPER_A(c)         isUPPER(c)
 __UNDEFINED__ isWORDCHAR_A(c)	   isWORDCHAR(c)
 __UNDEFINED__ isXDIGIT_A(c)	   isXDIGIT(c)
+
+__UNDEFINED__ isASCII_utf8_safe(s,e)  isASCII(*(s))
+
+#if { VERSION >= 5.006 }
+
+__UNDEFINED__ isALPHA_utf8_safe(s,e)    D_PPP_IS_GENERIC_UTF8_SAFE(s, e, ALPHA)
+#  ifdef isALPHANUMERIC_utf8
+__UNDEFINED__ isALPHANUMERIC_utf8_safe(s,e)                                 \
+                                D_PPP_IS_GENERIC_UTF8_SAFE(s, e, ALPHANUMERIC)
+#  else
+__UNDEFINED__ isALPHANUMERIC_utf8_safe(s,e)				    \
+                        (isALPHA_utf8_safe(s,e) || isDIGIT_utf8_safe(s,e))
+#  endif
+
+/* This was broken before 5.18, and just use this instead of worrying about
+ * which releases the official works on */
+#  if 'A' == 65
+__UNDEFINED__  isBLANK_utf8_safe(s,e)                                       \
+( ( LIKELY((e) > (s)) ) ?   /* Machine generated */                         \
+    ( ( 0x09 == ((const U8*)s)[0] || 0x20 == ((const U8*)s)[0] ) ? 1        \
+    : ( LIKELY(((e) - (s)) >= UTF8SKIP(s)) ) ?                              \
+	    ( ( 0xC2 == ((const U8*)s)[0] ) ?                               \
+		( ( 0xA0 == ((const U8*)s)[1] ) ? 2 : 0 )                   \
+	    : ( 0xE1 == ((const U8*)s)[0] ) ?                               \
+		( ( ( 0x9A == ((const U8*)s)[1] ) && ( 0x80 == ((const U8*)s)[2] ) ) ? 3 : 0 )\
+	    : ( 0xE2 == ((const U8*)s)[0] ) ?                               \
+		( ( 0x80 == ((const U8*)s)[1] ) ?                           \
+		    ( ( inRANGE(((const U8*)s)[2], 0x80, 0x8A ) || 0xAF == ((const U8*)s)[2] ) ? 3 : 0 )\
+		: ( ( 0x81 == ((const U8*)s)[1] ) && ( 0x9F == ((const U8*)s)[2] ) ) ? 3 : 0 )\
+	    : ( ( ( 0xE3 == ((const U8*)s)[0] ) && ( 0x80 == ((const U8*)s)[1] ) ) && ( 0x80 == ((const U8*)s)[2] ) ) ? 3 : 0 )\
+	: 0 )                                                               \
+ : 0 )
+
+#  elif 'A' == 193  && '^' == 95 /* EBCDIC 1047 */
+
+__UNDEFINED__  isBLANK_utf8_safe(s,e)                                       \
+( ( LIKELY((e) > (s)) ) ?                                                   \
+    ( ( 0x05 == ((const U8*)s)[0] || 0x40 == ((const U8*)s)[0] ) ? 1        \
+    : ( LIKELY(((e) - (s)) >= UTF8SKIP(s)) ) ?                              \
+	    ( ( 0x80 == ((const U8*)s)[0] ) ?                               \
+		( ( 0x41 == ((const U8*)s)[1] ) ? 2 : 0 )                   \
+	    : ( 0xBC == ((const U8*)s)[0] ) ?                               \
+		( ( ( 0x63 == ((const U8*)s)[1] ) && ( 0x41 == ((const U8*)s)[2] ) ) ? 3 : 0 )\
+	    : ( 0xCA == ((const U8*)s)[0] ) ?                               \
+		( ( 0x41 == ((const U8*)s)[1] ) ?                           \
+		    ( ( inRANGE(((const U8*)s)[2], 0x41, 0x4A ) || 0x51 == ((const U8*)s)[2] ) ? 3 : 0 )\
+		: ( 0x42 == ((const U8*)s)[1] ) ?                           \
+		    ( ( 0x56 == ((const U8*)s)[2] ) ? 3 : 0 )               \
+		: ( ( 0x43 == ((const U8*)s)[1] ) && ( 0x73 == ((const U8*)s)[2] ) ) ? 3 : 0 )\
+	    : ( ( ( 0xCE == ((const U8*)s)[0] ) && ( 0x41 == ((const U8*)s)[1] ) ) && ( 0x41 == ((const U8*)s)[2] ) ) ? 3 : 0 )\
+	: 0 )                                                               \
+: 0 )
+
+#  elif 'A' == 193  && '^' == 176 /* EBCDIC 037 */
+
+__UNDEFINED__  isBLANK_utf8_safe(s,e)                                       \
+( ( LIKELY((e) > (s)) ) ?                                                   \
+    ( ( 0x05 == ((const U8*)s)[0] || 0x40 == ((const U8*)s)[0] ) ? 1        \
+    : ( LIKELY(((e) - (s)) >= UTF8SKIP(s)) ) ?                              \
+	    ( ( 0x78 == ((const U8*)s)[0] ) ?                               \
+		( ( 0x41 == ((const U8*)s)[1] ) ? 2 : 0 )                   \
+	    : ( 0xBD == ((const U8*)s)[0] ) ?                               \
+		( ( ( 0x62 == ((const U8*)s)[1] ) && ( 0x41 == ((const U8*)s)[2] ) ) ? 3 : 0 )\
+	    : ( 0xCA == ((const U8*)s)[0] ) ?                               \
+		( ( 0x41 == ((const U8*)s)[1] ) ?                           \
+		    ( ( inRANGE(((const U8*)s)[2], 0x41, 0x4A ) || 0x51 == ((const U8*)s)[2] ) ? 3 : 0 )\
+		: ( 0x42 == ((const U8*)s)[1] ) ?                           \
+		    ( ( 0x56 == ((const U8*)s)[2] ) ? 3 : 0 )               \
+		: ( ( 0x43 == ((const U8*)s)[1] ) && ( 0x72 == ((const U8*)s)[2] ) ) ? 3 : 0 )\
+	    : ( ( ( 0xCE == ((const U8*)s)[0] ) && ( 0x41 == ((const U8*)s)[1] ) ) && ( 0x41 == ((const U8*)s)[2] ) ) ? 3 : 0 )\
+	: 0 )                                                               \
+: 0 )
+
+#  else
+#    error Unknown character set
+#  endif
+
+__UNDEFINED__ isCNTRL_utf8_safe(s,e)    D_PPP_IS_GENERIC_UTF8_SAFE(s, e, CNTRL)
+__UNDEFINED__ isDIGIT_utf8_safe(s,e)    D_PPP_IS_GENERIC_UTF8_SAFE(s, e, DIGIT)
+__UNDEFINED__ isGRAPH_utf8_safe(s,e)    D_PPP_IS_GENERIC_UTF8_SAFE(s, e, GRAPH)
+#  ifdef isIDCONT_utf8
+__UNDEFINED__ isIDCONT_utf8_safe(s,e)   D_PPP_IS_GENERIC_UTF8_SAFE(s, e, IDCONT)
+#  else
+__UNDEFINED__ isIDCONT_utf8_safe(s,e)   isWORDCHAR_utf8_safe(s,e)
+#  endif
+
+__UNDEFINED__ isIDFIRST_utf8_safe(s,e)  D_PPP_IS_GENERIC_UTF8_SAFE(s, e, IDFIRST)
+__UNDEFINED__ isLOWER_utf8_safe(s,e)    D_PPP_IS_GENERIC_UTF8_SAFE(s, e, LOWER)
+__UNDEFINED__ isPRINT_utf8_safe(s,e)    D_PPP_IS_GENERIC_UTF8_SAFE(s, e, PRINT)
+
+#  undef isPSXSPC_utf8_safe   /* Use the modern definition */
+__UNDEFINED__ isPSXSPC_utf8_safe(s,e)   isSPACE_utf8_safe(s,e)
+
+__UNDEFINED__ isPUNCT_utf8_safe(s,e)    D_PPP_IS_GENERIC_UTF8_SAFE(s, e, PUNCT)
+__UNDEFINED__ isSPACE_utf8_safe(s,e)    D_PPP_IS_GENERIC_UTF8_SAFE(s, e, SPACE)
+__UNDEFINED__ isUPPER_utf8_safe(s,e)    D_PPP_IS_GENERIC_UTF8_SAFE(s, e, UPPER)
+
+#  ifdef isWORDCHAR_utf8
+__UNDEFINED__ isWORDCHAR_utf8_safe(s,e) D_PPP_IS_GENERIC_UTF8_SAFE(s, e, WORDCHAR)
+#  else
+__UNDEFINED__ isWORDCHAR_utf8_safe(s,e)				               \
+                               (isALPHANUMERIC_utf8_safe(s,e) || (*(s)) == '_')
+#  endif
+
+/* This was broken before 5.12, and just use this instead of worrying about
+ * which releases the official works on */
+#  if 'A' == 65
+__UNDEFINED__  isXDIGIT_utf8_safe(s,e)                                       \
+( ( LIKELY((e) > (s)) ) ?                                                   \
+    ( ( inRANGE(((const U8*)s)[0], 0x30, 0x39 ) || inRANGE(((const U8*)s)[0], 0x41, 0x46 ) || inRANGE(((const U8*)s)[0], 0x61, 0x66 ) ) ? 1\
+    : ( ( LIKELY(((e) - (s)) >= UTF8SKIP(s)) ) && ( 0xEF == ((const U8*)s)[0] ) ) ? ( ( 0xBC == ((const U8*)s)[1] ) ?\
+		    ( ( inRANGE(((const U8*)s)[2], 0x90, 0x99 ) || inRANGE(((const U8*)s)[2], 0xA1, 0xA6 ) ) ? 3 : 0 )\
+		: ( ( 0xBD == ((const U8*)s)[1] ) && ( inRANGE(((const U8*)s)[2], 0x81, 0x86 ) ) ) ? 3 : 0 ) : 0 )\
+: 0 )
+
+#  elif 'A' == 193  && '^' == 95 /* EBCDIC 1047 */
+
+__UNDEFINED__  isXDIGIT_utf8_safe(s,e)                                       \
+( ( LIKELY((e) > (s)) ) ?                                                   \
+    ( ( inRANGE(((const U8*)s)[0], 0x81, 0x86 ) || inRANGE(((const U8*)s)[0], 0xC1, 0xC6 ) || inRANGE(((const U8*)s)[0], 0xF0, 0xF9 ) ) ? 1\
+    : ( ( ( LIKELY(((e) - (s)) >= UTF8SKIP(s)) ) && ( 0xDD == ((const U8*)s)[0] ) ) && ( 0x73 == ((const U8*)s)[1] ) ) ? ( ( 0x67 == ((const U8*)s)[2] ) ?\
+			( ( inRANGE(((const U8*)s)[3], 0x57, 0x59 ) || inRANGE(((const U8*)s)[3], 0x62, 0x68 ) ) ? 4 : 0 )\
+		    : ( ( inRANGE(((const U8*)s)[2], 0x68, 0x69 ) ) && ( inRANGE(((const U8*)s)[3], 0x42, 0x47 ) ) ) ? 4 : 0 ) : 0 )\
+: 0 )
+
+#  elif 'A' == 193  && '^' == 176 /* EBCDIC 037 */
+
+__UNDEFINED__  isXDIGIT_utf8_safe(s,e)                                       \
+( ( LIKELY((e) > (s)) ) ?                                                   \
+    ( ( inRANGE(((const U8*)s)[0], 0x81, 0x86 ) || inRANGE(((const U8*)s)[0], 0xC1, 0xC6 ) || inRANGE(((const U8*)s)[0], 0xF0, 0xF9 ) ) ? 1\
+    : ( ( ( LIKELY(((e) - (s)) >= UTF8SKIP(s)) ) && ( 0xDD == ((const U8*)s)[0] ) ) && ( 0x72 == ((const U8*)s)[1] ) ) ? ( ( 0x66 == ((const U8*)s)[2] ) ?\
+			( ( inRANGE(((const U8*)s)[3], 0x57, 0x59 ) || 0x5F == ((const U8*)s)[3] || inRANGE(((const U8*)s)[3], 0x62, 0x67 ) ) ? 4 : 0 )\
+		    : ( ( inRANGE(((const U8*)s)[2], 0x67, 0x68 ) ) && ( inRANGE(((const U8*)s)[3], 0x42, 0x47 ) ) ) ? 4 : 0 ) : 0 )\
+: 0 )
+
+#  else
+#    error Unknown character set
+#  endif
+
+/* Warning: isALPHANUMERIC_utf8_safe, isALPHA_utf8_safe, isASCII_utf8_safe,
+ * isBLANK_utf8_safe, isCNTRL_utf8_safe, isDIGIT_utf8_safe, isGRAPH_utf8_safe,
+ * isIDCONT_utf8_safe, isIDFIRST_utf8_safe, isLOWER_utf8_safe,
+ * isPRINT_utf8_safe, isPSXSPC_utf8_safe, isPUNCT_utf8_safe, isSPACE_utf8_safe,
+ * isUPPER_utf8_safe, isWORDCHAR_utf8_safe, isWORDCHAR_utf8_safe,
+ * isXDIGIT_utf8_safe
+ *
+ * The UTF-8 handling is buggy in early Perls, and this can give inaccurate
+ * results for code points above 0xFF, until the implementation started
+ * settling down in 5.12 and 5.14 */
+
+#endif
+
+#define D_PPP_TOO_SHORT_MSG  "Malformed UTF-8 character starting with:"      \
+                             " \\x%02x (too short; %d bytes available, need" \
+                             " %d)\n"
+/* Perls starting here had a new API which handled multi-character results */
+#if { VERSION >= 5.7.3 }
+#  if { VERSION != 5.15.6 }     /* Just this version is broken */
+
+      /* Prefer the macro to the function */
+#    if defined toLOWER_utf8
+#      define D_PPP_TO_LOWER_CALLEE(s,r,l)    toLOWER_utf8(s,r,l)
+#    else
+#      define D_PPP_TO_LOWER_CALLEE(s,r,l)    to_utf8_lower(s,r,l)
+#    endif
+#    if defined toTITLE_utf8
+#      define D_PPP_TO_TITLE_CALLEE(s,r,l)    toTITLE_utf8(s,r,l)
+#    else
+#      define D_PPP_TO_TITLE_CALLEE(s,r,l)    to_utf8_title(s,r,l)
+#    endif
+#    if defined toUPPER_utf8
+#      define D_PPP_TO_UPPER_CALLEE(s,r,l)    toUPPER_utf8(s,r,l)
+#    else
+#      define D_PPP_TO_UPPER_CALLEE(s,r,l)    to_utf8_upper(s,r,l)
+#    endif
+#    if defined toFOLD_utf8
+#      define D_PPP_TO_FOLD_CALLEE(s,r,l)     toFOLD_utf8(s,r,l)
+#    else
+#      define D_PPP_TO_FOLD_CALLEE(s,r,l)     to_utf8_fold(s,r,l)
+#    endif
+#  else     /* Below is 5.15.6, which failed to make the macros available
+#              outside of core, so we have to use the 'Perl_' form.  khw
+#              decided it was easier to just handle this case than have to
+#              document the exception, and make an exception in the tests below
+#              */
+#    define D_PPP_TO_LOWER_CALLEE(s,r,l)                                    \
+                        Perl__to_utf8_lower_flags(aTHX_ s, r, l, 0, NULL)
+#    define D_PPP_TO_TITLE_CALLEE(s,r,l)                                    \
+                        Perl__to_utf8_title_flags(aTHX_ s, r, l, 0, NULL)
+#    define D_PPP_TO_UPPER_CALLEE(s,r,l)                                    \
+                        Perl__to_utf8_upper_flags(aTHX_ s, r, l, 0, NULL)
+#    define D_PPP_TO_FOLD_CALLEE(s,r,l)                                     \
+            Perl__to_utf8_fold_flags(aTHX_ s, r, l, FOLD_FLAGS_FULL, NULL)
+#  endif
+
+/* The actual implementation of the backported macros.  If too short, croak,
+ * otherwise call the original that doesn't have an upper limit parameter */
+#  define D_PPP_GENERIC_MULTI_ARG_TO(name, s, e,r,l)                        \
+    (((((e) - (s)) <= 0)                                                    \
+         /* We could just do nothing, but modern perls croak */             \
+      ? (croak("Attempting case change on zero length string"),             \
+         0) /* So looks like it returns something, and will compile */      \
+      : ((e) - (s)) < UTF8SKIP(s))                                          \
+        ? (croak(D_PPP_TOO_SHORT_MSG,                                       \
+                               s[0], (int) ((e) - (s)), (int) UTF8SKIP(s)), \
+           0)                                                               \
+        : D_PPP_TO_ ## name ## _CALLEE(s,r,l))
+
+__UNDEFINED__  toUPPER_utf8_safe(s,e,r,l)                                   \
+                        D_PPP_GENERIC_MULTI_ARG_TO(UPPER,s,e,r,l)
+__UNDEFINED__  toLOWER_utf8_safe(s,e,r,l)                                   \
+                        D_PPP_GENERIC_MULTI_ARG_TO(LOWER,s,e,r,l)
+__UNDEFINED__  toTITLE_utf8_safe(s,e,r,l)                                   \
+                        D_PPP_GENERIC_MULTI_ARG_TO(TITLE,s,e,r,l)
+__UNDEFINED__  toFOLD_utf8_safe(s,e,r,l)                                    \
+                        D_PPP_GENERIC_MULTI_ARG_TO(FOLD,s,e,r,l)
+
+#elif defined(UTF8SKIP)
+
+/* Here we have UTF-8 support, but using the original API where the case
+ * changing functions merely returned the changed code point; hence they
+ * couldn't handle multi-character results. */
+
+#  ifdef uvchr_to_utf8
+#    define D_PPP_UV_TO_UTF8 uvchr_to_utf8
+#  else
+#    define D_PPP_UV_TO_UTF8 uv_to_utf8
+#  endif
+
+#  define D_PPP_GENERIC_SINGLE_ARG_TO(name, s, e, r, l)                     \
+    (((((e) - (s)) <= 0)                                                    \
+      ? (croak("Attempting case change on zero length string"),             \
+         0) /* So looks like it returns something, and will compile */      \
+      : ((e) - (s)) < UTF8SKIP(s))                                          \
+        ? (croak(D_PPP_TOO_SHORT_MSG,                                       \
+                               s[0], (int) ((e) - (s)), (int) UTF8SKIP(s)), \
+           0)                                                               \
+          /* Get the changed code point and store its UTF-8 */              \
+        : D_PPP_UV_TO_UTF8(r, to_utf8_ ## name(s)),                         \
+            /* Then store its length, and re-get code point for return */   \
+            *(l) = UTF8SKIP(r), to_utf8_ ## name(r))
+
+/* Warning: toUPPER_utf8_safe, toLOWER_utf8_safe, toTITLE_utf8_safe
+    The UTF-8 case changing operations had bugs before around 5.12 or 5.14;
+    this backport does not correct them.
+
+    In perls before 7.3, multi-character case changing is not implemented; this
+    backport uses the simple case changes available in those perls. */
+
+__UNDEFINED__  toUPPER_utf8_safe(s,e,r,l)                                   \
+                            D_PPP_GENERIC_SINGLE_ARG_TO(upper, s, e, r, l)
+__UNDEFINED__  toLOWER_utf8_safe(s,e,r,l)                                   \
+                            D_PPP_GENERIC_SINGLE_ARG_TO(lower, s, e, r, l)
+__UNDEFINED__  toTITLE_utf8_safe(s,e,r,l)                                   \
+                            D_PPP_GENERIC_SINGLE_ARG_TO(title, s, e, r, l)
+
+ /* Warning: toFOLD_utf8_safe
+    The UTF-8 case changing operations had bugs before around 5.12 or 5.14;
+    this backport does not correct them.
+
+    In perls before 7.3, case folding is not implemented; instead, this
+    backport substitutes simple (not multi-character, which isn't available)
+    lowercasing.  This gives the correct result in most, but not all, instances
+    */
+
+__UNDEFINED__  toFOLD_utf8_safe(s,e,r,l)                                    \
+                            D_PPP_GENERIC_SINGLE_ARG_TO(lower, s, e, r, l)
+
+#endif
 
 /* Until we figure out how to support this in older perls... */
 #if { VERSION >= 5.8.0 }
@@ -1373,6 +1690,280 @@ isPSXSPC_L1(ord)
     OUTPUT:
         RETVAL
 
+#if { VERSION >= 5.006 }
+
+bool
+isALPHA_utf8_safe(s, offset)
+    unsigned char * s
+    int offset
+    CODE:
+        RETVAL = isALPHA_utf8_safe(s, s + UTF8SKIP(s) + offset);
+    OUTPUT:
+        RETVAL
+
+bool
+isALPHANUMERIC_utf8_safe(s, offset)
+    unsigned char * s
+    int offset
+    CODE:
+        RETVAL = isALPHANUMERIC_utf8_safe(s, s + UTF8SKIP(s) + offset);
+    OUTPUT:
+        RETVAL
+
+bool
+isASCII_utf8_safe(s, offset)
+    unsigned char * s
+    int offset
+    CODE:
+        RETVAL = isASCII_utf8_safe(s, s + UTF8SKIP(s) + offset);
+    OUTPUT:
+        RETVAL
+
+bool
+isBLANK_utf8_safe(s, offset)
+    unsigned char * s
+    int offset
+    CODE:
+        RETVAL = isBLANK_utf8_safe(s, s + UTF8SKIP(s) + offset);
+    OUTPUT:
+        RETVAL
+
+bool
+isCNTRL_utf8_safe(s, offset)
+    unsigned char * s
+    int offset
+    CODE:
+        RETVAL = isCNTRL_utf8_safe(s, s + UTF8SKIP(s) + offset);
+    OUTPUT:
+        RETVAL
+
+bool
+isDIGIT_utf8_safe(s, offset)
+    unsigned char * s
+    int offset
+    CODE:
+        RETVAL = isDIGIT_utf8_safe(s, s + UTF8SKIP(s) + offset);
+    OUTPUT:
+        RETVAL
+
+bool
+isGRAPH_utf8_safe(s, offset)
+    unsigned char * s
+    int offset
+    CODE:
+        RETVAL = isGRAPH_utf8_safe(s, s + UTF8SKIP(s) + offset);
+    OUTPUT:
+        RETVAL
+
+bool
+isIDCONT_utf8_safe(s, offset)
+    unsigned char * s
+    int offset
+    CODE:
+        RETVAL = isIDCONT_utf8_safe(s, s + UTF8SKIP(s) + offset);
+    OUTPUT:
+        RETVAL
+
+bool
+isIDFIRST_utf8_safe(s, offset)
+    unsigned char * s
+    int offset
+    CODE:
+        RETVAL = isIDFIRST_utf8_safe(s, s + UTF8SKIP(s) + offset);
+    OUTPUT:
+        RETVAL
+
+bool
+isLOWER_utf8_safe(s, offset)
+    unsigned char * s
+    int offset
+    CODE:
+        RETVAL = isLOWER_utf8_safe(s, s + UTF8SKIP(s) + offset);
+    OUTPUT:
+        RETVAL
+
+bool
+isPRINT_utf8_safe(s, offset)
+    unsigned char * s
+    int offset
+    CODE:
+        RETVAL = isPRINT_utf8_safe(s, s + UTF8SKIP(s) + offset);
+    OUTPUT:
+        RETVAL
+
+bool
+isPSXSPC_utf8_safe(s, offset)
+    unsigned char * s
+    int offset
+    CODE:
+        RETVAL = isPSXSPC_utf8_safe(s, s + UTF8SKIP(s) + offset);
+    OUTPUT:
+        RETVAL
+
+bool
+isPUNCT_utf8_safe(s, offset)
+    unsigned char * s
+    int offset
+    CODE:
+        RETVAL = isPUNCT_utf8_safe(s, s + UTF8SKIP(s) + offset);
+    OUTPUT:
+        RETVAL
+
+bool
+isSPACE_utf8_safe(s, offset)
+    unsigned char * s
+    int offset
+    CODE:
+        RETVAL = isSPACE_utf8_safe(s, s + UTF8SKIP(s) + offset);
+    OUTPUT:
+        RETVAL
+
+bool
+isUPPER_utf8_safe(s, offset)
+    unsigned char * s
+    int offset
+    CODE:
+        RETVAL = isUPPER_utf8_safe(s, s + UTF8SKIP(s) + offset);
+    OUTPUT:
+        RETVAL
+
+bool
+isWORDCHAR_utf8_safe(s, offset)
+    unsigned char * s
+    int offset
+    CODE:
+        RETVAL = isWORDCHAR_utf8_safe(s, s + UTF8SKIP(s) + offset);
+    OUTPUT:
+        RETVAL
+
+bool
+isXDIGIT_utf8_safe(s, offset)
+    unsigned char * s
+    int offset
+    CODE:
+        RETVAL = isXDIGIT_utf8_safe(s, s + UTF8SKIP(s) + offset);
+    OUTPUT:
+        RETVAL
+
+#endif
+
+#ifdef UTF8SKIP
+
+AV *
+toLOWER_utf8_safe(s, offset)
+    unsigned char * s
+    int offset
+    PREINIT:
+        U8 u[UTF8_MAXBYTES+1];
+        Size_t len;
+        UV ret;
+        SV* utf8;
+        AV * av;
+    CODE:
+        av = newAV();
+        ret = toLOWER_utf8_safe(s, s + UTF8SKIP(s) + offset, u, &len);
+        av_push(av, newSVuv(ret));
+
+        utf8 = newSVpvn((char *) u, len);
+        SvUTF8_on(utf8);
+        av_push(av, utf8);
+
+        av_push(av, newSVuv(len));
+        RETVAL = av;
+    OUTPUT:
+        RETVAL
+
+AV *
+toTITLE_utf8_safe(s, offset)
+    unsigned char * s
+    int offset
+    PREINIT:
+        U8 u[UTF8_MAXBYTES+1];
+        Size_t len;
+        UV ret;
+        SV* utf8;
+        AV * av;
+    CODE:
+        av = newAV();
+        ret = toTITLE_utf8_safe(s, s + UTF8SKIP(s) + offset, u, &len);
+        av_push(av, newSVuv(ret));
+
+        utf8 = newSVpvn((char *) u, len);
+        SvUTF8_on(utf8);
+        av_push(av, utf8);
+
+        av_push(av, newSVuv(len));
+        RETVAL = av;
+    OUTPUT:
+        RETVAL
+
+AV *
+toUPPER_utf8_safe(s, offset)
+    unsigned char * s
+    int offset
+    PREINIT:
+        U8 u[UTF8_MAXBYTES+1];
+        Size_t len;
+        UV ret;
+        SV* utf8;
+        AV * av;
+    CODE:
+        av = newAV();
+        ret = toUPPER_utf8_safe(s, s + UTF8SKIP(s) + offset, u, &len);
+        av_push(av, newSVuv(ret));
+
+        utf8 = newSVpvn((char *) u, len);
+        SvUTF8_on(utf8);
+        av_push(av, utf8);
+
+        av_push(av, newSVuv(len));
+        RETVAL = av;
+    OUTPUT:
+        RETVAL
+
+AV *
+toFOLD_utf8_safe(s, offset)
+    unsigned char * s
+    int offset
+    PREINIT:
+        U8 u[UTF8_MAXBYTES+1];
+        Size_t len;
+        UV ret;
+        SV* utf8;
+        AV * av;
+    CODE:
+        av = newAV();
+        ret = toFOLD_utf8_safe(s, s + UTF8SKIP(s) + offset, u, &len);
+        av_push(av, newSVuv(ret));
+
+        utf8 = newSVpvn((char *) u, len);
+        SvUTF8_on(utf8);
+        av_push(av, utf8);
+
+        av_push(av, newSVuv(len));
+        RETVAL = av;
+    OUTPUT:
+        RETVAL
+
+#endif
+
+UV
+LATIN1_TO_NATIVE(cp)
+        UV cp
+        CODE:
+                if (cp > 255) RETVAL= cp;
+                else RETVAL= LATIN1_TO_NATIVE(cp);
+        OUTPUT:
+                RETVAL
+
+UV
+NATIVE_TO_LATIN1(cp)
+        UV cp
+        CODE:
+                RETVAL= NATIVE_TO_LATIN1(cp);
+        OUTPUT:
+                RETVAL
+
 STRLEN
 av_tindex(av)
         SV *av
@@ -1389,7 +1980,7 @@ av_top_index(av)
         OUTPUT:
                 RETVAL
 
-=tests plan => 176
+=tests plan => 17678 + 58
 
 use vars qw($my_sv @my_av %my_hv);
 
@@ -1498,89 +2089,24 @@ if ("$]" < 5.005) {
         ok(Devel::PPPort::SvRXOK(bless $qr, "Surprise"));
 }
 
-ok(  Devel::PPPort::isBLANK(ord(" ")));
-ok(! Devel::PPPort::isBLANK(ord("\n")));
+ok( Devel::PPPort::NATIVE_TO_LATIN1(0xB6) == 0xB6);
+ok( Devel::PPPort::NATIVE_TO_LATIN1(0x1) == 0x1);
+ok( Devel::PPPort::NATIVE_TO_LATIN1(ord("A")) == 0x41);
+ok( Devel::PPPort::NATIVE_TO_LATIN1(ord("0")) == 0x30);
 
-ok(  Devel::PPPort::isBLANK_A(ord("\t")));
-ok(! Devel::PPPort::isBLANK_A(ord("\r")));
-
-ok(  Devel::PPPort::isBLANK_L1(ord("\t")));
-ok(! Devel::PPPort::isBLANK_L1(ord("\r")));
-
-ok(  Devel::PPPort::isUPPER(ord("A")));
-ok(! Devel::PPPort::isUPPER(ord("a")));
-
-ok(  Devel::PPPort::isUPPER_A(ord("Z")));
-
-# One of these two is uppercase in EBCDIC; the other in Latin1, but neither are
-# ASCII uppercase.
-ok(! Devel::PPPort::isUPPER_A(0xDC));
-ok(! Devel::PPPort::isUPPER_A(0xFC));
-
-ok(Devel::PPPort::isUPPER_L1(0xDC) || Devel::PPPort::isUPPER_L1(0xFC));
-ok(! (Devel::PPPort::isUPPER_L1(0xDC) && Devel::PPPort::isUPPER_L1(0xFC)));
-
-ok(  Devel::PPPort::isLOWER(ord("b")));
-ok(! Devel::PPPort::isLOWER(ord("B")));
-
-ok(  Devel::PPPort::isLOWER_A(ord("y")));
-
-# One of these two is lowercase in EBCDIC; the other in Latin1, but neither are
-# ASCII lowercase.
-ok(! Devel::PPPort::isLOWER_A(0xDC));
-ok(! Devel::PPPort::isLOWER_A(0xFC));
-
-ok(Devel::PPPort::isLOWER_L1(0xDC) || Devel::PPPort::isLOWER_L1(0xFC));
-ok(! Devel::PPPort::isLOWER_L1(0xDC) && Devel::PPPort::isLOWER_L1(0xFC));
-
-ok(  Devel::PPPort::isALPHA(ord("C")));
-ok(! Devel::PPPort::isALPHA(ord("1")));
-
-ok(  Devel::PPPort::isALPHA_A(ord("x")));
-ok(! Devel::PPPort::isALPHA_A(0xDC));
-
-ok(  Devel::PPPort::isALPHA_L1(ord("y")));
-ok(  Devel::PPPort::isALPHA_L1(0xDC));
-ok(! Devel::PPPort::isALPHA_L1(0xB6));
-
-ok(  Devel::PPPort::isWORDCHAR(ord("_")));
-ok(! Devel::PPPort::isWORDCHAR(ord("@")));
-
-ok(  Devel::PPPort::isWORDCHAR_A(ord("2")));
-ok(! Devel::PPPort::isWORDCHAR_A(0xFC));
-
-ok(  Devel::PPPort::isWORDCHAR_L1(ord("2")));
-ok(  Devel::PPPort::isWORDCHAR_L1(0xFC));
-ok(! Devel::PPPort::isWORDCHAR_L1(0xB6));
-
-ok(  Devel::PPPort::isALPHANUMERIC(ord("4")));
-ok(! Devel::PPPort::isALPHANUMERIC(ord("_")));
-
-ok(  Devel::PPPort::isALPHANUMERIC_A(ord("l")));
-ok(! Devel::PPPort::isALPHANUMERIC_A(0xDC));
-
-ok(  Devel::PPPort::isALPHANUMERIC_L1(ord("l")));
-ok(  Devel::PPPort::isALPHANUMERIC_L1(0xDC));
-ok(! Devel::PPPort::isALPHANUMERIC_L1(0xB6));
-
-ok(  Devel::PPPort::isALNUM(ord("c")));
-ok(! Devel::PPPort::isALNUM(ord("}")));
-
-ok(  Devel::PPPort::isALNUM_A(ord("5")));
-ok(! Devel::PPPort::isALNUM_A(0xFC));
+ok( Devel::PPPort::LATIN1_TO_NATIVE(0xB6) == 0xB6);
+if (ord("A") == 65) {
+    ok( Devel::PPPort::LATIN1_TO_NATIVE(0x41) == 0x41);
+    ok( Devel::PPPort::LATIN1_TO_NATIVE(0x30) == 0x30);
+}
+else {
+    ok( Devel::PPPort::LATIN1_TO_NATIVE(0x41) == 0xC1);
+    ok( Devel::PPPort::LATIN1_TO_NATIVE(0x30) == 0xF0);
+}
 
 ok(  Devel::PPPort::isALNUMC_L1(ord("5")));
 ok(  Devel::PPPort::isALNUMC_L1(0xFC));
 ok(! Devel::PPPort::isALNUMC_L1(0xB6));
-
-ok(  Devel::PPPort::isDIGIT(ord("6")));
-ok(! Devel::PPPort::isDIGIT(ord("_")));
-
-ok(  Devel::PPPort::isDIGIT_A(ord("7")));
-ok(! Devel::PPPort::isDIGIT_A(0xDC));
-
-ok(  Devel::PPPort::isDIGIT_L1(ord("5")));
-ok(! Devel::PPPort::isDIGIT_L1(0xDC));
 
 ok(  Devel::PPPort::isOCTAL(ord("7")));
 ok(! Devel::PPPort::isOCTAL(ord("8")));
@@ -1591,112 +2117,335 @@ ok(! Devel::PPPort::isOCTAL_A(ord("9")));
 ok(  Devel::PPPort::isOCTAL_L1(ord("2")));
 ok(! Devel::PPPort::isOCTAL_L1(ord("8")));
 
-ok(  Devel::PPPort::isIDFIRST(ord("D")));
-ok(! Devel::PPPort::isIDFIRST(ord("1")));
-
-ok(  Devel::PPPort::isIDFIRST_A(ord("_")));
-ok(! Devel::PPPort::isIDFIRST_A(0xFC));
-
-ok(  Devel::PPPort::isIDFIRST_L1(ord("_")));
-ok(  Devel::PPPort::isIDFIRST_L1(0xFC));
-ok(! Devel::PPPort::isIDFIRST_L1(0xB6));
-
-ok(  Devel::PPPort::isIDCONT(ord("e")));
-ok(! Devel::PPPort::isIDCONT(ord("@")));
-
-ok(  Devel::PPPort::isIDCONT_A(ord("2")));
-ok(! Devel::PPPort::isIDCONT_A(0xDC));
-
-ok(  Devel::PPPort::isIDCONT_L1(ord("4")));
-ok(  Devel::PPPort::isIDCONT_L1(0xDC));
-ok(! Devel::PPPort::isIDCONT_L1(0xB6));
-
-ok(  Devel::PPPort::isSPACE(ord(" ")));
-ok(! Devel::PPPort::isSPACE(ord("_")));
-
-ok(  Devel::PPPort::isSPACE_A(ord("\cK")));
-ok(! Devel::PPPort::isSPACE_A(ord("F")));
-
-ok(  Devel::PPPort::isSPACE_L1(ord("\cK")));
-ok(! Devel::PPPort::isSPACE_L1(ord("g")));
-
-# This stresses the edge for ASCII machines, but happens to work on EBCDIC as
-# well
-ok(  Devel::PPPort::isASCII(0x7F));
-ok(! Devel::PPPort::isASCII(0x80));
-
-ok(  Devel::PPPort::isASCII_A(ord("9")));
-ok(  Devel::PPPort::isASCII_L1(ord("9")));
-
-# B6 is the PARAGRAPH SIGN in ASCII and EBCDIC
-ok(! Devel::PPPort::isASCII_A(0xB6));
-ok(! Devel::PPPort::isASCII_L1(0xB6));
-
-ok(  Devel::PPPort::isCNTRL(ord("\e")));
-ok(! Devel::PPPort::isCNTRL(ord(" ")));
-
-ok(  Devel::PPPort::isCNTRL_A(ord("\a")));
-ok(! Devel::PPPort::isCNTRL_A(0xB6));
-
-ok(  Devel::PPPort::isCNTRL_L1(ord("\a")));
-ok(  Devel::PPPort::isCNTRL_L1(ord(" ") - 1));
-ok(! Devel::PPPort::isCNTRL_L1(0xB6));
-if (ord('A') == 65) {
-    ok(Devel::PPPort::isCNTRL_L1(0x80));
+# For the other properties, we test every code point from 0.255, and a
+# smattering of higher ones.  First populate a hash with keys like '65:ALPHA'
+# to indicate that the code point there is alphabetic
+my $i;
+my %types;
+for $i (0x41..0x5A, 0x61..0x7A, 0xAA, 0xB5, 0xBA, 0xC0..0xD6, 0xD8..0xF6,
+        0xF8..0x101)
+{
+    my $native = Devel::PPPort::LATIN1_TO_NATIVE($i);
+    $types{"$native:ALPHA"} = 1;
+    $types{"$native:ALPHANUMERIC"} = 1;
+    $types{"$native:IDFIRST"} = 1;
+    $types{"$native:IDCONT"} = 1;
+    $types{"$native:PRINT"} = 1;
+    $types{"$native:WORDCHAR"} = 1;
 }
-elsif (ord('^') == 106) {
-    ok(Devel::PPPort::isCNTRL_L1(0x5F));
+for $i (0x30..0x39, 0x660, 0xFF19) {
+    my $native = Devel::PPPort::LATIN1_TO_NATIVE($i);
+    $types{"$native:ALPHANUMERIC"} = 1;
+    $types{"$native:DIGIT"} = 1;
+    $types{"$native:IDCONT"} = 1;
+    $types{"$native:WORDCHAR"} = 1;
+    $types{"$native:GRAPH"} = 1;
+    $types{"$native:PRINT"} = 1;
+    $types{"$native:XDIGIT"} = 1 if $i < 255 || ($i >= 0xFF10 && $i <= 0xFF19);
+}
+
+for $i (0..0x7F) {
+    my $native = Devel::PPPort::LATIN1_TO_NATIVE($i);
+    $types{"$native:ASCII"} = 1;
+}
+for $i (0..0x1f, 0x7F..0x9F) {
+    my $native = Devel::PPPort::LATIN1_TO_NATIVE($i);
+    $types{"$native:CNTRL"} = 1;
+}
+for $i (0x21..0x7E, 0xA1..0x101, 0x660) {
+    my $native = Devel::PPPort::LATIN1_TO_NATIVE($i);
+    $types{"$native:GRAPH"} = 1;
+    $types{"$native:PRINT"} = 1;
+}
+for $i (0x09, 0x20, 0xA0) {
+    my $native = Devel::PPPort::LATIN1_TO_NATIVE($i);
+    $types{"$native:BLANK"} = 1;
+    $types{"$native:SPACE"} = 1;
+    $types{"$native:PSXSPC"} = 1;
+    $types{"$native:PRINT"} = 1 if $i > 0x09;
+}
+for $i (0x09..0x0D, 0x85, 0x2029) {
+    my $native = Devel::PPPort::LATIN1_TO_NATIVE($i);
+    $types{"$native:SPACE"} = 1;
+    $types{"$native:PSXSPC"} = 1;
+}
+for $i (0x41..0x5A, 0xC0..0xD6, 0xD8..0xDE, 0x100) {
+    my $native = Devel::PPPort::LATIN1_TO_NATIVE($i);
+    $types{"$native:UPPER"} = 1;
+    $types{"$native:XDIGIT"} = 1 if $i < 0x47;
+}
+for $i (0x61..0x7A, 0xAA, 0xB5, 0xBA, 0xDF..0xF6, 0xF8..0xFF, 0x101) {
+    my $native = Devel::PPPort::LATIN1_TO_NATIVE($i);
+    $types{"$native:LOWER"} = 1;
+    $types{"$native:XDIGIT"} = 1 if $i < 0x67;
+}
+for $i (0x21..0x2F, 0x3A..0x40, 0x5B..0x60, 0x7B..0x7E, 0xB6, 0xA1, 0xA7, 0xAB,
+        0xB7, 0xBB, 0xBF, 0x5BE)
+{
+    my $native = Devel::PPPort::LATIN1_TO_NATIVE($i);
+    $types{"$native:PUNCT"} = 1;
+    $types{"$native:GRAPH"} = 1;
+    $types{"$native:PRINT"} = 1;
+}
+
+$i = ord('_');
+$types{"$i:WORDCHAR"} = 1;
+$types{"$i:IDFIRST"} = 1;
+$types{"$i:IDCONT"} = 1;
+
+# Now find all the unique code points included above.
+my %code_points_to_test;
+my $key;
+for $key (keys %types) {
+    $key =~ s/:.*//;
+    $code_points_to_test{$key} = 1;
+}
+
+# And test each one
+for $i (sort { $a <=> $b } keys %code_points_to_test) {
+    my $native = Devel::PPPort::LATIN1_TO_NATIVE($i);
+    my $hex = sprintf("0x%02X", $native);
+
+    # And for each code point test each of the classes
+    my $class;
+    for $class (qw(ALPHA ALPHANUMERIC ASCII BLANK CNTRL DIGIT GRAPH IDCONT
+                   IDFIRST LOWER PRINT PSXSPC PUNCT SPACE UPPER WORDCHAR
+                   XDIGIT))
+    {
+        if ($i < 256) {  # For the ones that can fit in a byte, test each of
+                         #three macros.
+            my $suffix;
+            for $suffix ("", "_A", "_L1") {
+                my $should_be = ($i > 0x7F && $suffix ne "_L1")
+                                ? 0     # Fail on non-ASCII unless L1
+                                : ($types{"$native:$class"} || 0);
+                my $eval_string = "Devel::PPPort::is${class}$suffix($hex)";
+                my $is = eval $eval_string || 0;
+                die "eval 'For $i: $eval_string' gave $@" if $@;
+                ok($is, $should_be, "'$eval_string'");
+            }
+        }
+
+        # For all code points, test the '_utf8' macros
+        if ("$]" < 5.006) {
+            skip("No UTF-8 on this perl", 0);
+            if ($i > 255) {
+                skip("No UTF-8 on this perl", 0);
+            }
+        }
+        else {
+            my $utf8 = quotemeta Devel::PPPort::uvoffuni_to_utf8($i);
+            if ("$]" < 5.007 && $native > 255) {
+                skip("Perls earlier than 5.7 give wrong answers for above Latin1 code points", 0);
+            }
+            elsif ("$]" <= 5.011003 && $native == 0x2029 && ($class eq 'PRINT' || $class eq 'GRAPH')) {
+                skip("Perls earlier than 5.11.3 considered high space characters as isPRINT and isGRAPH", 0);
+            }
+            else {
+
+                my $should_be = $types{"$native:$class"} || 0;
+                my $eval_string = "Devel::PPPort::is${class}_utf8_safe(\"$utf8\", 0)";
+                my $is = eval $eval_string || 0;
+                die "eval 'For $i, $eval_string' gave $@" if $@;
+                ok($is, $should_be, sprintf("For U+%04X '%s'", $native, $eval_string));
+            }
+
+            # And for the high code points, test that a too short malformation (the
+            # -1) causes it to fail
+            if ($i > 255) {
+                if ("$]" >= 5.025009) {
+                    skip("Prints an annoying error message that khw doesn't know how to easily suppress", 0);
+                }
+                else {
+                    my $eval_string = "Devel::PPPort::is${class}_utf8_safe(\"$utf8\", -1)";
+                    my $is = eval "no warnings; $eval_string" || 0;
+                    die "eval '$eval_string' gave $@" if $@;
+                    ok($is, 0, sprintf("For U+%04X '%s'", $native, $eval_string));
+                }
+            }
+        }
+    }
+}
+
+if ("$]" < 5.006000) {
+    my $i;
+    for $i (1..58) {    # Should be 44, don't know why not
+        skip 'UTF-8 not implemented on this perl', 0;
+    }
 }
 else {
-    ok(Devel::PPPort::isCNTRL_L1(0xFF));
+    my $ret = Devel::PPPort::toLOWER_utf8_safe('A', 0);
+    ok($ret->[0], ord 'a', "ord of lowercase of A is 97");
+    ok($ret->[1], 'a', "Lowercase of A is a");
+    ok($ret->[2], 1, "Length of lowercase of A is 1");
+
+    my $utf8 = Devel::PPPort::uvoffuni_to_utf8(0xC0);
+    my $lc_utf8 = Devel::PPPort::uvoffuni_to_utf8(0xE0);
+    $ret = Devel::PPPort::toLOWER_utf8_safe($utf8, 0);
+    ok($ret->[0], Devel::PPPort::LATIN1_TO_NATIVE(0xE0), "ord of lowercase of 0xC0 is 0xE0");
+    ok($ret->[1], $lc_utf8, "Lowercase of UTF-8 of 0xC0 is 0xE0");
+    ok($ret->[2], 2, "Length of lowercase of UTF-8 of 0xC0 is 2");
+
+    $utf8 = Devel::PPPort::uvoffuni_to_utf8(0x100);
+    $lc_utf8 = Devel::PPPort::uvoffuni_to_utf8(0x101);
+    $ret = Devel::PPPort::toLOWER_utf8_safe($utf8, 0);
+    ok($ret->[0], 0x101, "ord of lowercase of 0x100 is 0x101");
+    ok($ret->[1], $lc_utf8, "Lowercase of UTF-8 of 0x100 is 0x101");
+    ok($ret->[2], 2, "Length of lowercase of UTF-8 of 0x100 is 2");
+
+    my $eval_string = "Devel::PPPort::toLOWER_utf8_safe(\"$utf8\", -1);";
+    $ret = eval $eval_string;
+    my $fail = $@;  # Have to save $@, as it gets destroyed
+    ok($ret, undef, "Returns undef for illegal short char");
+    ok($fail, eval 'qr/Malformed UTF-8 character/', 'Gave appropriate error for short char');
+
+    if ("$]" > 5.025008) {
+        skip "Zero length inputs cause assertion failure; test dies in modern perls", 0;
+        skip "Zero length inputs cause assertion failure; test dies in modern perls", 0;
+    }
+    else {
+        $eval_string = "Devel::PPPort::toLOWER_utf8_safe(\"$utf8\", -3);";
+        $ret = eval $eval_string;
+        $fail = $@;
+        ok($ret, undef, "Returns undef for zero length string");
+        ok($fail, eval 'qr/Attempting case change on zero length string/',
+           'Gave appropriate error for short char');
+    }
+
+    $ret = Devel::PPPort::toUPPER_utf8_safe('b', 0);
+    ok($ret->[0], ord 'B', "ord of uppercase of b is 66");
+    ok($ret->[1], 'B', "Uppercase of b is B");
+    ok($ret->[2], 1, "Length of uppercase of b is 1");
+
+    $utf8 = Devel::PPPort::uvoffuni_to_utf8(0xE1);
+    my $uc_utf8 = Devel::PPPort::uvoffuni_to_utf8(0xC1);
+    $ret = Devel::PPPort::toUPPER_utf8_safe($utf8, 0);
+    ok($ret->[0], Devel::PPPort::LATIN1_TO_NATIVE(0xC1), "ord of uppercase of 0xC0 is 0xE0");
+    ok($ret->[1], $uc_utf8, "Uppercase of UTF-8 of 0xE1 is 0xC1");
+    ok($ret->[2], 2, "Length of uppercase of UTF-8 of 0xE1 is 2");
+
+    $eval_string = "Devel::PPPort::toUPPER_utf8_safe(\"$utf8\", -1);";
+    $ret = eval $eval_string;
+    $fail = $@;
+    ok($ret, undef, "Returns undef for illegal short char");
+    ok($fail, eval 'qr/Malformed UTF-8 character/', 'Gave appropriate error for short char');
+
+    if ("$]" > 5.025008) {
+        skip "Zero length inputs cause assertion failure; test dies in modern perls", 0;
+        skip "Zero length inputs cause assertion failure; test dies in modern perls", 0;
+    }
+    else {
+        $eval_string = "Devel::PPPort::toUPPER_utf8_safe(\"$utf8\", -3);";
+        $ret = eval $eval_string;
+        $fail = $@;
+        ok($ret, undef, "Returns undef for zero length string");
+        ok($fail, eval 'qr/Attempting case change on zero length string/',
+           'Gave appropriate error for short char');
+    }
+
+    $utf8 = Devel::PPPort::uvoffuni_to_utf8(0x103);
+    $uc_utf8 = Devel::PPPort::uvoffuni_to_utf8(0x102);
+    $ret = Devel::PPPort::toUPPER_utf8_safe($utf8, 0);
+    ok($ret->[0], 0x102, "ord of uppercase of 0x103 is 0x102");
+    ok($ret->[1], $uc_utf8, "Uppercase of UTF-8 of 0x103 is 0x102");
+    ok($ret->[2], 2, "Length of uppercase of UTF-8 of 0x102 is 2");
+
+    $ret = Devel::PPPort::toTITLE_utf8_safe('b', 0);
+    ok($ret->[0], ord 'B', "ord of titlecase of b is 66");
+    ok($ret->[1], 'B', "Titlecase of b is B");
+    ok($ret->[2], 1, "Length of titlecase of b is 1");
+
+    $utf8 = Devel::PPPort::uvoffuni_to_utf8(0xE1);
+    my $tc_utf8 = Devel::PPPort::uvoffuni_to_utf8(0xC1);
+    $ret = Devel::PPPort::toTITLE_utf8_safe($utf8, 0);
+    ok($ret->[0], Devel::PPPort::LATIN1_TO_NATIVE(0xC1), "ord of titlecase of 0xC0 is 0xE0");
+    ok($ret->[1], $tc_utf8, "Titlecase of UTF-8 of 0xE1 is 0xC1");
+    ok($ret->[2], 2, "Length of titlecase of UTF-8 of 0xE1 is 2");
+
+    $eval_string = "Devel::PPPort::toTITLE_utf8_safe(\"$utf8\", -1);";
+    $ret = eval $eval_string;
+    $fail = $@;
+    ok($ret, undef, "Returns undef for illegal short char");
+    ok($fail, eval 'qr/Malformed UTF-8 character/', 'Gave appropriate error for short char');
+
+    if ("$]" > 5.025008) {
+        skip "Zero length inputs cause assertion failure; test dies in modern perls", 0;
+        skip "Zero length inputs cause assertion failure; test dies in modern perls", 0;
+    }
+    else {
+        $eval_string = "Devel::PPPort::toTITLE_utf8_safe(\"$utf8\", -3);";
+        $ret = eval $eval_string;
+        $fail = $@;
+        ok($ret, undef, "Returns undef for zero length string");
+        ok($fail, eval 'qr/Attempting case change on zero length string/',
+           'Gave appropriate error for short char');
+    }
+
+    $utf8 = Devel::PPPort::uvoffuni_to_utf8(0x103);
+    $tc_utf8 = Devel::PPPort::uvoffuni_to_utf8(0x102);
+    $ret = Devel::PPPort::toTITLE_utf8_safe($utf8, 0);
+    ok($ret->[0], 0x102, "ord of titlecase of 0x103 is 0x102");
+    ok($ret->[1], $tc_utf8, "Titlecase of UTF-8 of 0x103 is 0x102");
+    ok($ret->[2], 2, "Length of titlecase of UTF-8 of 0x102 is 2");
+
+    $ret = Devel::PPPort::toFOLD_utf8_safe('C', 0);
+    ok($ret->[0], ord 'c', "ord of foldcase of C is 100");
+    ok($ret->[1], 'c', "Foldcase of C is c");
+    ok($ret->[2], 1, "Length of foldcase of C is 1");
+
+    $utf8 = Devel::PPPort::uvoffuni_to_utf8(0xC2);
+    my $fc_utf8 = Devel::PPPort::uvoffuni_to_utf8(0xE2);
+    $ret = Devel::PPPort::toFOLD_utf8_safe($utf8, 0);
+    ok($ret->[0], Devel::PPPort::LATIN1_TO_NATIVE(0xE2), "ord of foldcase of 0xC2 is 0xE2");
+    ok($ret->[1], $fc_utf8, "Foldcase of UTF-8 of 0xC2 is 0xE2");
+    ok($ret->[2], 2, "Length of foldcase of UTF-8 of 0xC2 is 2");
+
+    $utf8 = Devel::PPPort::uvoffuni_to_utf8(0x104);
+    $fc_utf8 = Devel::PPPort::uvoffuni_to_utf8(0x105);
+    $ret = Devel::PPPort::toFOLD_utf8_safe($utf8, 0);
+    ok($ret->[0], 0x105, "ord of foldcase of 0x104 is 0x105");
+    ok($ret->[1], $fc_utf8, "Foldcase of UTF-8 of 0x104 is 0x105");
+    ok($ret->[2], 2, "Length of foldcase of UTF-8 of 0x104 is 2");
+
+    $eval_string = "Devel::PPPort::toFOLD_utf8_safe(\"$utf8\", -1);";
+    $ret = eval $eval_string;
+    $fail = $@;
+    ok($ret, undef, "Returns undef for illegal short char");
+    ok($fail, eval 'qr/Malformed UTF-8 character/', 'Gave appropriate error for short char');
+
+    if ("$]" > 5.025008) {
+        skip "Zero length inputs cause assertion failure; test dies in modern perls", 0;
+        skip "Zero length inputs cause assertion failure; test dies in modern perls", 0;
+    }
+    else {
+        $eval_string = "Devel::PPPort::toFOLD_utf8_safe(\"$utf8\", -3);";
+        $ret = eval $eval_string;
+        $fail = $@;
+        ok($ret, undef, "Returns undef for zero length string");
+        ok($fail, eval 'qr/Attempting case change on zero length string/',
+           'Gave appropriate error for short char');
+    }
+
+    if ("$]" < 5.007003) {
+        my $i;
+        for $i (1..6) {
+            skip 'Multi-char case changing not implemented in this perl', 0;
+        }
+    }
+    else {
+        $utf8 = Devel::PPPort::uvoffuni_to_utf8(0xDF);
+
+        $ret = Devel::PPPort::toUPPER_utf8_safe($utf8, 0);
+        ok($ret->[0], ord 'S', "ord of uppercase of 0xDF is ord S");
+        ok($ret->[1], 'SS', "Uppercase of UTF-8 of 0xDF is SS");
+        ok($ret->[2], 2, "Length of uppercase of UTF-8 of 0xDF is 2");
+
+        $ret = Devel::PPPort::toFOLD_utf8_safe($utf8, 0);
+        ok($ret->[0], ord 's', "ord of foldcase of 0xDF is ord s");
+        ok($ret->[1], 'ss', "Foldcase of UTF-8 of 0xDF is ss");
+        ok($ret->[2], 2, "Length of foldcase of UTF-8 of 0xDF is 2");
+    }
 }
-
-ok(  Devel::PPPort::isPRINT(ord(" ")));
-ok(! Devel::PPPort::isPRINT(ord("\n")));
-
-ok(  Devel::PPPort::isPRINT_A(ord("G")));
-ok(! Devel::PPPort::isPRINT_A(0xB6));
-
-ok(  Devel::PPPort::isPRINT_L1(ord("~")));
-ok(  Devel::PPPort::isPRINT_L1(0xB6));
-ok(! Devel::PPPort::isPRINT_L1(ord("\r")));
-
-ok(  Devel::PPPort::isGRAPH(ord("h")));
-ok(! Devel::PPPort::isGRAPH(ord(" ")));
-
-ok(  Devel::PPPort::isGRAPH_A(ord("i")));
-ok(! Devel::PPPort::isGRAPH_A(0xB6));
-
-ok(  Devel::PPPort::isGRAPH_L1(ord("j")));
-ok(  Devel::PPPort::isGRAPH_L1(0xB6));
-ok(! Devel::PPPort::isGRAPH_L1(4));
-
-ok(  Devel::PPPort::isPUNCT(ord("#")));
-ok(! Devel::PPPort::isPUNCT(ord(" ")));
-
-ok(  Devel::PPPort::isPUNCT_A(ord("*")));
-ok(! Devel::PPPort::isPUNCT_A(0xB6));
-
-ok(  Devel::PPPort::isPUNCT_L1(ord("+")));
-ok(  Devel::PPPort::isPUNCT_L1(0xB6));
-
-ok(  Devel::PPPort::isXDIGIT(ord("A")));
-ok(! Devel::PPPort::isXDIGIT(ord("_")));
-
-ok(  Devel::PPPort::isXDIGIT_A(ord("9")));
-ok(! Devel::PPPort::isXDIGIT_A(0xDC));
-
-ok(  Devel::PPPort::isXDIGIT_L1(ord("9")));
-ok(! Devel::PPPort::isXDIGIT_L1(0xFF));
-
-ok(  Devel::PPPort::isPSXSPC(ord(" ")));
-ok(! Devel::PPPort::isPSXSPC(ord("k")));
-
-ok(  Devel::PPPort::isPSXSPC_A(ord("\cK")));
-ok(! Devel::PPPort::isPSXSPC_A(0xFC));
-
-ok(  Devel::PPPort::isPSXSPC_L1(ord("\cK")));
-ok(! Devel::PPPort::isPSXSPC_L1(0xFC));
 
 ok(&Devel::PPPort::av_top_index([1,2,3]), 2);
 ok(&Devel::PPPort::av_tindex([1,2,3,4]), 3);
