@@ -861,6 +861,7 @@ Amd|bool|UTF8_IS_NONCHAR|const U8 *s|const U8 *e
 Amd|bool|UTF8_IS_SUPER|const U8 *s|const U8 *e
 Amd|bool|UTF8_IS_SURROGATE|const U8 *s|const U8 *e
 AmnUd|STRLEN|UTF8_MAXBYTES
+AmnUd|STRLEN|UTF8_MAXBYTES_CASE
 Amd|STRLEN|UTF8_SAFE_SKIP|char* s|char* e
 Amd|STRLEN|UTF8_SKIP|char* s
 Amd|STRLEN|UTF8SKIP|char* s
