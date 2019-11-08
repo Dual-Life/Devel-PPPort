@@ -1,5 +1,10 @@
 Revision history for Devel-PPPort
 
+ 3.56 - {{NEXT}}
+
+ * mktests.PL: use FindBin for INC setup
+ * devel/regenerate: Adjust POD line length
+
  3.55 - 2019-11-07
 
   * Fix p5-Text-Xslate on Perl 5.8.5 (Nicolas R)
