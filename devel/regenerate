@@ -204,8 +204,8 @@ regenerate - Automatically regenerate Devel::PPPort's API information
 
   --nocheck      don't recheck symbols that caused an error
   --verbose      show verbose output
-  --yes          the answer to all the standard questions is 'yes', can be
-                 used to nohup this.
+  --yes          the answer to all the standard questions is 'yes',
+                 can be used to nohup this.
 
 =head1 COPYRIGHT
 
