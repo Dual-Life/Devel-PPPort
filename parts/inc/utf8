@@ -114,6 +114,7 @@ __UNDEFINED__  UTF8_SAFE_SKIP(s, e)  (                                          
 __UNDEFINED__ UTF8_CHK_SKIP(s)                                                  \
     (s[0] == '\0' ? 1 : ((U8) D_PPP_MIN(my_strnlen((char *) (s), UTF8SKIP(s)),  \
                                       UTF8SKIP(s))))
+/* UTF8_CHK_SKIP depends on my_strnlen */
 __UNDEFINED__ UTF8_SKIP(s)  UTF8SKIP(s)
 #endif
 
