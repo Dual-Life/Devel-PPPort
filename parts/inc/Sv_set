@@ -16,15 +16,12 @@ SV_NOSTEAL
 sv_setsv_flags
 newSVsv_nomg
 
-=dontwarn
-
-sv_setsv_flags
-
 =implementation
+
+__UNDEFINED__ SV_NOSTEAL 16
 
 #if ( { VERSION >= 5.7.3 } && { VERSION < 5.8.7 } ) || ( { VERSION >= 5.9.0 } && { VERSION < 5.9.2 } )
 #undef sv_setsv_flags
-#define SV_NOSTEAL 16
 #define sv_setsv_flags(dstr, sstr, flags)                                          \
   STMT_START {                                                                     \
     if (((flags) & SV_NOSTEAL) && (sstr) && (SvFLAGS((SV *)(sstr)) & SVs_TEMP)) {  \
@@ -37,15 +34,36 @@ sv_setsv_flags
   } STMT_END
 #endif
 
+__UNDEFINED__ sv_setsv_flags(dstr, sstr, flags)                                    \
+  STMT_START {                                                                     \
+    if (((flags) & SV_NOSTEAL) && (sstr) && (SvFLAGS((SV *)(sstr)) & SVs_TEMP)) {  \
+      SvTEMP_off((SV *)(sstr));                                                    \
+      if (!((flags) & SV_GMAGIC) && (sstr) && SvGMAGICAL((SV *)(sstr))) {          \
+        SvGMAGICAL_off((SV *)(sstr));                                              \
+        sv_setsv((dstr), (sstr));                                                  \
+        SvGMAGICAL_on((SV *)(sstr));                                               \
+      } else {                                                                     \
+        sv_setsv((dstr), (sstr));                                                  \
+      }                                                                            \
+      SvTEMP_on((SV *)(sstr));                                                     \
+    } else {                                                                       \
+      if (!((flags) & SV_GMAGIC) && (sstr) && SvGMAGICAL((SV *)(sstr))) {          \
+        SvGMAGICAL_off((SV *)(sstr));                                              \
+        sv_setsv((dstr), (sstr));                                                  \
+        SvGMAGICAL_on((SV *)(sstr));                                               \
+      } else {                                                                     \
+        sv_setsv((dstr), (sstr));                                                  \
+      }                                                                            \
+    }                                                                              \
+  } STMT_END
+
 #if defined(__GNUC__) && !defined(PERL_GCC_BRACE_GROUPS_FORBIDDEN)
 __UNDEFINED__ newSVsv_flags(sv, flags) ({ SV *_sv = newSV(0); sv_setsv_flags(_sv, (sv), (flags)); _sv; })
 #else
 __UNDEFINED__ newSVsv_flags(sv, flags) ((PL_Sv = newSV(0)), sv_setsv_flags(PL_Sv, (sv), (flags)), PL_Sv)
 #endif
 
-#ifdef SV_NOSTEAL
 __UNDEFINED__ newSVsv_nomg(sv) newSVsv_flags((sv), SV_NOSTEAL)
-#endif
 
 #if { VERSION >= 5.17.5 }
 __UNDEFINED__ sv_mortalcopy_flags(sv, flags) Perl_sv_mortalcopy_flags(aTHX_ (sv), (flags))
@@ -132,8 +150,6 @@ TestSvSTASH_set(sv, name)
                 SvREFCNT_dec(SvSTASH(sv));
                 SvSTASH_set(sv, (HV*) SvREFCNT_inc(gv_stashpv(name, 0)));
 
-#ifdef SV_NOSTEAL
-
 IV
 Test_sv_setsv_SV_NOSTEAL()
         PREINIT:
@@ -146,10 +162,6 @@ Test_sv_setsv_SV_NOSTEAL()
         OUTPUT:
                 RETVAL
 
-#endif
-
-#ifdef newSVsv_nomg
-
 SV *
 newSVsv_nomg(sv)
         SV *sv
@@ -158,19 +170,13 @@ newSVsv_nomg(sv)
         OUTPUT:
                 RETVAL
 
-#endif
-
 void
 sv_setsv_compile_test(sv)
         SV *sv
         CODE:
                 sv_setsv(sv, NULL);
-#ifdef sv_setsv_flags
                 sv_setsv_flags(sv, NULL, 0);
-#ifdef SV_NOSTEAL
                 sv_setsv_flags(sv, NULL, SV_NOSTEAL);
-#endif
-#endif
 
 =tests plan => 15
 
@@ -187,9 +193,6 @@ is($bar->x(), 'foobar');
 Devel::PPPort::TestSvSTASH_set($bar, 'bar');
 is($bar->x(), 'hacker');
 
-if ( "$]" < '5.007003' ) {
-    skip 'skip: no SV_NOSTEAL support', 10;
-} else {
     ok(Devel::PPPort::Test_sv_setsv_SV_NOSTEAL());
 
     tie my $scalar, 'TieScalarCounter', 'string';
@@ -207,7 +210,6 @@ if ( "$]" < '5.007003' ) {
     is tied($scalar)->{fetch}, 1;
     is tied($scalar)->{store}, 0;
     is $copy2, 'string';
-}
 
 package TieScalarCounter;
 

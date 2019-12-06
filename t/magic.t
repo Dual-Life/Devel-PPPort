@@ -122,9 +122,6 @@ my $foo = 'bar';
 ok(Devel::PPPort::sv_magic_portable($foo));
 ok($foo eq 'bar');
 
-if ( "$]" < '5.007003' ) {
-    skip 'skip: no SV_NOSTEAL support', 22;
-} else {
     tie my $scalar, 'TieScalarCounter', 10;
     my $fetch = $scalar;
 
@@ -153,7 +150,6 @@ if ( "$]" < '5.007003' ) {
     is Devel::PPPort::magic_SvNV_nomg($object), 5.5;
     is Devel::PPPort::magic_SvPV_nomg_nolen($object), 'string';
     ok !Devel::PPPort::magic_SvTRUE_nomg($object);
-}
 
 package TieScalarCounter;
 

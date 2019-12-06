@@ -411,7 +411,7 @@ __UNDEFINED__  utf8_to_uvchr(s, lp)                                             
 
 /* Replace utf8_to_uvchr with utf8_to_uvchr_buf */
 
-#ifdef SV_NOSTEAL
+#ifdef sv_len_utf8
    /* Older Perl versions have broken sv_len_utf8() when passed sv does not have SVf_UTF8 flag set */
    /* Also note that SvGETMAGIC() may change presence of SVf_UTF8 flag */
 #  if { VERSION < 5.17.5 }
@@ -589,7 +589,7 @@ utf8_to_uvchr(s)
 
 #endif
 
-#ifdef SV_NOSTEAL
+#ifdef sv_len_utf8
 
 STRLEN
 sv_len_utf8(sv)
@@ -598,6 +598,10 @@ sv_len_utf8(sv)
                 RETVAL = sv_len_utf8(sv);
         OUTPUT:
                 RETVAL
+
+#endif
+
+#ifdef sv_len_utf8_nomg
 
 STRLEN
 sv_len_utf8_nomg(sv)
@@ -847,7 +851,7 @@ if ("$]" ge '5.008') {
     is(tied($scalar)->{fetch}, 3);
     is(tied($scalar)->{store}, 0);
 } else {
-    skip 'skip: no SV_NOSTEAL support', 23;
+    skip 'skip: no utf8::downgrade/utf8::upgrade support', 23;
 }
 
 package TieScalarCounter;

@@ -262,7 +262,7 @@ if ("$]" ge '5.008') {
     is(tied($scalar)->{fetch}, 3);
     is(tied($scalar)->{store}, 0);
 } else {
-    skip 'skip: no SV_NOSTEAL support', 23;
+    skip 'skip: no utf8::downgrade/utf8::upgrade support', 23;
 }
 
 package TieScalarCounter;
