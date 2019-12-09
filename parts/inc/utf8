@@ -1,11 +1,22 @@
 =provides
 
 __UNDEFINED__
+UTF8f
+UTF8fARG
 utf8_to_uvchr_buf
 sv_len_utf8
 sv_len_utf8_nomg
 
 =implementation
+
+#if { VERSION == 5.19.1 } /* 5.19.1 does not have UTF8fARG, only broken UTF8f */
+#undef UTF8f
+#endif
+
+#ifdef SVf_UTF8
+__UNDEFINED__  UTF8f           SVf
+__UNDEFINED__  UTF8fARG(u,l,p) newSVpvn_flags((p), (l), ((u) ? SVf_UTF8 : 0) | SVs_TEMP)
+#endif
 
 #define D_PPP_MIN(a,b) (((a) <= (b)) ? (a) : (b))
 
@@ -437,6 +448,25 @@ __UNDEFINED__  utf8_to_uvchr(s, lp)                                             
 
 =xsubs
 
+#ifdef UTF8f
+
+void
+UTF8f(x)
+        SV *x
+        PREINIT:
+                U32 u;
+                STRLEN len;
+                char *ptr;
+        INIT:
+                ptr = SvPV(x, len);
+                u = SvUTF8(x);
+        PPCODE:
+                x = sv_2mortal(newSVpvf("[%" UTF8f "]", UTF8fARG(u, len, ptr)));
+                XPUSHs(x);
+                XSRETURN(1);
+
+#endif
+
 #if { VERSION >= 5.006 } /* This is just a helper fcn, not publicized */  \
                          /* as being available and params not what the  */  \
                          /* API function has; works on EBCDIC too */
@@ -635,15 +665,25 @@ UVCHR_SKIP(c)
 
 #endif
 
-=tests plan => 93
+=tests plan => 98
 
 BEGIN { require warnings if "$]" > '5.006' }
 
 # skip tests on 5.6.0 and earlier, plus 7.0
 if ("$]" <= '5.006' || "$]" == '5.007' ) {
-    skip 'skip: broken utf8 support', 93;
+    skip 'skip: broken utf8 support', 98;
     exit;
 }
+
+is(Devel::PPPort::UTF8f(42), '[42]');
+is(Devel::PPPort::UTF8f('abc'), '[abc]');
+is(Devel::PPPort::UTF8f("\x{263a}"), "[\x{263a}]");
+
+my $str = "\x{A8}";
+if (ivers($]) >= ivers(5.8)) { eval q{utf8::upgrade($str)} }
+is(Devel::PPPort::UTF8f($str), "[\x{A8}]");
+if (ivers($]) >= ivers(5.8)) { eval q{utf8::downgrade($str)} }
+is(Devel::PPPort::UTF8f($str), "[\x{A8}]");
 
 is(&Devel::PPPort::UTF8_SAFE_SKIP("A", 0), 1);
 is(&Devel::PPPort::UTF8_SAFE_SKIP("A", -1), 0);
