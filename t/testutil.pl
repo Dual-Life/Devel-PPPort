@@ -195,7 +195,7 @@ sub _qq {
 
 # Support pre-5.10 Perls, for the benefit of CPAN dists that copy this file.
 # Note that chr(90) exists in both ASCII ("Z") and EBCDIC ("!").
-my $chars_template = defined(eval { pack "W*", 90 }) ? "W*" : "U*";
+my $chars_template = defined(eval { pack "W*", 90 }) ? "W*" : defined(eval { pack "U*", 90 }) ? "U*" : "C*";
 eval 'sub re::is_regexp { ref($_[0]) eq "Regexp" }'
     if !defined &re::is_regexp;
 
