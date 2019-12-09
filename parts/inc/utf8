@@ -1,6 +1,7 @@
 =provides
 
 __UNDEFINED__
+SvUTF8
 UTF8f
 UTF8fARG
 utf8_to_uvchr_buf
@@ -8,6 +9,10 @@ sv_len_utf8
 sv_len_utf8_nomg
 
 =implementation
+
+#ifdef SVf_UTF8
+__UNDEFINED__ SvUTF8(sv) (SvFLAGS(sv) & SVf_UTF8)
+#endif
 
 #if { VERSION == 5.19.1 } /* 5.19.1 does not have UTF8fARG, only broken UTF8f */
 #undef UTF8f
