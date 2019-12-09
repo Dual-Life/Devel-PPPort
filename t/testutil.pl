@@ -25,6 +25,8 @@ my $test = 1;
 my $planned;
 my $noplan;
 
+$SIG{__WARN__} = sub { die $_[0] };
+
 # This defines ASCII/UTF-8 vs EBCDIC/UTF-EBCDIC
 $::IS_ASCII  = ord 'A' ==  65;
 $::IS_EBCDIC = ord 'A' == 193;
