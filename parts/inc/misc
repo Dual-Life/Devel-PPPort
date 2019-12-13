@@ -2541,6 +2541,7 @@ if (ivers($]) >= ivers(5.9.2) && ivers($]) < ivers(5.23)) {
     is(&Devel::PPPort::DEFSV(), "Fred");
     is(&Devel::PPPort::UNDERBAR(), "Tony");
   };
+  die __FILE__ . __LINE__ . ": $@" if $@;
 }
 else {
   ok(1);
