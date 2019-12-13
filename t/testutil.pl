@@ -226,10 +226,13 @@ sub display {
                 } elsif ($backslash_escape{$c}) {
                     $y = $y . $backslash_escape{$c};
                 } else {
+                    # /[::]/ was introduced before non-ASCII support
+                    my $is_printable_re = eval 'qr/[^[:^print:][:^ascii:]]/';
+
                     my $z = chr $c; # Maybe we can get away with a literal...
                     my $is_printable = ($::IS_ASCII)
                         ? $c  >= ord(" ") && $c <= ord("~")
-                        : $z !~ /[^[:^print:][:^ascii:]]/;
+                        : $z !~ $is_printable_re;
                             # /[::]/ was introduced before non-ASCII support
                             # The pattern above is equivalent (by de Morgan's
                             # laws) to:
