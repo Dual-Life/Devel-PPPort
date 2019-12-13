@@ -150,7 +150,6 @@ SvPVutf8x                      # U
 SvPVutf8x_force                # U
 sv_rvweaken                    # U
 SvUOK                          # U
-SvUTF8                         # U
 sv_utf8_decode                 # U
 sv_utf8_downgrade              # U
 sv_utf8_encode                 # U

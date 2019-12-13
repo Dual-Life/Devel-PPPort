@@ -19,7 +19,6 @@ ibcmp_utf8                     # U
 mg_dup                         # E (Perl_mg_dup)
 my_fork                        # U
 my_socketpair                  # U
-newSVsv_nomg                   # U
 OP_DESC                        # U
 OP_NAME                        # U
 perl_destruct                  # E (perl_destruct)
@@ -55,20 +54,15 @@ sortsv                         # U
 ss_dup                         # E (Perl_ss_dup)
 sv_copypv                      # U
 sv_dup                         # E (Perl_sv_dup)
-SvIV_nomg                      # U
 SvLOCK                         # U
 sv_magicext                    # U
 sv_nolocking                   # U
 sv_nosharing                   # U
-SV_NOSTEAL                     # E
 sv_nounlocking                 # U
-SvNV_nomg                      # U
 sv_recode_to_utf8              # U
 SvSHARE                        # U
-SvTRUE_nomg                    # U
 sv_uni_display                 # U
 SvUNLOCK                       # U
-SvUV_nomg                      # U
 unpack_str                     # U
 uvchr_to_utf8_flags            # U
 vdeb                           # U
