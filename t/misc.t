@@ -295,6 +295,7 @@ for $i (sort { $a <=> $b } keys %code_points_to_test) {
                 }
 
                 my $eval_string = "Devel::PPPort::is${class}$suffix($hex)";
+                local $SIG{__WARN__} = sub {};
                 my $is = eval $eval_string || 0;
                 die "eval 'For $i: $eval_string' gave $@" if $@;
                 is($is, $should_be, "'$eval_string'");
@@ -326,8 +327,8 @@ for $i (sort { $a <=> $b } keys %code_points_to_test) {
             else {
                 $utf8 = quotemeta Devel::PPPort::uvoffuni_to_utf8($i);
                 my $should_be = $types{"$native:$class"} || 0;
-                local $SIG{__WARN__} = sub {};
                 my $eval_string = "$fcn(\"$utf8\", 0)";
+                local $SIG{__WARN__} = sub {};
                 my $is = eval $eval_string || 0;
                 die "eval 'For $i, $eval_string' gave $@" if $@;
                 is($is, $should_be, sprintf("For U+%04X '%s'", $native, $eval_string));
@@ -344,7 +345,8 @@ for $i (sort { $a <=> $b } keys %code_points_to_test) {
                 }
                 else {
                     my $eval_string = "$fcn(\"$utf8\", -1)";
-                    my $is = eval "no warnings; $eval_string" || 0;
+                    local $SIG{__WARN__} = sub {};
+                    my $is = eval "$eval_string" || 0;
                     die "eval '$eval_string' gave $@" if $@;
                     is($is, 0, sprintf("For U+%04X '%s'", $native, $eval_string));
                 }
