@@ -2536,7 +2536,7 @@ is(&Devel::PPPort::UNDERBAR(), "Fred", 'And verify UNDERBAR is FRED');
 if (ivers($]) >= ivers(5.9.2) && ivers($]) < ivers(5.23)) {
   eval q{
     no warnings "deprecated";
-    no if $^V > v5.17.9, warnings => "experimental::lexical_topic";
+    no if $^V >= v5.17.9, warnings => "experimental::lexical_topic";
     my $_ = "Tony";
     is(&Devel::PPPort::DEFSV(), "Fred", 'lexical_topic eval: $_ is Tony; Verify DEFSV is Fred');
     is(&Devel::PPPort::UNDERBAR(), "Tony", 'And verify UNDERBAR is Tony');
