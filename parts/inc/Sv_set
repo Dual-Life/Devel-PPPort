@@ -237,7 +237,12 @@ is($bar->x(), 'foobar');
 Devel::PPPort::TestSvSTASH_set($bar, 'bar');
 is($bar->x(), 'hacker');
 
-    ok(Devel::PPPort::Test_sv_setsv_SV_NOSTEAL());
+    if (ivers($]) != ivers(5.7.2)) {
+        ok(Devel::PPPort::Test_sv_setsv_SV_NOSTEAL());
+    }
+    else {
+        skip("7.2 broken for NOSTEAL", 1);
+    }
 
     tie my $scalar, 'TieScalarCounter', 'string';
 
