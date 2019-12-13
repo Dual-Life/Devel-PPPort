@@ -454,7 +454,7 @@ __UNDEFINED__  utf8_to_uvchr(s, lp)                                             
 
 =xsubs
 
-#ifdef UTF8f
+#if defined(UTF8f) && defined(newSVpvf)
 
 void
 UTF8f(x)
