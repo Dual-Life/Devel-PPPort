@@ -687,7 +687,13 @@ if ("$]" <= '5.006' || "$]" == '5.007' ) {
 
 is(Devel::PPPort::UTF8f(42), '[42]');
 is(Devel::PPPort::UTF8f('abc'), '[abc]');
-is(Devel::PPPort::UTF8f("\x{263a}"), "[\x{263a}]");
+
+if (ivers($]) >= ivers(5.6)) {
+    is(Devel::PPPort::UTF8f("\x{263a}"), "[\x{263a}]");
+}
+else {
+    skip("UTF-8 needs 5.6.0 or greater", 1);
+}
 
 my $str = "\x{A8}";
 if (ivers($]) >= ivers(5.8)) { eval q{utf8::upgrade($str)} }
