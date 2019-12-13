@@ -31,6 +31,9 @@ __UNDEFINED__  call_argv     perl_call_argv
 __UNDEFINED__  call_method   perl_call_method
 
 __UNDEFINED__  eval_sv       perl_eval_sv
+#if { VERSION < 5.6.0 }
+__UNDEFINED__ Perl_eval_sv   perl_eval_sv
+#endif
 /* Replace: 0 */
 
 __UNDEFINED__ PERL_LOADMOD_DENY         0x1
