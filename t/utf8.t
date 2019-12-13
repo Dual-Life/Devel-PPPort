@@ -34,9 +34,9 @@ BEGIN {
     require 'inctools';
   }
 
-  if (93) {
+  if (98) {
     load();
-    plan(tests => 93);
+    plan(tests => 98);
   }
 }
 
@@ -56,9 +56,19 @@ BEGIN { require warnings if "$]" > '5.006' }
 
 # skip tests on 5.6.0 and earlier, plus 7.0
 if ("$]" <= '5.006' || "$]" == '5.007' ) {
-    skip 'skip: broken utf8 support', 93;
+    skip 'skip: broken utf8 support', 98;
     exit;
 }
+
+is(Devel::PPPort::UTF8f(42), '[42]');
+is(Devel::PPPort::UTF8f('abc'), '[abc]');
+is(Devel::PPPort::UTF8f("\x{263a}"), "[\x{263a}]");
+
+my $str = "\x{A8}";
+if (ivers($]) >= ivers(5.8)) { eval q{utf8::upgrade($str)} }
+is(Devel::PPPort::UTF8f($str), "[\x{A8}]");
+if (ivers($]) >= ivers(5.8)) { eval q{utf8::downgrade($str)} }
+is(Devel::PPPort::UTF8f($str), "[\x{A8}]");
 
 is(&Devel::PPPort::UTF8_SAFE_SKIP("A", 0), 1);
 is(&Devel::PPPort::UTF8_SAFE_SKIP("A", -1), 0);
