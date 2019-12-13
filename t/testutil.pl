@@ -25,7 +25,11 @@ my $test = 1;
 my $planned;
 my $noplan;
 
-$SIG{__WARN__} = sub { die $_[0] };
+# Fatalize warnings, so that we don't introduce new warnings.  But on early
+# perls the burden of avoiding warnings becomes too large, and someone still
+# trying to use such outmoded versions should be willing to accept warnings in
+# our test suite.
+$SIG{__WARN__} = sub { die "Fatalized: $_[0]" } if $] ge "5.6.0";
 
 # This defines ASCII/UTF-8 vs EBCDIC/UTF-EBCDIC
 $::IS_ASCII  = ord 'A' ==  65;
