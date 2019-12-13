@@ -677,12 +677,13 @@ UVCHR_SKIP(c)
 
 =tests plan => 98
 
-BEGIN { require warnings if "$]" > '5.006' }
-
-# skip tests on 5.6.0 and earlier, plus 7.0
-if ("$]" <= '5.006' || "$]" == '5.007' ) {
-    skip 'skip: broken utf8 support', 98;
-    exit;
+BEGIN {
+    # skip tests on 5.6.0 and earlier, plus 5.7.0
+    if (ivers($]) <= ivers(5.6) || ivers($]) == ivers(5.7) ) {
+        skip 'skip: broken utf8 support', 98;
+        exit;
+    }
+    require warnings;
 }
 
 is(Devel::PPPort::UTF8f(42), '[42]');
