@@ -83,22 +83,22 @@ is(&Devel::PPPort::UVCHR_IS_INVARIANT(ord("A")), 1);
 ok(! &Devel::PPPort::UVCHR_IS_INVARIANT(0xb6));
 ok(! &Devel::PPPort::UVCHR_IS_INVARIANT(0x100));
 
-    is(&Devel::PPPort::UVCHR_SKIP(ord("A")), 1);
-    is(&Devel::PPPort::UVCHR_SKIP(0xb6),     2, "This is a test");
-    is(&Devel::PPPort::UVCHR_SKIP(0x3FF),    2);
-    is(&Devel::PPPort::UVCHR_SKIP(0x3FFF),   3);
-    is(&Devel::PPPort::UVCHR_SKIP(0x3FFFF),  4);
-    is(&Devel::PPPort::UVCHR_SKIP(0x3FFFFF), 5);
-    is(&Devel::PPPort::UVCHR_SKIP(0x3FFFFFF), ord("A") == 65 ? 5 : 6);
-    is(&Devel::PPPort::UVCHR_SKIP(0x4000000), ord("A") == 65 ? 6 : 7);
-    if (ord("A") != 65) {
-        skip("Test not valid on EBCDIC", 1)
-    }
-    else {
-        is(&Devel::PPPort::UVCHR_SKIP(0xFFFFFFFF), 7);
-    }
+is(&Devel::PPPort::UVCHR_SKIP(ord("A")), 1);
+is(&Devel::PPPort::UVCHR_SKIP(0xb6),     2, "This is a test");
+is(&Devel::PPPort::UVCHR_SKIP(0x3FF),    2);
+is(&Devel::PPPort::UVCHR_SKIP(0x3FFF),   3);
+is(&Devel::PPPort::UVCHR_SKIP(0x3FFFF),  4);
+is(&Devel::PPPort::UVCHR_SKIP(0x3FFFFF), 5);
+is(&Devel::PPPort::UVCHR_SKIP(0x3FFFFFF), ord("A") == 65 ? 5 : 6);
+is(&Devel::PPPort::UVCHR_SKIP(0x4000000), ord("A") == 65 ? 6 : 7);
+if (ord("A") != 65) {
+    skip("Test not valid on EBCDIC", 1)
+}
+else {
+    is(&Devel::PPPort::UVCHR_SKIP(0xFFFFFFFF), 7);
+}
 
-if ("$]" < '5.008') {
+if (ivers($]) < ivers(5.8)) {
     skip("Perl version too early", 3);
 }
 else {
@@ -123,8 +123,53 @@ $ret = &Devel::PPPort::utf8_to_uvchr_buf("\0", 0);
 is($ret->[0], 0);
 is($ret->[1], 1);
 
+my @buf_tests = (
+    {
+        input      => "A",
+        adjustment => -1,
+        warning    => eval "qr/empty/",
+        no_warnings_returned_length => 0,
+    },
+    {
+        input      => "\xc4\xc5",
+        adjustment => 0,
+        warning    => eval "qr/non-continuation/",
+        no_warnings_returned_length => 1,
+    },
+    {
+        input      => "\xc4\x80",
+        adjustment => -1,
+        warning    => eval "qr/short|1 byte, need 2/",
+        no_warnings_returned_length => 1,
+    },
+    {
+        input      => "\xc0\x81",
+        adjustment => 0,
+        warning    => eval "qr/overlong|2 bytes, need 1/",
+        no_warnings_returned_length => 2,
+    },
+    {
+        input      => "\xe0\x80\x81",
+        adjustment => 0,
+        warning    => eval "qr/overlong|3 bytes, need 1/",
+        no_warnings_returned_length => 3,
+    },
+    {
+        input      => "\xf0\x80\x80\x81",
+        adjustment => 0,
+        warning    => eval "qr/overlong|4 bytes, need 1/",
+        no_warnings_returned_length => 4,
+    },
+    {                 # Old algorithm failed to detect this
+        input      => "\xff\x80\x90\x90\x90\xbf\xbf\xbf\xbf\xbf\xbf\xbf\xbf",
+        adjustment => 0,
+        warning    => eval "qr/overflow/",
+        no_warnings_returned_length => 13,
+    },
+);
+
 if (ord("A") != 65) {   # tests not valid for EBCDIC
-    skip("Perl version too early",  1 .. (2 + 4 + (7 * 5)));
+    skip("Perl version too early", 2 + 4 + (scalar @buf_tests * 5));
 }
 else {
     $ret = &Devel::PPPort::utf8_to_uvchr_buf("\xc4\x80", 0);
@@ -146,50 +191,6 @@ else {
         is($ret->[1], 1);
     }
 
-    my @buf_tests = (
-        {
-            input      => "A",
-            adjustment => -1,
-            warning    => eval "qr/empty/",
-            no_warnings_returned_length => 0,
-        },
-        {
-            input      => "\xc4\xc5",
-            adjustment => 0,
-            warning    => eval "qr/non-continuation/",
-            no_warnings_returned_length => 1,
-        },
-        {
-            input      => "\xc4\x80",
-            adjustment => -1,
-            warning    => eval "qr/short|1 byte, need 2/",
-            no_warnings_returned_length => 1,
-        },
-        {
-            input      => "\xc0\x81",
-            adjustment => 0,
-            warning    => eval "qr/overlong|2 bytes, need 1/",
-            no_warnings_returned_length => 2,
-        },
-        {
-            input      => "\xe0\x80\x81",
-            adjustment => 0,
-            warning    => eval "qr/overlong|3 bytes, need 1/",
-            no_warnings_returned_length => 3,
-        },
-        {
-            input      => "\xf0\x80\x80\x81",
-            adjustment => 0,
-            warning    => eval "qr/overlong|4 bytes, need 1/",
-            no_warnings_returned_length => 4,
-        },
-        {                 # Old algorithm failed to detect this
-            input      => "\xff\x80\x90\x90\x90\xbf\xbf\xbf\xbf\xbf\xbf\xbf\xbf",
-            adjustment => 0,
-            warning    => eval "qr/overflow/",
-            no_warnings_returned_length => 13,
-        },
-    );
 
     # An empty input is an assertion failure on debugging builds.  It is
     # deliberately the first test.
@@ -232,8 +233,8 @@ else {
     }
 }
 
-if ("$]" ge '5.008') {
-    BEGIN { if ("$]" ge '5.008') { require utf8; "utf8"->import() } }
+if (ivers($]) ge ivers(5.008)) {
+    BEGIN { if (ivers($]) ge ivers(5.008)) { require utf8; "utf8"->import() } }
 
     is(Devel::PPPort::sv_len_utf8("aščť"), 4);
     is(Devel::PPPort::sv_len_utf8_nomg("aščť"), 4);
@@ -279,7 +280,7 @@ sub TIESCALAR {
 }
 
 sub FETCH {
-    BEGIN { if ("$]" ge '5.008') { require utf8; "utf8"->import() } }
+    BEGIN { if (main::ivers($]) ge main::ivers(5.008)) { require utf8; "utf8"->import() } }
     my ($self) = @_;
     $self->{fetch}++;
     return $self->{value} .= "é";
