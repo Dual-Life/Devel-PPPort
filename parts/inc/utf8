@@ -478,17 +478,16 @@ UTF8f(x)
                          /* API function has; works on EBCDIC too */
 
 SV *
-uvoffuni_to_utf8(uni)
+uvchr_to_utf8(native)
 
-    UV uni
+    UV native
     PREINIT:
         int len;
         U8 string[UTF8_MAXBYTES+1];
         int i;
-        UV native;
-    CODE:
-        native = UNI_TO_NATIVE(uni);
+        UV uni;
 
+    CODE:
 	len = UVCHR_SKIP(native);
 
         for (i = 0; i < len; i++) {
@@ -500,6 +499,7 @@ uvoffuni_to_utf8(uni)
         }
         else {
             i = len;
+            uni = NATIVE_TO_UNI(native);
             while (i-- > 1) {
                 string[i] = I8_TO_NATIVE_UTF8((uni & UTF_CONTINUATION_MASK) | UTF_CONTINUATION_MARK);
                 uni >>= UTF_ACCUMULATION_SHIFT;
