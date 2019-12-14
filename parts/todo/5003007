@@ -332,6 +332,8 @@ newSVpvs_share                 # T
 newSVREF                       # T
 newSVrv                        # T
 newSVsv                        # T
+newSVsv_flags                  # T
+newSVsv_nomg                   # T
 newSV_type                     # T
 newSVuv                        # T
 newUNOP                        # T
@@ -652,6 +654,7 @@ SvIOKp                         # T
 sv_isa                         # T
 sv_isobject                    # T
 SvIV                           # T
+SvIV_nomg                      # T
 SvIV_set                       # T
 SvIVX                          # T
 SvIVx                          # T
@@ -661,6 +664,7 @@ SvLEN_set                      # T
 sv_magic                       # T
 SvMAGIC_set                    # T
 sv_mortalcopy                  # T
+sv_mortalcopy_flags            # T
 SV_MUTABLE_RETURN              # T
 sv_newmortal                   # T
 sv_newref                      # T
@@ -672,7 +676,9 @@ SvNOK_off                      # T
 SvNOK_on                       # T
 SvNOK_only                     # T
 SvNOKp                         # T
+SV_NOSTEAL                     # T
 SvNV                           # T
+SvNV_nomg                      # T
 SvNV_set                       # T
 SvNVX                          # T
 SvNVx                          # T
@@ -735,6 +741,7 @@ sv_setref_pv                   # T
 sv_setref_pvn                  # T
 sv_setsv                       # T
 SvSetSV                        # T
+sv_setsv_flags                 # T
 sv_setsv_mg                    # T
 sv_setsv_nomg                  # T
 sv_setuv                       # T
@@ -759,6 +766,7 @@ SVt_PVLV                       # T
 SVt_PVMG                       # T
 SVt_PVNV                       # T
 SvTRUE                         # T
+SvTRUE_nomg                    # T
 SvTRUEx                        # T
 SvTYPE                         # T
 sv_unmagic                     # T
@@ -768,9 +776,11 @@ sv_upgrade                     # T
 SvUPGRADE                      # T
 sv_usepvn                      # T
 sv_usepvn_mg                   # T
+SvUTF8                         # T
 SV_UTF8_NO_ENCODING            # T
 sv_uv                          # T
 SvUV                           # T
+SvUV_nomg                      # T
 SvUV_set                       # T
 SvUVX                          # T
 SvUVx                          # T
@@ -786,6 +796,8 @@ UNICODE_REPLACEMENT            # T
 UNI_TO_NATIVE                  # T
 UNLIKELY                       # T
 unsharepvn                     # T
+UTF8f                          # T
+UTF8fARG                       # T
 UTF8_IS_INVARIANT              # T
 UTF8_MAXBYTES_CASE             # T
 UVCHR_IS_INVARIANT             # T

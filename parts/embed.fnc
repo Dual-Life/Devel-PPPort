@@ -1777,6 +1777,7 @@ ApdR	|bool	|sv_derived_from_sv|NN SV* sv|NN SV *namesv|U32 flags
 ApdR	|bool	|sv_derived_from_pv|NN SV* sv|NN const char *const name|U32 flags
 ApdR	|bool	|sv_derived_from_pvn|NN SV* sv|NN const char *const name \
                                     |const STRLEN len|U32 flags
+ApdRx	|bool	|sv_isa_sv	|NN SV* sv|NN SV* namesv
 ApdR	|bool	|sv_does	|NN SV* sv|NN const char *const name
 ApdR	|bool	|sv_does_sv	|NN SV* sv|NN SV* namesv|U32 flags
 ApdR	|bool	|sv_does_pv	|NN SV* sv|NN const char *const name|U32 flags
@@ -1878,6 +1879,8 @@ EiR	|SV*	|add_cp_to_invlist	|NULLOK SV* invlist|const UV cp
 Ei	|void	|invlist_extend    |NN SV* const invlist|const UV len
 Ei	|void	|invlist_set_len|NN SV* const invlist|const UV len|const bool offset
 EiRT	|UV	|invlist_highest|NN SV* const invlist
+#endif
+#if defined(PERL_IN_REGCOMP_C) || defined(PERL_IN_OP_C)
 EiRT	|STRLEN*|get_invlist_iter_addr	|NN SV* invlist
 EiT	|void	|invlist_iterinit|NN SV* invlist
 EiRT	|bool	|invlist_iternext|NN SV* invlist|NN UV* start|NN UV* end
@@ -3364,7 +3367,7 @@ pTo	|int	|my_mkstemp	|NN char *templte
 #endif
 
 APpdT	|bool	|isinfnan	|NV nv
-p	|bool	|isinfnansv	|NN SV *sv
+pd	|bool	|isinfnansv	|NN SV *sv
 
 #if !defined(HAS_SIGNBIT)
 AxdToP	|int	|Perl_signbit	|NV f
