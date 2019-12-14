@@ -283,7 +283,7 @@ for $i (sort { $a <=> $b } keys %code_points_to_test) {
                    XDIGIT))
     {
         if ($i < 256) {  # For the ones that can fit in a byte, test each of
-                         #three macros.
+                         # three macros.
             my $suffix;
             for $suffix ("", "_A", "_L1", "_uvchr") {
                 my $should_be = ($i > 0x7F && $suffix !~ /_(uvchr|L1)/)
