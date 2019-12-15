@@ -33,7 +33,6 @@ $SIG{__WARN__} = sub { die "Fatalized: $_[0]" } if $] ge "5.6.0";
 
 # This defines ASCII/UTF-8 vs EBCDIC/UTF-EBCDIC
 $::IS_ASCII  = ord 'A' ==  65;
-$::IS_EBCDIC = ord 'A' == 193;
 
 $TODO = 0;
 $NO_ENDING = 0;
