@@ -377,9 +377,6 @@ my %case_changing = ( 'LOWER' => [ [ ord('A'), ord('a') ],
                     );
 
 my $name;
-
-my $non_ascii_re = eval 'qr/[[:^ascii:]]/';
-
 for $name (keys %case_changing) {
     my @code_points_to_test = @{$case_changing{$name}};
     my $unchanged;
@@ -396,10 +393,7 @@ for $name (keys %case_changing) {
                 $should_be_bytes = Devel::PPPort::UTF8_SAFE_SKIP($utf8_changed, 0);
             }
             else {
-                die("Test currently doesn't work for non-ASCII multi-char"
-                  . " case changes") if $utf8_changed =~ ($non_ascii_re)
-                                                         ? $non_ascii_re
-                                                         : /[^\x00-\x7F]/;
+                die("Test currently doesn't work for non-ASCII multi-char case changes") if $utf8_changed =~ /[[:^ascii:]]/;
                 $should_be_bytes = length $utf8_changed;
             }
         }
@@ -422,10 +416,7 @@ for $name (keys %case_changing) {
                 $should_be_bytes = Devel::PPPort::UTF8_SAFE_SKIP($utf8_changed, 0);
             }
             else {
-                die("Test currently doesn't work for non-ASCII multi-char"
-                  . " case changes") if $utf8_changed =~ ($non_ascii_re)
-                                                         ? $non_ascii_re
-                                                         : /[^\x00-\x7F]/;
+                die("Test currently doesn't work for non-ASCII multi-char case changes") if $utf8_changed =~ /[[:^ascii:]]/;
                 $should_be_bytes = length $utf8_changed;
             }
 
