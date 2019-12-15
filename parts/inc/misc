@@ -1873,6 +1873,7 @@ isASCII_utf8_safe(s, offset)
     unsigned char * s
     int offset
     CODE:
+        PERL_UNUSED_ARG(offset);
         RETVAL = isASCII_utf8_safe(s, s + 1 + offset);
     OUTPUT:
         RETVAL
@@ -2174,6 +2175,7 @@ isASCII_LC_utf8_safe(s, offset)
     unsigned char * s
     int offset
     CODE:
+        PERL_UNUSED_ARG(offset);
         RETVAL = isASCII_utf8_safe(s, s + UTF8SKIP(s) + offset);
     OUTPUT:
         RETVAL
