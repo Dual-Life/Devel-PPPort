@@ -376,7 +376,7 @@ utf8_to_uvchr_buf(pTHX_ const U8 *s, const U8 *send, STRLEN *retlen)
              * length.  It should not extend past the end of string, nor past
              * what the first byte indicates the length is, nor past the
              * continuation characters */
-            if (retlen && *retlen >= 0) {
+            if (retlen && (IV) *retlen >= 0) {
                 unsigned int i = 1;
 
                 *retlen = D_PPP_MIN(*retlen, curlen);
