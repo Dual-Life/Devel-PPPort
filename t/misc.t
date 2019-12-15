@@ -393,7 +393,7 @@ for $name (keys %case_changing) {
                 $should_be_bytes = Devel::PPPort::UTF8_SAFE_SKIP($utf8_changed, 0);
             }
             else {
-                die("Test currently doesn't work for non-ASCII multi-char case changes") if $utf8_changed =~ /[[:^ascii:]]/;
+                die("Test currently doesn't work for non-ASCII multi-char case changes") if eval '$utf8_changed =~ /[[:^ascii:]]/';
                 $should_be_bytes = length $utf8_changed;
             }
         }
@@ -416,7 +416,8 @@ for $name (keys %case_changing) {
                 $should_be_bytes = Devel::PPPort::UTF8_SAFE_SKIP($utf8_changed, 0);
             }
             else {
-                die("Test currently doesn't work for non-ASCII multi-char case changes") if $utf8_changed =~ /[[:^ascii:]]/;
+                my $non_ascii_re = (ivers($]) >= ivers(5.6)) ? '[[:^ascii:]]' : '[^\x00-\x7F]';
+                die("Test currently doesn't work for non-ASCII multi-char case changes") if eval '$utf8_changed =~ /$non_ascii_re/';
                 $should_be_bytes = length $utf8_changed;
             }
 
