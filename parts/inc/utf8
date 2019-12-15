@@ -708,10 +708,6 @@ is(&Devel::PPPort::UVCHR_IS_INVARIANT(ord("A")), 1);
 ok(! &Devel::PPPort::UVCHR_IS_INVARIANT(0xb6));
 ok(! &Devel::PPPort::UVCHR_IS_INVARIANT(0x100));
 
-if ("$]" < '5.006') {
-    skip("Perl version too early", 9);
-}
-else {
     is(&Devel::PPPort::UVCHR_SKIP(ord("A")), 1);
     is(&Devel::PPPort::UVCHR_SKIP(0xb6),     2, "This is a test");
     is(&Devel::PPPort::UVCHR_SKIP(0x3FF),    2);
@@ -726,7 +722,6 @@ else {
     else {
         is(&Devel::PPPort::UVCHR_SKIP(0xFFFFFFFF), 7);
     }
-}
 
 if ("$]" < '5.008') {
     skip("Perl version too early", 3);
@@ -765,12 +760,12 @@ else {
     local $SIG{__WARN__} = sub { push @warnings, @_; };
 
     {
-        BEGIN { 'warnings'->import('utf8') if "$]" > '5.006' }
+        use warnings 'utf8';
         $ret = &Devel::PPPort::utf8_to_uvchr("\xe0\0\x80");
         is($ret->[0], 0);
         is($ret->[1], -1);
 
-        BEGIN { 'warnings'->unimport() if "$]" > '5.006' }
+        no warnings 'utf8';
         $ret = &Devel::PPPort::utf8_to_uvchr("\xe0\0\x80");
         is($ret->[0], 0xFFFD);
         is($ret->[1], 1);
@@ -844,7 +839,7 @@ else {
         my $warning = $test->{'warning'};
 
         undef @warnings;
-        BEGIN { 'warnings'->import('utf8') if "$]" > '5.006' }
+        use warnings 'utf8';
         $ret = &Devel::PPPort::utf8_to_uvchr_buf($input, $adjustment);
         is($ret->[0], 0,  "returned value $display; warnings enabled");
         is($ret->[1], -1, "returned length $display; warnings enabled");
@@ -854,7 +849,7 @@ else {
                     . "; Got: '$all_warnings', which should contain '$warning'");
 
         undef @warnings;
-        BEGIN { 'warnings'->unimport('utf8') if "$]" > '5.006' }
+        no warnings 'utf8';
         $ret = &Devel::PPPort::utf8_to_uvchr_buf($input, $adjustment);
         is($ret->[0], 0xFFFD,  "returned value $display; warnings disabled");
         is($ret->[1], $test->{'no_warnings_returned_length'},
