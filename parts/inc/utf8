@@ -315,8 +315,9 @@ utf8_to_uvchr_buf(pTHX_ const U8 *s, const U8 *send, STRLEN *retlen)
          * The modern versions allow anything that evaluates to a legal UV, but
          * not overlongs nor an empty input */
         ret = D_PPP_utf8_to_uvchr_buf_callee(
-                s, curlen, retlen,   (UTF8_ALLOW_ANYUV
-                                  & ~(UTF8_ALLOW_LONG|UTF8_ALLOW_EMPTY)));
+              (U8 *) /* Early perls: no const */
+                    s, curlen, retlen,   (UTF8_ALLOW_ANYUV
+                                      & ~(UTF8_ALLOW_LONG|UTF8_ALLOW_EMPTY)));
 
 #    if { VERSION >= 5.26.0 } && { VERSION < 5.28.0 }
 
@@ -365,6 +366,7 @@ utf8_to_uvchr_buf(pTHX_ const U8 *s, const U8 *send, STRLEN *retlen)
         }
         else {
             ret = D_PPP_utf8_to_uvchr_buf_callee(
+                                     (U8 *) /* Early perls: no const */
                                             s, curlen, retlen, UTF8_ALLOW_ANY);
             /* Override with the REPLACEMENT character, as that is what the
              * modern version of this function returns */
