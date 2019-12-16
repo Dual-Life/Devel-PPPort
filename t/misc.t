@@ -283,7 +283,7 @@ for $i (sort { $a <=> $b } keys %code_points_to_test) {
                    XDIGIT))
     {
         if ($i < 256) {  # For the ones that can fit in a byte, test each of
-                         #three macros.
+                         # three macros.
             my $suffix;
             for $suffix ("", "_A", "_L1", "_uvchr") {
                 my $should_be = ($i > 0x7F && $suffix !~ /_(uvchr|L1)/)
@@ -325,7 +325,7 @@ for $i (sort { $a <=> $b } keys %code_points_to_test) {
                 skip $skip, 1;
             }
             else {
-                $utf8 = quotemeta Devel::PPPort::uvoffuni_to_utf8($i);
+                $utf8 = quotemeta Devel::PPPort::uvchr_to_utf8($native);
                 my $should_be = $types{"$native:$class"} || 0;
                 my $eval_string = "$fcn(\"$utf8\", 0)";
                 local $SIG{__WARN__} = sub {};
@@ -356,30 +356,34 @@ for $i (sort { $a <=> $b } keys %code_points_to_test) {
 }
 
 my %case_changing = ( 'LOWER' => [ [ ord('A'), ord('a') ],
-                                   [ 0xC0, 0xE0 ],
+                                   [ Devel::PPPort::LATIN1_TO_NATIVE(0xC0),
+                                     Devel::PPPort::LATIN1_TO_NATIVE(0xE0) ],
                                    [ 0x100, 0x101 ],
                                  ],
                       'FOLD'  => [ [ ord('C'), ord('c') ],
-                                   [ 0xC0, 0xE0 ],
+                                   [ Devel::PPPort::LATIN1_TO_NATIVE(0xC0),
+                                     Devel::PPPort::LATIN1_TO_NATIVE(0xE0) ],
                                    [ 0x104, 0x105 ],
-                                   [ 0xDF, 'ss' ],
+                                   [ Devel::PPPort::LATIN1_TO_NATIVE(0xDF),
+                                     'ss' ],
                                  ],
-                      'UPPER' => [ [ ord('a'),ord('A'),  ],
-                                   [ 0xE0, 0xC0 ],
+                      'UPPER' => [ [ ord('a'), ord('A'),  ],
+                                   [ Devel::PPPort::LATIN1_TO_NATIVE(0xE0),
+                                     Devel::PPPort::LATIN1_TO_NATIVE(0xC0) ],
                                    [ 0x101, 0x100 ],
-                                   [ 0xDF, 'SS' ],
+                                   [ Devel::PPPort::LATIN1_TO_NATIVE(0xDF),
+                                     'SS' ],
                                  ],
-                      'TITLE' => [ [ ord('c'),ord('C'),  ],
-                                   [ 0xE2, 0xC2 ],
+                      'TITLE' => [ [ ord('c'), ord('C'),  ],
+                                   [ Devel::PPPort::LATIN1_TO_NATIVE(0xE2),
+                                     Devel::PPPort::LATIN1_TO_NATIVE(0xC2) ],
                                    [ 0x103, 0x102 ],
-                                   [ 0xDF, 'Ss' ],
+                                   [ Devel::PPPort::LATIN1_TO_NATIVE(0xDF),
+                                     'Ss' ],
                                  ],
                     );
 
 my $name;
-
-my $non_ascii_re = eval 'qr/[[:^ascii:]]/';
-
 for $name (keys %case_changing) {
     my @code_points_to_test = @{$case_changing{$name}};
     my $unchanged;
@@ -392,14 +396,11 @@ for $name (keys %case_changing) {
         my $should_be_bytes;
         if (ivers($]) >= ivers(5.6)) {
             if ($is_cp) {
-                $utf8_changed = Devel::PPPort::uvoffuni_to_utf8($changed);
+                $utf8_changed = Devel::PPPort::uvchr_to_utf8($changed);
                 $should_be_bytes = Devel::PPPort::UTF8_SAFE_SKIP($utf8_changed, 0);
             }
             else {
-                die("Test currently doesn't work for non-ASCII multi-char"
-                  . " case changes") if $utf8_changed =~ ($non_ascii_re)
-                                                         ? $non_ascii_re
-                                                         : /[^\x00-\x7F]/;
+                die("Test currently doesn't work for non-ASCII multi-char case changes") if eval '$utf8_changed =~ /[[:^ascii:]]/';
                 $should_be_bytes = length $utf8_changed;
             }
         }
@@ -418,14 +419,12 @@ for $name (keys %case_changing) {
         }
         else {
             if ($is_cp) {
-                $utf8_changed = Devel::PPPort::uvoffuni_to_utf8($changed);
+                $utf8_changed = Devel::PPPort::uvchr_to_utf8($changed);
                 $should_be_bytes = Devel::PPPort::UTF8_SAFE_SKIP($utf8_changed, 0);
             }
             else {
-                die("Test currently doesn't work for non-ASCII multi-char"
-                  . " case changes") if $utf8_changed =~ ($non_ascii_re)
-                                                         ? $non_ascii_re
-                                                         : /[^\x00-\x7F]/;
+                my $non_ascii_re = (ivers($]) >= ivers(5.6)) ? '[[:^ascii:]]' : '[^\x00-\x7F]';
+                die("Test currently doesn't work for non-ASCII multi-char case changes") if eval '$utf8_changed =~ /$non_ascii_re/';
                 $should_be_bytes = length $utf8_changed;
             }
 
@@ -466,7 +465,7 @@ for $name (keys %case_changing) {
             }
             else {
                 my $fcn = "to${name}_utf8_safe";
-                my $utf8 = quotemeta Devel::PPPort::uvoffuni_to_utf8($original);
+                my $utf8 = quotemeta Devel::PPPort::uvchr_to_utf8($original);
                 my $real_truncate = ($truncate < 2)
                                     ? $truncate : $should_be_bytes;
                 my $eval_string = "Devel::PPPort::$fcn(\"$utf8\", $real_truncate)";

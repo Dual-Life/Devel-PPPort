@@ -33,7 +33,6 @@ $SIG{__WARN__} = sub { die "Fatalized: $_[0]" } if $] ge "5.6.0";
 
 # This defines ASCII/UTF-8 vs EBCDIC/UTF-EBCDIC
 $::IS_ASCII  = ord 'A' ==  65;
-$::IS_EBCDIC = ord 'A' == 193;
 
 $TODO = 0;
 $NO_ENDING = 0;
@@ -225,33 +224,32 @@ sub display {
                     $y = $y . sprintf "\\x{%x}", $c;
                 } elsif ($backslash_escape{$c}) {
                     $y = $y . $backslash_escape{$c};
-                } else {
-                    # /[::]/ was introduced before non-ASCII support
-                    my $is_printable_re = eval 'qr/[^[:^print:][:^ascii:]]/';
-
-                    my $z = chr $c; # Maybe we can get away with a literal...
-                    my $is_printable = ($::IS_ASCII)
-                        ? $c  >= ord(" ") && $c <= ord("~")
-                        : $z !~ $is_printable_re;
-                            # /[::]/ was introduced before non-ASCII support
-                            # The pattern above is equivalent (by de Morgan's
-                            # laws) to:
-                            #     $z !~ /(?[ [:print:] & [:ascii:] ])/
-                            # or, $z is not an ascii printable character
-
-                    unless ($is_printable) {
-                        # Use octal for characters with small ordinals that
-                        # are traditionally expressed as octal: the controls
-                        # below space, which on EBCDIC are almost all the
-                        # controls, but on ASCII don't include DEL nor the C1
-                        # controls.
-                        if ($c < ord " ") {
-                            $z = sprintf "\\%03o", $c;
-                        } else {
-                            $z = sprintf "\\x{%x}", $c;
-                        }
-                    }
-                    $y = $y . $z;
+                } elsif ($c < ord " ") {
+                    # Use octal for characters with small ordinals that are
+                    # traditionally expressed as octal: the controls below
+                    # space, which on EBCDIC are almost all the controls, but
+                    # on ASCII don't include DEL nor the C1 controls.
+                    $y = $y . sprintf "\\%03o", $c;
+                } elsif ($::IS_ASCII && $c <= ord('~')) {
+                    $y = $y . chr $c;
+                } elsif ( ! $::IS_ASCII
+                         && eval 'chr $c =~ /[^[:^print:][:^ascii:]]/')
+                        # The pattern above is equivalent (by de Morgan's
+                        # laws) to:
+                        #     $z =~ /(?[ [:print:] & [:ascii:] ])/
+                        # or, $z is an ascii printable character
+                        # The /a modifier doesn't go back so far.
+                {
+                    $y = $y . chr $c;
+                }
+                elsif ($@) { # Should only be an error on platforms too
+                             # early to have the [:posix:] syntax, which
+                             # also should be ASCII ones
+                    die __FILE__ . __LINE__
+                      . ": Unexpected non-ASCII platform; $@";
+                }
+                else {
+                    $y = $y . sprintf "\\x%02X", $c;
                 }
             }
             $x = $y;
