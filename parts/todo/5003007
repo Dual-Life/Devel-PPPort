@@ -108,6 +108,7 @@ grok_numeric_radix             # T
 grok_oct                       # T
 G_SCALAR                       # T
 GV_ADD                         # T
+GV_ADDMULTI                    # T
 GvAV                           # T
 gv_AVadd                       # T
 gv_check                       # T
@@ -351,11 +352,13 @@ NVef                           # T
 NVff                           # T
 NVgf                           # T
 NVTYPE                         # T
+OPf_KIDS                       # T
 op_free                        # T
 OpHAS_SIBLING                  # T
 OpLASTSIB_set                  # T
 OpMAYBESIB_set                 # T
 OpMORESIB_set                  # T
+OPpENTERSUB_AMPER              # T
 OpSIBLING                      # T
 ORIGMARK                       # T
 OSNAME                         # T
