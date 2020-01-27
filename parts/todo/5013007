@@ -35,6 +35,7 @@ parse_barestmt                 # U
 parse_block                    # U
 parse_label                    # U
 PARSE_OPTIONAL                 # E
+PL_phase                       # E
 XopFLAGS                       # E
 XopDISABLE                     # X added by devel/scanprov
 XopENABLE                      # X added by devel/scanprov
