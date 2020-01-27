@@ -20,7 +20,6 @@ Amd|void|__ASSERT_|bool expr
 Amnhd||aTHX
 Amnhd||aTHX_
 Amd|int|AvFILL|AV* av
-md|int|AvFILLp|AV* av
 Amnd|I32|ax
 Amxud|void|BhkDISABLE|BHK *hk|which
 Amxud|void|BhkENABLE|BHK *hk|which
@@ -363,6 +362,7 @@ Amnd||LONGSIZE
 Amnd||LSEEKSIZE
 mnUd||LVRET
 AmnUd||MARK
+Amd|bool|memCHRs|"list"|char c
 Amd|bool|memEQ|char* s1|char* s2|STRLEN len
 Amd|bool|memEQs|char* s1|STRLEN l1|"s2"
 Amd|bool|memNE|char* s1|char* s2|STRLEN len
@@ -589,11 +589,7 @@ AmnxUd|PADNAMELIST *|PL_comppad_name
 Amnd|COP*|PL_curcop
 AmnxUd|SV **|PL_curpad
 Amnd|HV*|PL_curstash
-mnd|SV *|PL_DBsingle
-mnd|GV *|PL_DBsub
-mnd|SV *|PL_DBtrace
 Amnd|GV *|PL_defgv
-mnd|U8|PL_dowarn
 Amnhd|GV *|PL_errgv
 Amnd|U8|PL_exit_flags
 AmnUxd|Perl_keyword_plugin_t|PL_keyword_plugin
@@ -609,6 +605,7 @@ AmnxUNd|char *|PL_parser-E<gt>bufptr
 AmnxUNd|char *|PL_parser-E<gt>linestart
 Amnd|peep_t|PL_peepp
 Amnd|signed char|PL_perl_destruct_level
+Amnd|enum perl_phase|PL_phase
 Amnd|peep_t|PL_rpeepp
 mnd|SV*|PL_rs
 Amnd|runops_proc_t|PL_runops
@@ -737,7 +734,6 @@ Amd|IV|SvIVx|SV* sv
 Amd|STRLEN|SvLEN|SV* sv
 Amd|void|SvLEN_set|SV* sv|STRLEN len
 Amd|void|SvLOCK|SV* sv
-Amnhd||SV_SMAGIC
 Amd|void|SvMAGIC_set|SV* sv|MAGIC* val
 Amd|U32|SvNIOK|SV* sv
 Amd|void|SvNIOK_off|SV* sv
@@ -891,10 +887,10 @@ Amnhd||UTF8_CHECK_ONLY
 Amd|STRLEN|UTF8_CHK_SKIP|char* s
 Amnhd||UTF8_DISALLOW_ILLEGAL_C9_INTERCHANGE
 Amnhd||UTF8_DISALLOW_ILLEGAL_INTERCHANGE
-Amnhd||UTF8_DISALLOW_SURROGATE
 Amnhd||UTF8_DISALLOW_NONCHAR
 Amnhd||UTF8_DISALLOW_PERL_EXTENDED
 Amnhd||UTF8_DISALLOW_SUPER
+Amnhd||UTF8_DISALLOW_SURROGATE
 Amnhd||UTF8f
 Amhd||UTF8fARG|bool is_utf8|Size_t byte_len|char *str
 Amd|bool|UTF8_IS_INVARIANT|char c
@@ -908,10 +904,10 @@ Amd|STRLEN|UTF8_SKIP|char* s
 Amd|STRLEN|UTF8SKIP|char* s
 Amnhd||UTF8_WARN_ILLEGAL_C9_INTERCHANGE
 Amnhd||UTF8_WARN_ILLEGAL_INTERCHANGE
-Amnhd||UTF8_WARN_SURROGATE
 Amnhd||UTF8_WARN_NONCHAR
 Amnhd||UTF8_WARN_PERL_EXTENDED
 Amnhd||UTF8_WARN_SUPER
+Amnhd||UTF8_WARN_SURROGATE
 Amd|bool|UVCHR_IS_INVARIANT|UV cp
 Amd|STRLEN|UVCHR_SKIP|UV cp
 Amnhd||UVof
