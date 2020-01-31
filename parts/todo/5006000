@@ -99,6 +99,8 @@ newATTRSUB                     # U
 newXS                          # E (Perl_newXS)
 newXSproto                     # E
 op_dump                        # U
+OPpEARLY_CV                    # E
+PERL_EXIT_EXPECTED             # E
 perl_parse                     # E (perl_parse)
 PERL_SYS_INIT3                 # U
 PL_check                       # E

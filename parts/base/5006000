@@ -82,8 +82,13 @@ newXS                          # E (Perl_newXS)
 newXSproto                     # E
 NVTYPE                         # E
 op_dump                        # E
+OPpEARLY_CV                    # E
+PERL_EXIT_EXPECTED             # E
 PerlIO_printf                  # E
 PerlIO_stdoutf                 # E
+PERL_LOADMOD_DENY              # E
+PERL_LOADMOD_IMPORT_OPS        # E
+PERL_LOADMOD_NOIMPORT          # E
 perl_parse                     # E (perl_parse)
 PERL_REVISION                  # E
 PERL_SUBVERSION                # E
