@@ -353,7 +353,7 @@ typedef OP* (CPERLscope(*Perl_check_t)) (pTHX_ OP*);
 #  ifdef U64TYPE
 #   define WIDEST_UTYPE U64TYPE
 #  else
-#   define WIDEST_UTYPE Quad_t
+#   define WIDEST_UTYPE unsigned Quad_t
 #  endif
 # else
 #  define WIDEST_UTYPE U32
