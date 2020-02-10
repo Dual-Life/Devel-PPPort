@@ -1,5 +1,9 @@
 Revision history for Devel-PPPort
 
+ 3.57_01 DEV - 2020-02-10
+
+ * Make sure WIDEST_UTYPE is unsigned
+
  3.57 - 2020-01-31
 
  * Fix eval_sv for Perl versions prior to 5.6.0 (Pali)
