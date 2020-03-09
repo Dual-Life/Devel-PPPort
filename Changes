@@ -1,12 +1,10 @@
 Revision history for Devel-PPPort
 
- 3.57_02 DEV - 2020-03-04
+ 3.58 - 2020-03-09
 
  * Safer definition of UVCHR_SKIP
-
- 3.57_01 DEV - 2020-02-10
-
  * Make sure WIDEST_UTYPE is unsigned
+ * Avoid Pax Header in tarballs
 
  3.57 - 2020-01-31
 
