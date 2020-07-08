@@ -399,7 +399,7 @@ collect the remaining information in F<parts/apidoc.fnc>.
 =item *
 
 The final step before regenerating everything is to run
-F</devel/mkppport_fnc.pl> to update the F</parts/ppport.fnc> file.
+F<devel/mkppport_fnc.pl> to update the F</parts/ppport.fnc> file.
 
 =back
 
