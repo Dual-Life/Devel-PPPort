@@ -1,0 +1,7 @@
+5.033000
+PERL_VERSION_EQ                # U
+PERL_VERSION_GE                # U
+PERL_VERSION_GT                # U
+PERL_VERSION_LE                # U
+PERL_VERSION_LT                # U
+PERL_VERSION_NE                # U
