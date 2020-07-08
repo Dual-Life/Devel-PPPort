@@ -44,7 +44,7 @@ sub parse_version
 
     $s = 0 unless $s;
 
-    die "Only Perl 5 is supported '$ver'\n" if $r != 5;
+    die "Only Perl $r_pat are supported '$ver'\n" unless $r =~ / ^ $r_pat $ /x;
     die "Invalid version number: $ver\n" if $v >= 1000 || $s >= 1000;
     return (5, 0 + $v, 0 + $s);
   }
@@ -58,8 +58,8 @@ sub parse_version
     $v = ord $v;
     $s = ord $s;
 
-    die "Only Perl 5 is supported '$ver'\n" if $r != 5;
-    return (5, $v, $s);
+    die "Only Perl $r_pat are supported '$ver'\n" unless $r =~ / ^ $r_pat $ /x;
+    return ($r, $v, $s);
   }
 
   my $mesg = "";
