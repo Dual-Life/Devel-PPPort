@@ -1,5 +1,8 @@
 # These are tools that must be included in ppport.h.  It doesn't work if given
-# a .pl suffix
+# a .pl suffix.
+#
+# WARNING: Use only constructs that are legal as far back as D:P handles, as
+# this is run in the perl version being tested.
 
 sub format_version
 {
