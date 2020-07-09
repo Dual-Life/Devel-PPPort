@@ -1,3 +1,7 @@
 5.031009
+compile_wildcard               # F added by devel/scanprov
+execute_wildcard               # F added by devel/scanprov
 form_alien_digit_msg           # F added by devel/scanprov
 form_cp_too_large_msg          # F added by devel/scanprov
+load_charnames                 # F added by devel/scanprov
+regpnode                       # F added by devel/scanprov

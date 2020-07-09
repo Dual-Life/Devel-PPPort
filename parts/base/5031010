@@ -1,6 +1,22 @@
 5.031010
-compile_wildcard               # F added by devel/scanprov
-execute_wildcard               # F added by devel/scanprov
-load_charnames                 # F added by devel/scanprov
-regpnode                       # F added by devel/scanprov
-re_op_compile_wrapper          # F added by devel/scanprov
+amagic_cmp_desc                # F added by devel/scanprov
+amagic_cmp_locale_desc         # F added by devel/scanprov
+amagic_i_ncmp_desc             # F added by devel/scanprov
+amagic_ncmp_desc               # F added by devel/scanprov
+cmpchain_extend                # F added by devel/scanprov
+cmpchain_finish                # F added by devel/scanprov
+cmpchain_start                 # F added by devel/scanprov
+cmp_desc                       # F added by devel/scanprov
+cmp_locale_desc                # F added by devel/scanprov
+do_uniprop_match               # F added by devel/scanprov
+get_deprecated_property_msg    # F added by devel/scanprov
+get_prop_definition            # F added by devel/scanprov
+get_prop_values                # F added by devel/scanprov
+get_re_gclass_nonbitmap_data   # F added by devel/scanprov
+get_regclass_nonbitmap_data    # F added by devel/scanprov
+handle_names_wildcard          # F added by devel/scanprov
+mortal_getenv                  # F added by devel/scanprov
+should_we_output_Debug_r       # F added by devel/scanprov
+sortsv_flags_impl              # F added by devel/scanprov
+sv_i_ncmp_desc                 # F added by devel/scanprov
+sv_ncmp_desc                   # F added by devel/scanprov
