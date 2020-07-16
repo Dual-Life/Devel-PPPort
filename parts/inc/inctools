@@ -108,6 +108,9 @@ sub dictionary_order($$)    # Sort caselessly, ignoring punct
         ($valid_a, $valid_b) = @_;
     }
 
+    $valid_a = '' unless defined $valid_a;
+    $valid_b = '' unless defined $valid_b;
+
     $lc_a = lc $valid_a;
     $lc_b = lc $valid_b;
 
