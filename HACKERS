@@ -14,7 +14,7 @@ lying around in this distribution.
 =head2 How to backport something
 
 First, make sure that what you want to backport is documented.  If it's worth
-backporting, it surely is worth documenting.  Send a documentation patch to 
+backporting, it surely is worth documenting.  Send a documentation patch to
 L<perlbug@perl.org|mailto:perlbug@perl.org> if necessary.  Also,
 C<Devel::PPPort> cannot automatically generate proper information about the
 item without at least knowing its API prototype.  It can get this from
@@ -161,10 +161,29 @@ In all sections, lines that begin with C<##> are completely ignored.
 =head2 Implementation Section Details
 
 You can implement API elements via C functions or macros, or simple variables.
-For a function, just place its body in this C<=implementation> section.  But it
-is preferable to use a macro if feasible.  Otherwise, the user must explicitly
-request that it get loaded, by defining a C<NEED_I<function>> (or I<variable>)
-as described in F<ppport.h>.
+It is preferable to use a macro if feasible.  Otherwise, the user must
+explicitly request that it get loaded, by defining a C<NEED_I<function>> (or
+I<variable>) as described in F<ppport.h>.  If a function, I<foo> is required,
+place its body in this C<=implementation> section, like so:
+
+ #if { NEED foo }
+
+ char *
+ foo(pTHX_ const U8 *arg1, const U32 arg2, ...)
+ {
+    ...
+ }
+
+ #endif
+
+Similarly for a variable.
+
+It's obviously best to use a macro if at all feasible.  Sometimes what once
+was implemented with a macro now requires a function; perhaps an edge case was
+overlooked.  Doing so will cause the new F<ppport.h> to not be drop-in
+compatible with the older version, and can hence cause breakage.  This
+incompatiblity (while easily solved) really needs to be stressed in
+documentation.
 
 =over
 
@@ -246,9 +265,8 @@ the C<=xsubs>, C<=xsinit>, C<=xsmisc>, C<=xshead> and C<=xsboot> sections.
 If you add a comment like so:
 
  /* Hint: PL_expect, PL_copline, PL_rsfp
-    paragraphs of stuff about foo you want to have
-    shown when ppport.h outputs something about PL_expect or
-    PL_copline or PL_rsfp
+    paragraphs of stuff you want to have shown when ppport.h outputs
+    something about any one of PL_expect, PL_copline, or PL_rsfp
  */
 
 Earlier versions of F<ppport.h> required an asterisk at the beginning of every
@@ -256,12 +274,11 @@ continuation line, or else the content would be silently dropped.
 
 =item Warnings
 
-A more serious caution about C<foo> can be displayed by instead saying
+A more serious caution can be displayed by instead saying
 
  /* Warning: PL_expect, PL_copline, PL_rsfp
-    paragraphs of stuff about foo you want to have
-    shown when ppport.h outputs something about PL_expect or
-    PL_copline or PL_rsfp
+    paragraphs of stuff you want to have shown when ppport.h outputs
+    something about any one of PL_expect, PL_copline, or PL_rsfp
  */
 
 Earlier versions of F<ppport.h> required an asterisk at the beginning of every
