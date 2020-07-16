@@ -338,10 +338,10 @@ HEAD
 
   # #ifdef out if marked as todo (not known in) this version
   if (exists $todo{$f->{'name'}}) {
-    my($five, $ver,$sub) = parse_version($todo{$f->{'name'}}{'version'});
+    my($rev, $ver,$sub) = parse_version($todo{$f->{'name'}}{'version'});
     print OUT <<EOT;
-#if       PERL_REVISION > $five                             \\
-   || (   PERL_REVISION == $five                            \\
+#if       PERL_REVISION > $rev                             \\
+   || (   PERL_REVISION == $rev                            \\
        && (   PERL_VERSION > $ver                           \\
            || (   PERL_VERSION == $ver                      \\
                && PERL_SUBVERSION >= $sub))) /* TODO */
