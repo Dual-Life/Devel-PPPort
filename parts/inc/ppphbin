@@ -257,8 +257,29 @@ if (exists $opt{'api-info'}) {
   my $f;
   my $count = 0;
   my $match = $opt{'api-info'} =~ m!^/(.*)/$! ? $1 : "^\Q$opt{'api-info'}\E\$";
+
+  # Sort the names, and split into two classes; one for things that are part of
+  # the API; a second for things that aren't.
+  my @ok_to_use;
+  my @shouldnt_use;
   for $f (sort dictionary_order keys %API) {
     next unless $f =~ /$match/;
+    my $base = int_parse_version($API{$f}{base}) if $API{$f}{base};
+    if ($base && ! $API{$f}{inaccessible} && ! $API{$f}{core_only}) {
+        push @ok_to_use, $f;
+    }
+    else {
+        push @shouldnt_use, $f;
+    }
+  }
+
+  # We normally suppress non-API items.  But if the search matched no API
+  # items, output the non-ones.  This allows someone to get the info for an
+  # item if they ask for it specifically enough, but doesn't normally clutter
+  # the output with irrelevant results.
+  @ok_to_use = @shouldnt_use unless @ok_to_use;
+
+  for $f (@ok_to_use) {
     print "\n=== $f ===\n";
     my $info = 0;
     my $base;
@@ -266,8 +287,8 @@ if (exists $opt{'api-info'}) {
     my $todo;
     $todo = int_parse_version($API{$f}{todo}) if $API{$f}{todo};
 
-    # Output information if it is generally publicly usable
-    if ($base && ! $API{$f}{inaccessible} && ! $API{$f}{core_only}) {
+    # Output information
+    if ($base) {
         my $with_or= "";
         if (    $base <= $int_min_perl
             || (   (! $API{$f}{provided} && ! $todo)
