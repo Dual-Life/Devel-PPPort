@@ -186,6 +186,10 @@ static double VARarg3;
 typedef void yy_parser;
 #endif
 
+/* This causes some functions to compile that otherwise wouldn't, so we can
+ * get their info; and doesn't seem to harm anything */
+#define PERL_IMPLICIT_CONTEXT
+
 HEAD
 
 # Caller can restrict what functions tests are generated for
