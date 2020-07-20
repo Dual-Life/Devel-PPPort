@@ -117,7 +117,7 @@ my($hint, $define, $function);
 
 sub find_api
 {
-  BEGIN { 'warnings'->unimport('uninitialized') if "$]" > '5.006' }
+  BEGIN { 'warnings'->unimport('uninitialized') if "$]" > 5.006 }
   my $code = shift;
   $code =~ s{
     / (?: \*[^*]*\*+(?:[^$ccs][^*]*\*+)* / | /[^\r\n]*)
