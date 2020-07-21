@@ -721,7 +721,7 @@ my %p;
 my $fail = 0;
 for (@o) {
   my($name, $flags) = /^(\w+)(?:\s+\[(\w+(?:,\s+\w+)*)\])?$/ or $fail++;
-  { BEGIN { 'warnings'->unimport('uninitialized') if "$]" > '5.006' } exists $p{$name} and $fail++; }
+  { exists $p{$name} and $fail++; }
   $p{$name} = defined $flags ? { map { ($_ => 1) } $flags =~ /(\w+)/g } : '';
 }
 ok(@o > 100);
@@ -762,7 +762,7 @@ my %p;
 my $fail = 0;
 for (@o) {
   my($name, $ver) = /^(\w+)\s*\.+\s*([\d._]+)$/ or $fail++;
-  { BEGIN { 'warnings'->unimport('uninitialized') if "$]" > '5.006' } exists $p{$name} and $fail++; }
+  { exists $p{$name} and $fail++; }
   $p{$name} = $ver;
 }
 ok(@o > 100);
