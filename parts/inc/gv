@@ -11,13 +11,7 @@
 
 =provides
 
-GV_NOADD_MASK
-gv_fetchpvn_flags
-GvSVn
-isGV_with_GP
-gv_fetchsv
-get_cvn_flags
-gv_init_pvn
+__UNDEFINED__
 
 =implementation
 
