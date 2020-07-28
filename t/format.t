@@ -54,7 +54,7 @@ package main;
 
 use Config;
 
-if ("$]" < '5.004') {
+if (ivers($]) < ivers('5.004')) {
     skip 'skip: No newSVpvf support', 5;
     exit;
 }
