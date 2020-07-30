@@ -362,6 +362,11 @@ sub parse_embed
           }
 
           if ($name =~ /^[^\W\d]\w*$/) {
+            my $cond = ppcond(\@pps);
+            if ($cond =~ /defined\(PERL_IN_[A-Z0-9_]+_[CH]/ && $flags =~ /A/)
+            {
+                warn "$name marked as API, but restricted scope: $cond\n";
+            }
             for (@args) {
               $_ = [trim_arg($_)];
             }
@@ -371,7 +376,7 @@ sub parse_embed
               flags => { map { $_, 1 } $flags =~ /./g },
               ret   => $ret,
               args  => \@args,
-              cond  => ppcond(\@pps),
+              cond  => $cond,
             };
             $func[-1]{'ppport_fnc'} = 1 if $file =~ /ppport\.fnc/;
           }
