@@ -42,18 +42,55 @@ while (<$m>) {                      # In embed.fnc,
     next if m! ^ embed \. fnc \t !x;
     next if m! ^ ( cpan | dist | t) / !x;
     next if m! [^\t]* \.t \t !x;
-    push @files, $_;
+    s/\t.*//;
+    push @files, "$PERLROOT/$_";
+}
+close $m;
+
+# Examine the SEE ALSO section of perlapi which should contain links to all
+# the pods with apidoc entries in them.  Add them to the MANIFEST list.
+my $file;
+
+sub callback {
+    return unless $_ eq $file;
+    return if $_ eq 'config.h';   # We don't examine this one
+    return if $_ eq 'perlintern.pod';   # We don't examine this one
+    return if $File::Find::dir =~ / \/ ( cpan | dist | t ) \b /x;
+    push @files, $File::Find::name;
 }
 
-# These files are also needed.  This might have to be added to in the future.
-push @files, qw(pod/perlguts.pod lib/perlxs.pod);
+open my $a, '<', "$PERLROOT/pod/perlapi.pod"
+        or die "Can't open perlapi.pod ($PERLROOT needs to have been built): $!";
+while (<$a>) {
+    next unless / ^ =head1\ SEE\ ALSO /x;
+    while (<$a>) {
+        # The lines look like:
+        # F<config.h>, L<perlintern>, L<perlapio>, L<perlcall>, L<perlclib>,
+        last if / ^ = /x;
+        my @tags = split /, \s* | \s+ /x;  # Allow comma- or just space-separated
+        foreach my $tag (@tags) {
+            if ($tag =~ / ^ F< (.*) > $ /x) {
+                $file = $1;
+            }
+            elsif ($tag =~ / ^ L< (.*) > $ /x) {
+                $file = "$1.pod";
+            }
+            else {
+                die "Unknown tag '$tag'";
+            }
 
-# Find the apidoc entries in all these files
+            use File::Find;
+            find(\&callback, $PERLROOT);
+        }
+    }
+}
+
+# Look through all the files that potentially have apidoc entries
 my @entries;
 for (@files) {
 
     s/ \t .* //x;
-    open my $f, '<', "$PERLROOT/$_" or die "Can't open $_: $!";
+    open my $f, '<', "$_" or die "Can't open $_: $!";
 
     my $line;
     while (defined ($line = <$f>)) {
