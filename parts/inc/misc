@@ -274,6 +274,7 @@ __UNDEFINED__  AvFILLp      AvFILL
 
 __UNDEFINED__  av_tindex    AvFILL
 __UNDEFINED__  av_top_index AvFILL
+__UNDEFINED__  av_count(av) (AvFILL(av)+1)
 
 __UNDEFINED__  ERRSV        get_sv("@",FALSE)
 
@@ -2527,7 +2528,15 @@ av_top_index(av)
         OUTPUT:
                 RETVAL
 
-=tests plan => 26826
+STRLEN
+av_count(av)
+        SV *av
+        CODE:
+                RETVAL = av_count((AV*)SvRV(av));
+        OUTPUT:
+                RETVAL
+
+=tests plan => 26827
 
 use vars qw($my_sv @my_av %my_hv);
 
@@ -2973,3 +2982,4 @@ for $name (keys %case_changing) {
 
 is(&Devel::PPPort::av_top_index([1,2,3]), 2);
 is(&Devel::PPPort::av_tindex([1,2,3,4]), 3);
+is(&Devel::PPPort::av_count([1,2,3,4]), 4);
