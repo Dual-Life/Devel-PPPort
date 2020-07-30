@@ -18,7 +18,7 @@ use strict;
 BEGIN { require warnings if "$]" > '5.006' }
 
 # Disable broken TRIE-optimization
-BEGIN { eval '${^RE_TRIE_MAXBUF} = -1' if "$]" >= 5.009004 && "$]" <= 5.009005 }
+BEGIN { eval '${^RE_TRIE_MAXBUF} = -1' if "$]" >= "5.009004" && "$]" <= "5.009005"}
 
 my $VERSION = __VERSION__;
 
@@ -117,7 +117,7 @@ my($hint, $define, $function);
 
 sub find_api
 {
-  BEGIN { 'warnings'->unimport('uninitialized') if "$]" > 5.006 }
+  BEGIN { 'warnings'->unimport('uninitialized') if "$]" > '5.006' }
   my $code = shift;
   $code =~ s{
     / (?: \*[^*]*\*+(?:[^$ccs][^*]*\*+)* / | /[^\r\n]*)
