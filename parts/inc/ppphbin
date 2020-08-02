@@ -228,7 +228,7 @@ while (<DATA>) {
   $replace{$2} = $1 if m{^\s*#\s*define\s+(\w+)(?:\([^)]*\))?\s+(\w+).*$rccs\s+Replace\s+$rcce};
 
   # Add foo => bar to %replace for lines like / * Replace foo with bar * /
-  $replace{$1} = $2 if m{^\s*$rccs\s+Replace (\w+) with (\w+)\s+$rcce\s*$};
+  $replace{$1} = $2 if m{^\s*$rccs\s+Replace (\w+) with (\w+.*?)\s+$rcce\s*$};
 
   # For lines like / * foo, bar depends on baz, bat * /
   # create a list of the elements on the rhs, and make that list apply to each
