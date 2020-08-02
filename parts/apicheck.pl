@@ -186,6 +186,17 @@ static double VARarg3;
 typedef void yy_parser;
 #endif
 
+/* Handle both 5.x.y and 7.x.y and up
+#ifndef PERL_VERSION_MAJOR
+#  define PERL_VERSION_MAJOR PERL_REVISION
+#endif
+#ifndef PERL_VERSION_MINOR
+#  define PERL_VERSION_MINOR PERL_VERSION
+#endif
+#ifndef PERL_VERSION_PATCH
+#  define PERL_VERSION_PATCH PERL_SUBVERSION
+#endif
+
 /* This causes some functions to compile that otherwise wouldn't, so we can
  * get their info; and doesn't seem to harm anything */
 #define PERL_IMPLICIT_CONTEXT
@@ -344,11 +355,11 @@ HEAD
   if (exists $todo{$f->{'name'}}) {
     my($rev, $ver,$sub) = parse_version($todo{$f->{'name'}}{'version'});
     print OUT <<EOT;
-#if       PERL_REVISION > $rev                             \\
-   || (   PERL_REVISION == $rev                            \\
-       && (   PERL_VERSION > $ver                           \\
-           || (   PERL_VERSION == $ver                      \\
-               && PERL_SUBVERSION >= $sub))) /* TODO */
+#if       PERL_VERSION_MAJOR > $rev                         \\
+   || (   PERL_VERSION_MAJOR == $rev                        \\
+       && (   PERL_VERSION_MINOR > $ver                     \\
+           || (   PERL_VERSION_MINOR == $ver                \\
+               && PERL_VERSION_PATCH >= $sub))) /* TODO */
 EOT
   }
 
