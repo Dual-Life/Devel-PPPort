@@ -567,7 +567,16 @@ They are most probably not XS writers. Also, don't make F<ppport.h>
 optional. Rather, just take the most recent copy of F<ppport.h> that
 you can find (e.g. by generating it with the latest C<Devel::PPPort>
 release from CPAN), copy it into your project, adjust your project to
-use it, and distribute the header along with your module.
+use it, test it, and distribute the header along with your module.
+
+It is important to use the most recent version of F<ppport.h>.  You do need to
+test before shipping a newer version than you already had.  One possible
+failure is that someone had to convert a backported element from a macro into
+a function, and actual functions must be enabled with a NEED macro to minimize
+the possibility of namespace pollution.  See F<HACKERS> for details.  The
+developers of C<Devel::PPPort> want to hear if there are other problems that
+arise from using a later F<ppport.h>.  Use
+L<<https://github.com/Dual-Life/Devel-PPPort/issues> to report any.
 
 =head2 Running ppport.h
 
