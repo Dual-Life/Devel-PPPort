@@ -1,4 +1,5 @@
 5.004005
+DEFSV                          # E
 do_binmode                     # E
 dTHR                           # E
 ERRSV                          # E
@@ -15,6 +16,7 @@ PL_sv_no                       # E
 PL_sv_undef                    # E
 PL_sv_yes                      # E
 save_aelem                     # E
+SAVE_DEFSV                     # E
 save_helem                     # E
 sv_catpv_mg                    # E
 sv_catpvn_mg                   # U
@@ -27,7 +29,6 @@ sv_setsv_mg                    # E
 sv_setuv_mg                    # E
 sv_usepvn_mg                   # U
 AvFILLp                        # M added by devel/scanprov
-DEFSV                          # M added by devel/scanprov
 PL_compiling                   # M added by devel/scanprov
 PL_DBsingle                    # M added by devel/scanprov
 PL_DBsub                       # M added by devel/scanprov
@@ -42,7 +43,6 @@ PL_stdingv                     # M added by devel/scanprov
 PL_sv_arenaroot                # M added by devel/scanprov
 PL_tainted                     # M added by devel/scanprov
 PL_tainting                    # M added by devel/scanprov
-SAVE_DEFSV                     # M added by devel/scanprov
 find_script                    # F added by devel/scanprov
 magic_getnkeys                 # F added by devel/scanprov
 magic_getsubstr                # F added by devel/scanprov

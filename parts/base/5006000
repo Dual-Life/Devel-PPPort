@@ -8,37 +8,41 @@ call_atexit                    # E
 call_method                    # E (perl_call_method)
 call_pv                        # E (perl_call_pv)
 call_sv                        # E (perl_call_sv)
-cast_i32                       # E (cast_i32)
-cast_iv                        # E (cast_iv)
-cast_ulong                     # E
-cast_uv                        # E (cast_uv)
 ckWARN                         # E
 ckWARN2                        # E
 ckWARN2_d                      # E
 ckWARN_d                       # E
+CopFILE                        # E
+CopFILEAV                      # E
+CopFILEGV                      # E
+CopFILEGV_set                  # E
+CopFILE_set                    # E
+CopFILESV                      # E
+CopLINE                        # E
+CopSTASH                       # E
+CopSTASH_eq                    # E
+CopSTASHPV                     # E
+CopSTASH_set                   # E
 CPPLAST                        # E
 CPPRUN                         # E
 croak                          # E (Perl_croak)
+croak_nocontext                # U
 die                            # E (Perl_die)
-do_gv_dump                     # E
-do_gvgv_dump                   # E
-do_hv_dump                     # E
-do_magic_dump                  # E
-do_op_dump                     # E
+die_nocontext                  # U
+dNOOP                          # E
 do_open9                       # E
-do_pmop_dump                   # E
-do_sv_dump                     # E
 DO_UTF8                        # E
+dTHXa                          # E
 dump_all                       # U
 dump_eval                      # U
 dump_form                      # U
-dump_indent                    # E
 dump_packsubs                  # U
 dump_sub                       # U
-dump_vindent                   # E
 eval_pv                        # E (perl_eval_pv)
 eval_sv                        # E (perl_eval_sv)
 form                           # E (Perl_form)
+form_nocontext                 # U
+fprintf_nocontext              # U
 get_av                         # E (perl_get_av)
 get_context                    # U
 get_cv                         # E (perl_get_cv)
@@ -68,15 +72,18 @@ IVdf                           # E
 IVSIZE                         # E
 IVTYPE                         # E
 load_module                    # E
+load_module_nocontext          # U
 LSEEKSIZE                      # E
 magic_dump                     # E
 mess                           # E (Perl_mess)
+mess_nocontext                 # U
 my_atof                        # E
 my_fflush_all                  # E
 newANONATTRSUB                 # E
 newATTRSUB                     # E
 newSVnv                        # E (Perl_newSVnv)
 newSVpvf                       # E (Perl_newSVpvf)
+newSVpvf_nocontext             # U
 newSVuv                        # E
 newXS                          # E (Perl_newXS)
 newXSproto                     # E
@@ -105,17 +112,14 @@ PTR2NV                         # E
 PTR2UV                         # E
 PUSHn                          # E
 pv_display                     # E
-reginitcolors                  # E
 require_pv                     # E (perl_require_pv)
 safesyscalloc                  # U
 safesysfree                    # U
 safesysmalloc                  # U
 safesysrealloc                 # U
 save_alloc                     # E
-save_destructor                # E (Perl_save_destructor)
-save_destructor_x              # E
-save_I8                        # E
-save_re_context                # E
+SAVEDESTRUCTOR                 # E
+SAVEI8                         # E
 save_vptr                      # E
 scan_bin                       # E
 scan_hex                       # E (Perl_scan_hex)
@@ -123,14 +127,12 @@ scan_oct                       # E (Perl_scan_oct)
 set_context                    # U
 Strtol                         # E
 Strtoul                        # E
-str_to_version                 # E
 sv_2pvbyte                     # U
-sv_2pvbyte_nolen               # U
-sv_2pv_nolen                   # U
 sv_2pvutf8                     # U
-sv_2pvutf8_nolen               # U
 sv_catpvf                      # E (Perl_sv_catpvf)
 sv_catpvf_mg                   # E (Perl_sv_catpvf_mg)
+sv_catpvf_mg_nocontext         # U
+sv_catpvf_nocontext            # U
 SVf                            # E
 sv_force_normal                # U
 SVf_UTF8                       # E
@@ -138,7 +140,6 @@ SvIOK_notUV                    # E
 SvIOK_only_UV                  # E
 SvIOK_UV                       # E
 sv_len_utf8                    # E
-sv_nv                          # E (Perl_sv_nv)
 SvNV                           # E
 SvNV_set                       # E
 SvNVX                          # E
@@ -146,20 +147,13 @@ SvNVx                          # E
 SvPOK_only_UTF8                # E
 sv_pos_b2u                     # E
 sv_pos_u2b                     # E
-sv_pv                          # U
-sv_pvbyte                      # U
 SvPVbyte                       # E
-sv_pvbyten                     # E
-sv_pvbyten_force               # E
 SvPVbyte_nolen                 # E
 SvPVbytex                      # E
 SvPVbytex_force                # E
 SvPV_nolen                     # E
-sv_pvutf8                      # U
 SvPVutf8                       # E
 SvPVutf8_force                 # E
-sv_pvutf8n                     # E
-sv_pvutf8n_force               # E
 SvPVutf8_nolen                 # E
 SvPVutf8x                      # E
 SvPVutf8x_force                # E
@@ -168,6 +162,8 @@ sv_setnv                       # E (Perl_sv_setnv)
 sv_setnv_mg                    # E (Perl_sv_setnv_mg)
 sv_setpvf                      # E (Perl_sv_setpvf)
 sv_setpvf_mg                   # E (Perl_sv_setpvf_mg)
+sv_setpvf_mg_nocontext         # U
+sv_setpvf_nocontext            # U
 sv_setref_nv                   # E (Perl_sv_setref_nv)
 SvUTF8                         # E
 sv_utf8_decode                 # E
@@ -210,6 +206,7 @@ WARN_DEBUGGING                 # E
 WARN_DEPRECATED                # E
 WARN_DIGIT                     # E
 warner                         # E
+warner_nocontext               # U
 WARN_EXEC                      # E
 WARN_EXITING                   # E
 WARN_GLOB                      # E
@@ -219,6 +216,7 @@ WARN_IO                        # E
 WARN_MALLOC                    # E
 WARN_MISC                      # E
 WARN_NEWLINE                   # E
+warn_nocontext                 # U
 WARN_NUMERIC                   # E
 WARN_ONCE                      # E
 WARN_OVERFLOW                  # E
@@ -249,55 +247,47 @@ WARN_VOID                      # E
 XPUSHn                         # E
 XSRETURN_NV                    # E
 XST_mNV                        # E
-CopFILE                        # M added by devel/scanprov
-CopFILEAV                      # M added by devel/scanprov
-CopFILEGV                      # M added by devel/scanprov
-CopFILEGV_set                  # M added by devel/scanprov
-CopFILE_set                    # M added by devel/scanprov
-CopFILESV                      # M added by devel/scanprov
-CopSTASH                       # M added by devel/scanprov
-CopSTASH_eq                    # M added by devel/scanprov
-CopSTASHPV                     # M added by devel/scanprov
-CopSTASHPV_set                 # M added by devel/scanprov
-CopSTASH_set                   # M added by devel/scanprov
-croak_nocontext                # M added by devel/scanprov
-dNOOP                          # M added by devel/scanprov
-dTHXa                          # M added by devel/scanprov
-dTHXoa                         # M added by devel/scanprov
 dXSTARG                        # M added by devel/scanprov
-mess_nocontext                 # M added by devel/scanprov
 NUM2PTR                        # M added by devel/scanprov
+Perl_warner_nocontext          # M added by devel/scanprov
 PL_no_modify                   # M added by devel/scanprov
 PL_ppaddr                      # M added by devel/scanprov
 pTHX_                          # M added by devel/scanprov
 PTRV                           # M added by devel/scanprov
-sv_catpvf_mg_nocontext         # M added by devel/scanprov
-sv_setpvf_mg_nocontext         # M added by devel/scanprov
-warn_nocontext                 # M added by devel/scanprov
+sv_2pvbyte_nolen               # M added by devel/scanprov
+sv_2pv_nolen                   # M added by devel/scanprov
 XSprePUSH                      # M added by devel/scanprov
 any_dup                        # F added by devel/scanprov
 apply_attrs                    # F added by devel/scanprov
+cast_i32                       # F added by devel/scanprov
+cast_iv                        # F added by devel/scanprov
+cast_uv                        # F added by devel/scanprov
 cop_free                       # F added by devel/scanprov
 cr_textfilter                  # F added by devel/scanprov
 cv_dump                        # F added by devel/scanprov
-die_nocontext                  # F added by devel/scanprov
+cx_dup                         # F added by devel/scanprov
 do_aexec5                      # F added by devel/scanprov
 do_exec3                       # F added by devel/scanprov
+do_gv_dump                     # F added by devel/scanprov
+do_gvgv_dump                   # F added by devel/scanprov
+do_hv_dump                     # F added by devel/scanprov
+do_magic_dump                  # F added by devel/scanprov
 do_oddball                     # F added by devel/scanprov
 dooneliner                     # F added by devel/scanprov
+do_op_dump                     # F added by devel/scanprov
+do_pmop_dump                   # F added by devel/scanprov
+do_sv_dump                     # F added by devel/scanprov
 do_vecget                      # F added by devel/scanprov
+dump_indent                    # F added by devel/scanprov
+dump_vindent                   # F added by devel/scanprov
 dup_attrlist                   # F added by devel/scanprov
 find_byclass                   # F added by devel/scanprov
-form_nocontext                 # F added by devel/scanprov
-fprintf_nocontext              # F added by devel/scanprov
 getenv_len                     # F added by devel/scanprov
 get_mstats                     # F added by devel/scanprov
-GetVars                        # F added by devel/scanprov
 hv_magic_check                 # F added by devel/scanprov
 init_i18nl10n                  # F added by devel/scanprov
 init_i18nl14n                  # F added by devel/scanprov
 is_handle_constructor          # F added by devel/scanprov
-load_module_nocontext          # F added by devel/scanprov
 magic_killbackrefs             # F added by devel/scanprov
 magic_regdata_cnt              # F added by devel/scanprov
 magic_regdatum_get             # F added by devel/scanprov
@@ -308,29 +298,34 @@ new_collate                    # F added by devel/scanprov
 new_ctype                      # F added by devel/scanprov
 new_numeric                    # F added by devel/scanprov
 newPADOP                       # F added by devel/scanprov
-newSVpvf_nocontext             # F added by devel/scanprov
 op_clear                       # F added by devel/scanprov
 parse_body                     # F added by devel/scanprov
 perl_alloc_using               # F added by devel/scanprov
 perl_clone                     # F added by devel/scanprov
 perl_clone_using               # F added by devel/scanprov
 qerror                         # F added by devel/scanprov
+reginitcolors                  # F added by devel/scanprov
 re_intuit_start                # F added by devel/scanprov
 re_intuit_string               # F added by devel/scanprov
 report_uninit                  # F added by devel/scanprov
 run_body                       # F added by devel/scanprov
+save_destructor_x              # F added by devel/scanprov
+save_I8                        # F added by devel/scanprov
+save_re_context                # F added by devel/scanprov
 scalar_mod_type                # F added by devel/scanprov
 set_numeric_radix              # F added by devel/scanprov
 set_numeric_standard           # F added by devel/scanprov
 simplify_sort                  # F added by devel/scanprov
 Slab_Alloc                     # F added by devel/scanprov
-sv_catpvf_nocontext            # F added by devel/scanprov
+str_to_version                 # F added by devel/scanprov
 sv_del_backref                 # F added by devel/scanprov
-sv_setpvf_nocontext            # F added by devel/scanprov
+sv_pvbyten                     # F added by devel/scanprov
+sv_pvbyten_force               # F added by devel/scanprov
+sv_pvutf8n                     # F added by devel/scanprov
+sv_pvutf8n_force               # F added by devel/scanprov
 sys_intern_dup                 # F added by devel/scanprov
 to_uni_lower                   # F added by devel/scanprov
 to_uni_title                   # F added by devel/scanprov
 to_uni_upper                   # F added by devel/scanprov
 utf16_to_utf8                  # F added by devel/scanprov
 utf16_to_utf8_reversed         # F added by devel/scanprov
-warner_nocontext               # F added by devel/scanprov

@@ -1,38 +1,39 @@
 5.008001
 C_ARRAY_LENGTH                 # U
 CvPADLIST                      # E
-doing_taint                    # U
 find_runcv                     # U
+IN_PERL_COMPILETIME            # E
+IN_PERL_RUNTIME                # E
 is_utf8_string_loc             # U
 packlist                       # U
 pad_add_anon                   # U
 pad_new                        # E
-pad_setsv                      # U
 pad_tidy                       # E
 PERL_ABS                       # U
 PERL_MAGIC_utf8                # E
 PERL_MAGIC_vstring             # E
 PERL_SCAN_SILENT_ILLDIGIT      # E
+PERL_SIGNALS_UNSAFE_FLAG       # E
 PL_comppad                     # E
-save_bool                      # U
+SAVEBOOL                       # U
 savestack_grow_cnt             # U
 seed                           # U
 sv_cat_decode                  # U
 SV_COW_DROP_PV                 # E
 sv_setpviv                     # U
 sv_setpviv_mg                  # U
+SV_UTF8_NO_ENCODING            # E
 SvVOK                          # U
 unpackstring                   # U
 XSRETURN_UV                    # U
 XST_mUV                        # U
-IN_PERL_COMPILETIME            # M added by devel/scanprov
-PERL_SIGNALS_UNSAFE_FLAG       # M added by devel/scanprov
 PL_signals                     # M added by devel/scanprov
-SV_UTF8_NO_ENCODING            # M added by devel/scanprov
 allocmy                        # F added by devel/scanprov
+csighandler                    # F added by devel/scanprov
 deb_stack_all                  # F added by devel/scanprov
 deb_stack_n                    # F added by devel/scanprov
 do_dump_pad                    # F added by devel/scanprov
+doing_taint                    # F added by devel/scanprov
 doopen_pm                      # F added by devel/scanprov
 free_tied_hv_pool              # F added by devel/scanprov
 get_debug_opts                 # F added by devel/scanprov
@@ -45,6 +46,8 @@ pad_block_start                # F added by devel/scanprov
 pad_check_dup                  # F added by devel/scanprov
 pad_fixup_inner_anons          # F added by devel/scanprov
 pad_push                       # F added by devel/scanprov
+pad_setsv                      # F added by devel/scanprov
 parse_unicode_opts             # F added by devel/scanprov
+save_bool                      # F added by devel/scanprov
 unpack_rec                     # F added by devel/scanprov
 write_to_stderr                # F added by devel/scanprov

@@ -1,5 +1,4 @@
 5.005000
-cx_dump                        # U
 debop                          # U
 debprofdump                    # U
 DOUBLESIZE                     # E
@@ -12,24 +11,15 @@ mg_length                      # E
 mg_size                        # E
 newHVhv                        # E
 new_stackinfo                  # E
+NOOP                           # E
 PL_curpad                      # E
 PL_modglobal                   # E
+PL_Sv                          # E
 PTRSIZE                        # E
-regdump                        # U
-regexec_flags                  # E
-regnext                        # E (Perl_regnext)
-runops_debug                   # E
-runops_standard                # E
-save_iv                        # E (save_iv)
-sv_iv                          # E
 sv_peek                        # U
-sv_pvn                         # E
-sv_true                        # E
-sv_uv                          # E
 CPERLscope                     # M added by devel/scanprov
 END_EXTERN_C                   # M added by devel/scanprov
 EXTERN_C                       # M added by devel/scanprov
-NOOP                           # M added by devel/scanprov
 PL_DBsignal                    # M added by devel/scanprov
 PL_DBtrace                     # M added by devel/scanprov
 PL_hexdigit                    # M added by devel/scanprov
@@ -37,9 +27,9 @@ PL_hints                       # M added by devel/scanprov
 PL_laststatval                 # M added by devel/scanprov
 PL_mess_sv                     # M added by devel/scanprov
 PL_statcache                   # M added by devel/scanprov
-PL_Sv                          # M added by devel/scanprov
 PL_Xpv                         # M added by devel/scanprov
 START_EXTERN_C                 # M added by devel/scanprov
+sv_uv                          # M added by devel/scanprov
 add_data                       # F added by devel/scanprov
 ao                             # F added by devel/scanprov
 debprof                        # F added by devel/scanprov
@@ -94,6 +84,7 @@ regbranch                      # F added by devel/scanprov
 regclass                       # F added by devel/scanprov
 regcppop                       # F added by devel/scanprov
 regcppush                      # F added by devel/scanprov
+regexec_flags                  # F added by devel/scanprov
 reginclass                     # F added by devel/scanprov
 reginsert                      # F added by devel/scanprov
 regmatch                       # F added by devel/scanprov
@@ -102,6 +93,8 @@ regpiece                       # F added by devel/scanprov
 regrepeat                      # F added by devel/scanprov
 regtail                        # F added by devel/scanprov
 regtry                         # F added by devel/scanprov
+runops_debug                   # F added by devel/scanprov
+runops_standard                # F added by devel/scanprov
 save_lines                     # F added by devel/scanprov
 save_scalar_at                 # F added by devel/scanprov
 scalarboolean                  # F added by devel/scanprov
@@ -110,6 +103,9 @@ study_chunk                    # F added by devel/scanprov
 sublex_done                    # F added by devel/scanprov
 sublex_push                    # F added by devel/scanprov
 sublex_start                   # F added by devel/scanprov
+sv_iv                          # F added by devel/scanprov
+sv_nv                          # F added by devel/scanprov
+sv_true                        # F added by devel/scanprov
 sv_unglob                      # F added by devel/scanprov
 tokeq                          # F added by devel/scanprov
 usage                          # F added by devel/scanprov

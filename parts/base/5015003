@@ -1,5 +1,7 @@
 5.015003
 GV_ADDMG                       # E
+gv_fetchsv_nomg                # U
+GV_NO_SVGMAGIC                 # E
 coresub_op                     # F added by devel/scanprov
 inplace_aassign                # F added by devel/scanprov
 op_integerize                  # F added by devel/scanprov

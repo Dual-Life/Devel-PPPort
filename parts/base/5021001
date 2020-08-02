@@ -1,8 +1,8 @@
 5.021001
 isUTF8_CHAR                    # U
 markstack_grow                 # E (Perl_markstack_grow)
+PERL_UNUSED_RESULT             # U
 WARN_EXPERIMENTAL__WIN32_PERLIO # E
-PERL_UNUSED_RESULT             # M added by devel/scanprov
 add_above_Latin1_folds         # F added by devel/scanprov
 construct_ahocorasick_from_trie # F added by devel/scanprov
 dump_c_backtrace               # F added by devel/scanprov
