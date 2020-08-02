@@ -423,7 +423,9 @@ some of these have been in limbo for many years, so should be documented.
 
 And you will need updated API information. Copy the latest F<embed.fnc> file
 from bleadperl to the F<parts> directory and run F<devel/mkapidoc.pl> to
-collect the remaining information in F<parts/apidoc.fnc>.
+collect the remaining information in F<parts/apidoc.fnc>.  This needs to be
+done after the perl has been compiled, as there are generated files that feed
+it.
 
 =item *
 
