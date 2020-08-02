@@ -40,14 +40,19 @@ Amd|bool|cBOOL|bool expr
 Amnd||CHARBITS
 Amd|bool|ckWARN|U32 w
 Amd|bool|ckWARN2|U32 w1|U32 w2
-Amd|bool|ckWARN2_d|U32 w1|U32 w2
-Amd|bool|ckWARN3|U32 w1|U32 w2|U32 w3
-Amd|bool|ckWARN3_d|U32 w1|U32 w2|U32 w3
-Amd|bool|ckWARN4|U32 w1|U32 w2|U32 w3|U32 w4
-Amd|bool|ckWARN4_d|U32 w1|U32 w2|U32 w3|U32 w4
+Amhd|bool|ckWARN2_d|U32 w1|U32 w2
+Amhd|bool|ckWARN3|U32 w1|U32 w2|U32 w3
+Amhd|bool|ckWARN3_d|U32 w1|U32 w2|U32 w3
+Amhd|bool|ckWARN4|U32 w1|U32 w2|U32 w3|U32 w4
+Amhd|bool|ckWARN4_d|U32 w1|U32 w2|U32 w3|U32 w4
 Amd|bool|ckWARN_d|U32 w
 Amnd|char*|CLASS
 Amd|void|CLEAR_ERRSV
+Amd|const char *|CopFILE|const COP * c
+Amd|AV *|CopFILEAV|const COP * c
+Amd|const char *|CopFILEGV|const COP * c
+Amd|void|CopFILE_set|COP * c|const char * pv
+Amd|SV *|CopFILESV|const COP * c
 Amxd|HV *|cophh_2hv|const COPHH *cophh|U32 flags
 Amxd|COPHH *|cophh_copy|COPHH *cophh
 Amxd|COPHH *|cophh_delete_pv|const COPHH *cophh|const char *key|U32 hash|U32 flags
@@ -73,8 +78,15 @@ Amd|SV *|cop_hints_fetch_sv|const COP *cop|SV *key|U32 hash|U32 flags
 Amd|const char *|CopLABEL|COP *const cop
 Amd|const char *|CopLABEL_len|COP *const cop|STRLEN *len
 Amd|const char *|CopLABEL_len_flags|COP *const cop|STRLEN *len|U32 *flags
+Amd|STRLEN|CopLINE|const COP * c
+Amd|HV *|CopSTASH|const COP * c
+Amd|bool|CopSTASH_eq|const COP * c|const HV * hv
+Amd|char *|CopSTASHPV|const COP * c
+Amd|void|CopSTASHPV_set|COP * c|const char * pv
+Amd|bool|CopSTASH_set|COP * c|const HV * hv
 Amd|void|Copy|void* src|void* dest|int nitems|type
 Amd|void *|CopyD|void* src|void* dest|int nitems|type
+AmDd|void|CPERLscope|void x
 Amnd||CPPLAST
 Amnd||CPPMINUS
 Amnd||CPPRUN
@@ -88,11 +100,15 @@ md|SV *|CX_CURPAD_SV|struct context|PADOFFSET po
 Amnsd||dAX
 Amnsd||dAXMARK
 Amnd|void|DECLARATION_FOR_LC_NUMERIC_MANIPULATION
+Amnd|SV *|DEFSV
+Amd|void|DEFSV_set|SV * sv
 Amnsd||dITEMS
 msd||djSP
 Amnsd||dMARK
 Amnsd||dMULTICALL
 Amnhd||dMY_CXT
+Amnsd||dMY_CXT_SV
+Amnsd||dNOOP
 Amnsd||dORIGMARK
 Amnd||DOUBLEINFBYTES
 Amnd||DOUBLEKIND
@@ -103,42 +119,57 @@ Amd|bool|DO_UTF8|SV* sv
 mnd|void|dSAVEDERRNO
 mnd|void|dSAVE_ERRNO
 Amnsd||dSP
+Amnsd||dTARGET
 Amnhd||dTHR
 Amnhd||dTHX
+AmUd|void|dTHXa|PerlInterpreter * a
+AmUd|void|dTHXoa|PerlInterpreter * a
 Amnsd||dUNDERBAR
-Amnhd||dVAR
+AmnUd||dVAR
 Amnsd||dXCPT
 Amnsd||dXSARGS
 Amnsd||dXSI32
+AmnUud|void|END_EXTERN_C
 Amnsd||ENTER
 Amsd||ENTER_with_name|"name"
 Amnd|SV *|ERRSV
 Amd|void|EXTEND|SP|SSize_t nitems
+AmnUud|void|EXTERN_C
 Amnsd||FREETMPS
-AmnUd||G_ARRAY
-AmnUd||G_DISCARD
-AmnUd||G_EVAL
-Amnd|U32|GIMME
+AmnUhd||G_ARRAY
+AmnUhd||G_DISCARD
+Amd|CV *|get_cvs|"string"|I32 flags
+AmnUhd||G_EVAL
+AmnDd|U32|GIMME
 Amnd|U32|GIMME_V
+AmnUhd||G_KEEPERR
 Amnhd||G_METHOD
 Amnhd||G_METHOD_NAMED
-AmnUd||G_NOARGS
+AmnUhd||G_NOARGS
 Amnhd||G_RETHROW
 AmdR|bool|GROK_NUMERIC_RADIX|NN const char **sp|NN const char *send
-AmnUd||G_SCALAR
+AmnUhd||G_SCALAR
 Amnhd||GV_ADD
 Amnhd||GV_ADDMG
 Amnhd||GV_ADDMULTI
+Amnhd||GV_ADDWARN
 Amd|AV*|GvAV|GV* gv
+Emnhd||GV_CACHE_ONLY
 Amd|CV*|GvCV|GV* gv
+Amd|GV*|gv_fetchpvn|const char* name|STRLEN len|I32 flags|const svtype sv_type
+Amd|GV*|gv_fetchpvs|"name"|I32 flags|const svtype sv_type
+Amd|GV *|gv_fetchsv_nomg|SV *name|I32 flags|const svtype sv_type
 Amd|HV*|GvHV|GV* gv
 Amnhd||GV_NOADD_NOINIT
 Amnhd||GV_NOEXPAND
 Amnhd||GV_NOINIT
-AmnUd||G_VOID
+Amnhd||GV_NO_SVGMAGIC
+Amnhd||GV_NOTQUAL
+AmnUhd||G_VOID
 Amd|HV*|gv_stashpvs|"name"|I32 create
 Amnhd||GV_SUPER
 Amd|SV*|GvSV|GV* gv
+Amd|SV*|GvSVn|GV* gv
 AmnUd||HEf_SVKEY
 Amd|U32|HeHASH|HE* he
 Amd|void*|HeKEY|HE* he
@@ -156,7 +187,9 @@ Amd|SV**|hv_fetchs|HV* tb|"key"|I32 lval
 Amd|STRLEN|HvFILL|HV *const hv
 Amnhd||HV_ITERNEXT_WANTPLACEHOLDERS
 Amd|char*|HvNAME|HV* stash
+Cmhd|char*|HvNAME_get|HV* stash
 Amd|STRLEN|HvNAMELEN|HV *stash
+Amhd|char*|HvNAMELEN_get|HV* stash
 Amd|unsigned char|HvNAMEUTF8|HV *stash
 Amd|SV**|hv_stores|HV* tb|"key"|SV* val
 Amnd||I16SIZE
@@ -168,7 +201,10 @@ Amnd||I8TYPE
 Amnd|bool|IN_LOCALE
 Amnd|bool|IN_LOCALE_COMPILETIME
 Amnd|bool|IN_LOCALE_RUNTIME
+Amnd|bool|IN_PERL_COMPILETIME
+Amnd|bool|IN_PERL_RUNTIME
 Amhd|void *|INT2PTR|type|int value
+Amd||INTMAX_C|number
 Amnd||INTSIZE
 Amhd|bool|isALNUM|int ch
 Amhd|bool|isALNUM_A|int ch
@@ -242,6 +278,7 @@ Amhd|bool|isGRAPH_LC_uvchr|int ch
 Amhd|bool|isGRAPH_utf8|U8 * s|U8 * end
 Amhd|bool|isGRAPH_utf8_safe|U8 * s|U8 * end
 Amhd|bool|isGRAPH_uvchr|int ch
+Amd|bool|isGV_with_GP|SV * sv
 Amd|bool|isIDCONT|char ch
 Amhd|bool|isIDCONT_A|int ch
 Amhd|bool|isIDCONT_L1|int ch
@@ -376,6 +413,13 @@ Amd|void|mPUSHp|char* str|STRLEN len
 Amd|void|mPUSHs|SV* sv
 Amd|void|mPUSHu|UV uv
 Amnsd||MULTICALL
+Amhd|AV *|MUTABLE_AV|AV * p
+Amhd|CV *|MUTABLE_CV|CV * p
+Amhd|GV *|MUTABLE_GV|GV * p
+Amhd|HV *|MUTABLE_HV|HV * p
+Amhd|IO *|MUTABLE_IO|IO * p
+Amd|void *|MUTABLE_PTR|void * p
+Amhd|SV *|MUTABLE_SV|SV * p
 Amd|void|mXPUSHi|IV iv
 Amd|void|mXPUSHn|NV nv
 Amd|void|mXPUSHp|char* str|STRLEN len
@@ -397,11 +441,13 @@ Amd|void|Newx|void* ptr|int nitems|type
 Amd|void|Newxc|void* ptr|int nitems|type|cast
 AmUd||newXSproto|char* name|XSUBADDR_t f|char* filename|const char *proto
 Amd|void|Newxz|void* ptr|int nitems|type
+Amnsd||NOOP
 ADmnUd||Nullav
 AmnUd||Nullch
 ADmnUd||Nullcv
 ADmnUd||Nullhv
 AmnUd||Nullsv
+Cmhd|void *|NUM2PTR|type|int value
 Amnhd||NVef
 Amnhd||NVff
 Amnhd||NVgf
@@ -424,6 +470,10 @@ Amd|bool|OP_TYPE_IS_OR_WAS|OP *o|Optype type
 AmnUd||ORIGMARK
 Amnd||OSNAME
 Amnd||OSVERS
+Amd|U32|packWARN|U32 w1
+Amhd|bool|packWARN2|U32 w1|U32 w2
+Amhd|bool|packWARN3|U32 w1|U32 w2|U32 w3
+Amhd|bool|packWARN4|U32 w1|U32 w2|U32 w3|U32 w4
 Amd|PADOFFSET|pad_add_name_pvs|"name"|U32 flags|HV *typestash|HV *ourstash
 Amxd|SV **|PadARRAY|PAD * pad
 md|SV *|PAD_BASE_SV	|PADLIST padlist|PADOFFSET po
@@ -483,6 +533,8 @@ ATmhd|FILE  *|PerlIO_exportFILE|PerlIO *f|const char *mode
 ATmhd|int    |PerlIO_fast_gets|PerlIO *f
 ATmhd|PerlIO*|PerlIO_fdopen|int fd|const char *mode
 ATmhd|FILE  *|PerlIO_findFILE|PerlIO *f
+Amd|PerlIO_funcs *|PERLIO_FUNCS_CAST|PerlIO * func
+Amd||PERLIO_FUNCS_DECL|PerlIO * func
 ATmhd|int    |PerlIO_getc|PerlIO *d
 ATmhd|int    |PerlIO_getpos|PerlIO *f|SV *save
 ATmhd|int    |PerlIO_has_base|PerlIO *f
@@ -557,12 +609,15 @@ Amnhd||PERL_PV_ESCAPE_QUOTE
 Amnhd||PERL_PV_ESCAPE_RE
 Amnhd||PERL_PV_ESCAPE_UNI
 Amnhd||PERL_PV_ESCAPE_UNI_DETECT
+Cmnhd||PERL_PV_PRETTY_DUMP
 Amnhd||PERL_PV_PRETTY_ELLIPSES
 Amnhd||PERL_PV_PRETTY_LTGT
+Cmnhd||PERL_PV_PRETTY_NOCLEAR
 Amnhd||PERL_PV_PRETTY_QUOTE
+Cmnhd||PERL_PV_PRETTY_REGPROP
 AmnUhd||PERL_QUAD_MAX
 AmnUhd||PERL_QUAD_MIN
-hAmnd|int|PERL_REVISION
+AmDnUd|U8|PERL_REVISION
 Amnhd||PERL_SCAN_ALLOW_UNDERSCORES
 Amnhd||PERL_SCAN_DISALLOW_PREFIX
 Amnhd||PERL_SCAN_GREATER_THAN_UV_MAX
@@ -570,26 +625,34 @@ Amnhd||PERL_SCAN_SILENT_ILLDIGIT
 Amnhd||PERL_SCAN_TRAILING
 AmnUhd||PERL_SHORT_MAX
 AmnUhd||PERL_SHORT_MIN
-hAmnd|int|PERL_SUBVERSION
+Amnd|U32|PERL_SIGNALS_UNSAFE_FLAG
+AmDnUd|U8|PERL_SUBVERSION
 Amd|void|PERL_SYS_INIT|int *argc|char*** argv
 Amd|void|PERL_SYS_INIT3|int *argc|char*** argv|char*** env
 Amd|void|PERL_SYS_TERM|
 AmnUhd||PERL_UCHAR_MAX
 AmnUhd||PERL_UCHAR_MIN
 AmnUhd||PERL_UINT_MAX
+AmnUhd||PERL_UINT_MIN
 AmnUhd||PERL_ULONG_MAX
 AmnUhd||PERL_ULONG_MIN
+Amd||PERL_UNUSED_ARG|void x
+Amnd||PERL_UNUSED_CONTEXT
+AmnUd||PERL_UNUSED_DECL
+Amd||PERL_UNUSED_RESULT|void x
+Amd||PERL_UNUSED_VAR|void x
 AmnUhd||PERL_UQUAD_MAX
 AmnUhd||PERL_UQUAD_MIN
+AmnuUd|bool|PERL_USE_GCC_BRACE_GROUPS
 AmnUhd||PERL_USHORT_MAX
 AmnUhd||PERL_USHORT_MIN
-hAmnd|int|PERL_VERSION
-AmdR|bool|PERL_VERSION_EQ|const int r|const int v|const int s
-AmdR|bool|PERL_VERSION_GE|const int r|const int v|const int s
-AmdR|bool|PERL_VERSION_GT|const int r|const int v|const int s
-AmdR|bool|PERL_VERSION_LE|const int r|const int v|const int s
-AmdR|bool|PERL_VERSION_LT|const int r|const int v|const int s
-AmdR|bool|PERL_VERSION_NE|const int r|const int v|const int s
+AmDnUd|U8|PERL_VERSION
+AmRd|bool|PERL_VERSION_EQ|const int r|const int v|const int s
+AmRhd|bool|PERL_VERSION_GE|const int r|const int v|const int s
+AmRhd|bool|PERL_VERSION_GT|const int r|const int v|const int s
+AmRhd|bool|PERL_VERSION_LE|const int r|const int v|const int s
+AmRhd|bool|PERL_VERSION_LT|const int r|const int v|const int s
+AmRhd|bool|PERL_VERSION_NE|const int r|const int v|const int s
 AmnUd|Perl_check_t *|PL_check
 AmnxUd|PAD *|PL_comppad
 AmnxUd|PADNAMELIST *|PL_comppad_name
@@ -601,8 +664,9 @@ mnd|GV *|PL_DBsub
 mnd|SV *|PL_DBtrace
 Amnd|GV *|PL_defgv
 mnd|U8|PL_dowarn
-Amnhd|GV *|PL_errgv
+AmnUhd|GV *|PL_errgv
 Amnd|U8|PL_exit_flags
+AmTuUd|const char *|PL_hexdigit|U8 value
 AmnUxd|Perl_keyword_plugin_t|PL_keyword_plugin
 mnd|GV*|PL_last_in_gv
 Amnd|HV*|PL_modglobal
@@ -620,6 +684,7 @@ Amnd|enum perl_phase|PL_phase
 Amnd|peep_t|PL_rpeepp
 mnd|SV*|PL_rs
 Amnd|runops_proc_t|PL_runops
+Amnd||PL_Sv
 Amnd|SV|PL_sv_no
 Amnd|SV|PL_sv_undef
 Amnd|SV|PL_sv_yes
@@ -645,9 +710,12 @@ Amnd||PRIVLIB
 Amnhd||pTHX
 Amnhd||pTHX_
 Amhd|IV|PTR2IV|void *
+Amhd|IV|PTR2nat|void *
 Amhd|NV|PTR2NV|void *
+Amhd|unsigned long|PTR2ul|void *
 Amhd|UV|PTR2UV|void *
 Amnd||PTRSIZE
+AmhuUd|type|PTRV
 Amd|void|PUSHi|IV iv
 Amd|void|PUSHMARK|SP
 Amnd|void|PUSHmortal
@@ -671,12 +739,29 @@ Amnhd||RV2CVOPCV_MARK_EARLY
 Amnhd||RV2CVOPCV_RETURN_NAME_GV
 Amd|void|Safefree|void* ptr
 Amd|void|SANE_ERRSV
+Amhd||SAVEBOOL|int i
 md|void|SAVECLEARSV	|SV **svp
 md|void|SAVECOMPPAD
+Amnd|void|SAVE_DEFSV
+Amhd||SAVEDELETE|HV * hv|char * key|I32 length
+Amhd||SAVEDESTRUCTOR|DESTRUCTORFUNC_NOCONTEXT_t f|void *p
 mnd|void|SAVE_ERRNO
+Amhd||SAVEFREEOP|OP *op
+Amhd||SAVEFREEPV|void * p
+Amhd||SAVEFREESV|SV* sv
+Amhd||SAVEI16|I16 i
+Amhd||SAVEI32|I32 i
+Amhd||SAVEI8|I8 i
+Amhd||SAVEINT|int i
+Amhd||SAVEIV|IV i
+Amhd||SAVELONG|long i
+Amhd||SAVEMORTALIZESV|SV* sv
 md|void|SAVEPADSV	|PADOFFSET po
+Amhd||SAVEPPTR|char * p
 Amad|char*|savepvs|"literal string"
 Amad|char*|savesharedpvs|"literal string"
+Amhd||SAVESPTR|SV * s
+Amhd||SAVESTACK_POS
 Amnsd||SAVETMPS
 md|void|SETERRNO|int errcode|int vmserrcode
 Amnd||SHORTSIZE
@@ -684,6 +769,7 @@ Amnd||SITELIB
 AmnUd||SP
 Amnsd||SPAGAIN
 Amd|SV*|ST|int ix
+AmnUud|void|START_EXTERN_C
 Amnhd||START_MY_CXT
 Amnd||STARTPERL
 Amnd||STDCHAR
@@ -722,7 +808,6 @@ Amnhd||SVf
 Amhd||SVfARG|SV *sv
 Amnhd||SVf_UTF8
 Amd|U32|SvGAMAGIC|SV* sv
-Amd|void|SvGETMAGIC|SV* sv
 Amnhd||SV_GMAGIC
 Amd|char *|SvGROW|SV* sv|STRLEN len
 Amnhd||SV_HAS_TRAILING_NUL
@@ -737,8 +822,6 @@ Amd|U32|SvIOKp|SV* sv
 Amd|bool|SvIOK_UV|SV* sv
 Amd|U32|SvIsCOW|SV* sv
 Amd|bool|SvIsCOW_shared_hash|SV* sv
-Amd|IV|SvIV|SV* sv
-Amd|IV|SvIV_nomg|SV* sv
 Amd|void|SvIV_set|SV* sv|IV val
 Amd|IV|SvIVX|SV* sv
 Amd|IV|SvIVx|SV* sv
@@ -755,13 +838,12 @@ Amd|void|SvNOK_on|SV* sv
 Amd|void|SvNOK_only|SV* sv
 Amd|U32|SvNOKp|SV* sv
 Amnhd||SV_NOSTEAL
-Amd|NV|SvNV|SV* sv
-Amd|NV|SvNV_nomg|SV* sv
 Amd|void|SvNV_set|SV* sv|NV val
 Amd|NV|SvNVX|SV* sv
 Amd|NV|SvNVx|SV* sv
 Amd|U32|SvOK|SV* sv
 Amd|U32|SvOOK|SV* sv
+Amd|void|SvOOK_off|SV * sv
 Amd|void|SvOOK_offset|SV*sv|STRLEN len
 Amd|U32|SvPOK|SV* sv
 Amd|void|SvPOK_off|SV* sv
@@ -779,12 +861,29 @@ Amd|char*|SvPVbyte_or_null_nomg|SV* sv|STRLEN len
 Amd|char*|SvPVbytex|SV* sv|STRLEN len
 Amd|char*|SvPVbytex_force|SV* sv|STRLEN len
 Amd|char *|SvPVCLEAR|SV* sv
+Amhd|const char*|SvPV_const|SV* sv|STRLEN len
+Amd|char *|SvPV_flags|SV * sv|STRLEN len|U32 flags
+Amhd|const char *|SvPV_flags_const|SV * sv|STRLEN len|U32 flags
+Amd|const char *|SvPV_flags_const_nolen|SV * sv|U32 flags
+Amhd|char *|SvPV_flags_mutable|SV * sv|STRLEN len|U32 flags
 Amd|char*|SvPV_force|SV* sv|STRLEN len
-Amd|char*|SvPV_force_nomg|SV* sv|STRLEN len
+Amd|char *|SvPV_force_flags|SV * sv|STRLEN len|U32 flags
+Amhd|char*|SvPV_force_flags_mutable|SV* sv|STRLEN len|U32 flags
+Amd|char*|SvPV_force_flags_nolen|SV* sv|U32 flags
+Amhd|char*|SvPV_force_mutable|SV* sv|STRLEN len
+Amd|char*|SvPV_force_nolen|SV* sv
+Amhd|char*|SvPV_force_nomg|SV* sv|STRLEN len
+Amhd|char*|SvPV_force_nomg_nolen|SV* sv
+Amhd|const char*|SvPV_mutable|SV* sv|STRLEN len
 Amd|char*|SvPV_nolen|SV* sv
-Amd|char*|SvPV_nomg|SV* sv|STRLEN len
-Amd|char*|SvPV_nomg_nolen|SV* sv
+Amhd|const char*|SvPV_nolen_const|SV* sv
+Amhd|char*|SvPV_nomg|SV* sv|STRLEN len
+Amhd|const char*|SvPV_nomg_const|SV* sv|STRLEN len
+Amhd|const char*|SvPV_nomg_const_nolen|SV* sv
+Amhd|char*|SvPV_nomg_nolen|SV* sv
+Amd|void|SvPV_renew|SV* sv|STRLEN len
 Amd|void|SvPV_set|SV* sv|char* val
+Amd|void|SvPV_shrink_to_cur|SV* sv
 Amd|char*|SvPVutf8|SV* sv|STRLEN len
 Amd|char*|SvPVutf8_force|SV* sv|STRLEN len
 Amd|char*|SvPVutf8_nolen|SV* sv
@@ -794,7 +893,9 @@ Amd|char*|SvPVutf8_or_null_nomg|SV* sv|STRLEN len
 Amd|char*|SvPVutf8x|SV* sv|STRLEN len
 Amd|char*|SvPVutf8x_force|SV* sv|STRLEN len
 Amd|char*|SvPVX|SV* sv
-Amd|char*|SvPVx|SV* sv|STRLEN len
+Amhd|char*|SvPVx|SV* sv|STRLEN len
+Amd|const char*|SvPVX_const|SV* sv
+Amd|const char*|SvPVX_mutable|SV* sv
 Amd|U32|SvREADONLY|SV* sv
 Amd|U32|SvREADONLY_off|SV* sv
 Amd|U32|SvREADONLY_on|SV* sv
@@ -821,6 +922,7 @@ Amd|void|SvSetSV|SV* dsv|SV* ssv
 Amd|void|sv_setsv_nomg|SV* dsv|SV* ssv
 Amd|void|SvSetSV_nosteal|SV* dsv|SV* ssv
 Amd|void|SvSHARE|SV* sv
+Amd|struct hek*|SvSHARED_HASH|SV * sv
 Amnhd||SV_SMAGIC
 Amnhd||SVs_PADSTALE
 Amd|HV*|SvSTASH|SV* sv
@@ -847,8 +949,7 @@ AmnUd||SVt_PVLV
 AmnUd||SVt_PVMG
 AmnUd||SVt_PVNV
 AmnUd||SVt_REGEXP
-Amd|bool|SvTRUE|SV* sv
-Amd|bool|SvTRUE_nomg|SV* sv
+Amd|bool|SvTRUE_nomg_NN|SV* sv
 Amd|bool|SvTRUEx|SV* sv
 Amd|svtype|SvTYPE|SV* sv
 AmnUd||svtype
@@ -856,15 +957,16 @@ Amd|void|SvUNLOCK|SV* sv
 Amd|bool|SvUOK|SV* sv
 Amd|void|SvUPGRADE|SV* sv|svtype type
 Amd|U32|SvUTF8|SV* sv
+AmnhDd||SV_UTF8_NO_ENCODING
 Amd|void|SvUTF8_off|SV *sv
 Amd|void|SvUTF8_on|SV *sv
-Amd|UV|SvUV|SV* sv
-Amd|UV|SvUV_nomg|SV* sv
 Amd|void|SvUV_set|SV* sv|UV val
 Amd|UV|SvUVX|SV* sv
 Amd|UV|SvUVx|SV* sv
 AmDd|UV|SvUVXx|SV* sv
 Amd|bool|SvVOK|SV* sv
+Amd|MAGIC*|SvVSTRING_mg|SV * sv
+Amnsd||TARG
 Amnd|(whatever)|THIS
 Amd|U8|toFOLD|U8 ch
 Amd|UV|toFOLD_utf8|U8* p|U8* e|U8* s|STRLEN* lenp
@@ -890,6 +992,7 @@ Amnd||U32SIZE
 Amnd||U32TYPE
 Amnd||U8SIZE
 Amnd||U8TYPE
+Amd||UINTMAX_C|number
 AmnUd||UNDERBAR
 AmnUd|UV|UNICODE_REPLACEMENT
 Amd|UV|UNI_TO_NATIVE|UV ch
@@ -1020,10 +1123,11 @@ Amd|void|XPUSHn|NV nv
 Amd|void|XPUSHp|char* str|STRLEN len
 Amd|void|XPUSHs|SV* sv
 Amd|void|XPUSHu|UV uv
-AmnUd||XS
+AmUd||XS
 Amnsd||XS_APIVERSION_BOOTCHECK
-AmnUd||XS_EXTERNAL
+AmUd||XS_EXTERNAL
 AmUd||XS_INTERNAL
+AmUd||XSPROTO
 Amd|void|XSRETURN|int nitems
 Amnsd||XSRETURN_EMPTY
 Amd|void|XSRETURN_IV|IV iv
