@@ -84,6 +84,20 @@ PERL_PATCHLEVEL_H_IMPLICIT
 #  define D_PPP_REVISION      5
 #  define D_PPP_VERSION     200
 #  define D_PPP_SUBVERSION  200
+#  if   (defined(__clang__)     /* _Pragma here doesn't work with gcc */  \
+     && (   (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L)    \
+         || defined(_STDC_C99)                                            \
+         || defined(__c99)))
+#    define D_PPP_STRINGIFY(x) #x
+#    define D_PPP_deprecate(xyz) _Pragma(D_PPP_STRINGIFY(GCC warning(D_PPP_STRINGIFY(xyz) " is deprecated")))
+#    define PERL_REVISION     (D_PPP_REVISION D_PPP_deprecate(PERL_REVISION))
+#    define PERL_VERSION      (D_PPP_REVISION D_PPP_deprecate(PERL_VERSION))
+#    define PERL_SUBVERSION   (D_PPP_SUBVERSION D_PPP_deprecate(PERL_SUBVERSION))
+#  else
+#    define PERL_REVISION     D_PPP_REVISION
+#    define PERL_VERSION      D_PPP_REVISION
+#    define PERL_SUBVERSION   D_PPP_SUBVERSION
+#  endif
 #endif
 
 /* Replace PERL_PATCHLEVEL with PERL_VERSION_xy(5,a,b) (where xy is EQ,LT,GT...) */
