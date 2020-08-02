@@ -218,7 +218,7 @@ my $undocumented = "(undocumented)";
 my @todo;
 for (@todo_list) {
   my $ver = format_version($_);
-  $ver .= " (at least)" if $_ == $todo_list[-1];
+  $ver .= " (or maybe earlier)" if $_ == $todo_list[-1];
   my $todo = "=item perl $ver\n\n";
   for (sort dictionary_order @{$todo{$_}}) {
     $todo .= "  $_";
