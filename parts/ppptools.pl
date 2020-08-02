@@ -444,7 +444,9 @@ sub known_but_hard_to_test_for
     my %return;
 
     for (qw(CLASS dXSI32 items ix pTHX_ RETVAL StructCopy svtype
-            STMT_START STMT_END STR_WITH_LEN THIS XS))
+            STMT_START STMT_END STR_WITH_LEN THIS XS PTRV
+            PERL_USE_GCC_BRACE_GROUPS CPERLscope XSPROTO
+            EXTERN_C START_EXTERN_C END_EXTERN_C PL_hexdigit))
     {
         # __MIN_PERL__ is this at the time of this commit.  This is the
         # earliest these have been tested to at the time of the commit, but
@@ -453,6 +455,9 @@ sub known_but_hard_to_test_for
     }
     for (qw(_pMY_CXT pMY_CXT_)) {
         $return{$_} = '5.9.0';
+    }
+    for (qw(PERLIO_FUNCS_DECL)) {
+        $return{$_} = '5.9.3';
     }
     for (qw(XopDISABLE XopENABLE XopENTRY XopENTRYCUSTOM XopENTRY_set)) {
         $return{$_} = '5.13.7';
