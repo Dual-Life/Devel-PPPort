@@ -55,6 +55,7 @@ my %amap = (
   type => 'int',
   cast => 'int',
   block => '{1;}',
+  number => '1',
 );
 
 # Certain return types are instead considered void
@@ -121,6 +122,7 @@ my %stack = (
   STORE_LC_NUMERIC_FORCE_TO_UNDERLYING => ['DECLARATION_FOR_LC_NUMERIC_MANIPULATION;'],
   STORE_LC_NUMERIC_SET_TO_NEEDED => ['DECLARATION_FOR_LC_NUMERIC_MANIPULATION;'],
   STORE_LC_NUMERIC_SET_TO_NEEDED_IN => ['DECLARATION_FOR_LC_NUMERIC_MANIPULATION;'],
+  TARG           => ['dTARG;'],
   UNDERBAR       => ['dUNDERBAR;'],
   XCPT_CATCH     => ['dXCPT;'],
   XCPT_RETHROW   => ['dXCPT;'],
