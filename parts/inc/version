@@ -11,13 +11,16 @@
 
 =provides
 
-PERL_REVISION
-PERL_VERSION
-PERL_SUBVERSION
 __UNDEFINED__
 
 =dontwarn
 
+## We don't want people to be using these symbols so even though we provide
+## them, we don't publicly mention them
+
+PERL_REVISION
+PERL_VERSION
+PERL_SUBVERSION
 PERL_PATCHLEVEL_H_IMPLICIT
 
 =implementation
