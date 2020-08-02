@@ -367,6 +367,7 @@ sub parse_embed
             {
                 warn "$name marked as API, but restricted scope: $cond\n";
             }
+            #warn "$name: $cond" if length $cond && $flags =~ /A/;
             for (@args) {
               $_ = [trim_arg($_)];
             }
