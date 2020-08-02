@@ -438,7 +438,7 @@ sub known_but_hard_to_test_for
     #
     # The values for the keys are each the version that ppport.h makes them
     # work on, and were gleaned by manually looking at the code parts/inc/*.
-    # For non-ppport.h, scanprov will automatically figure out the version
+    # For functions, scanprov will automatically figure out the version
     # they were introduced in.
 
     my %return;
