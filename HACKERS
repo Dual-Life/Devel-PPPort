@@ -14,13 +14,12 @@ lying around in this distribution.
 =head2 How to backport something
 
 First, make sure that what you want to backport is documented.  If it's worth
-backporting, it surely is worth documenting.  Send a documentation patch to
-L<perlbug@perl.org|mailto:perlbug@perl.org> if necessary.  Also,
-C<Devel::PPPort> cannot automatically generate proper information about the
-item without at least knowing its API prototype.  It can get this from
-F<embed.fnc> if the item is a function, but if it is a macro, there needs to be
-at least a S<C<=for apidoc>> line for C<Devel::PPPort> to be able to figure
-things out on its own.
+backporting, it surely is worth documenting.  Submit a documentation patch to
+L<https://github.com/Perl/perl5/issues> if necessary.  Also, C<Devel::PPPort>
+cannot automatically generate proper information about the item without at
+least knowing its API prototype.  It can get this from F<embed.fnc> if the item
+is a function, but if it is a macro, there needs to be at least a S<C<=for
+apidoc>> line for C<Devel::PPPort> to be able to figure things out on its own.
 
 Next, figure out where to place your implementation.  Look at all the files in
 F<parts/inc/> for one that fits what you're planning.  If there isn't one,
