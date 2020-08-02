@@ -32,13 +32,17 @@ PERL_PATCHLEVEL_H_IMPLICIT
 #  endif
 #  ifndef PERL_REVISION
 #    define PERL_REVISION       (5)
-     /* Replace: 1 */
 #    define PERL_VERSION        PATCHLEVEL
 #    define PERL_SUBVERSION     SUBVERSION
-     /* Replace PERL_PATCHLEVEL with PERL_VERSION */
-     /* Replace: 0 */
 #  endif
 #endif
+
+/* Replace PERL_PATCHLEVEL with PERL_VERSION_xy(5,a,b) (where xy is EQ,LT,GT...) */
+/* Replace PATCHLEVEL with PERL_VERSION_xy(5,a,b) (where xy is EQ,LT,GT...) */
+/* Replace SUBVERSION with PERL_VERSION_xy(5,a,b) (where xy is EQ,LT,GT...) */
+/* Replace PERL_REVISION with PERL_VERSION_xy(a,b,c) (where xy is EQ,LT,GT...) */
+/* Replace PERL_VERSION with PERL_VERSION_xy(5,a,b) (where xy is EQ,LT,GT...) */
+/* Replace PERL_SUBVERSION with PERL_VERSION_xy(5,a,b) (where xy is EQ,LT,GT...) */
 
 #define D_PPP_DEC2BCD(dec) ((((dec)/100)<<8)|((((dec)%100)/10)<<4)|((dec)%10))
 #define D_PPP_RVS_TO_BCD(r,v,s) ((D_PPP_DEC2BCD(r)<<24)|(D_PPP_DEC2BCD(v)<<12)|D_PPP_DEC2BCD(s))
