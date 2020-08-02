@@ -108,12 +108,37 @@ PERL_PATCHLEVEL_H_IMPLICIT
 /* Replace PERL_SUBVERSION with PERL_VERSION_xy(5,a,b) (where xy is EQ,LT,GT...) */
 
 #define D_PPP_DEC2BCD(dec) ((((dec)/100)<<8)|((((dec)%100)/10)<<4)|((dec)%10))
-#define D_PPP_RVS_TO_BCD(r,v,s) ((D_PPP_DEC2BCD(r)<<24)|(D_PPP_DEC2BCD(v)<<12)|D_PPP_DEC2BCD(s))
-#define D_PPP_BCDVERSION D_PPP_RVS_TO_BCD(D_PPP_MAJOR, D_PPP_MINOR, D_PPP_PATCH)
+#define D_PPP_JNP_TO_BCD(j,n,p) ((D_PPP_DEC2BCD(j)<<24)|(D_PPP_DEC2BCD(n)<<12)|D_PPP_DEC2BCD(p))
+#define D_PPP_BCDVERSION D_PPP_JNP_TO_BCD(D_PPP_MAJOR,          \
+                                          D_PPP_MINOR,          \
+                                          D_PPP_PATCH)
 
-__UNDEFINED__ PERL_VERSION_EQ(r,v,s) (D_PPP_BCDVERSION == D_PPP_RVS_TO_BCD(r,v,s))
-__UNDEFINED__ PERL_VERSION_NE(r,v,s) (! PERL_VERSION_EQ(r,v,s))
-__UNDEFINED__ PERL_VERSION_LT(r,v,s) (D_PPP_BCDVERSION < D_PPP_RVS_TO_BCD(r,v,s))
-__UNDEFINED__ PERL_VERSION_LE(r,v,s) (D_PPP_BCDVERSION <= D_PPP_RVS_TO_BCD(r,v,s))
-__UNDEFINED__ PERL_VERSION_GT(r,v,s) (! PERL_VERSION_LE(r,v,s))
-__UNDEFINED__ PERL_VERSION_GE(r,v,s) (! PERL_VERSION_LT(r,v,s))
+/* These differ from the versions outside D:P in using D_PPP_BCDVERSION instead
+ * of PERL_DECIMAL_VERSION.  The formats printing in this module assume BCD, so
+ * always use it */
+#undef PERL_VERSION_EQ
+#undef PERL_VERSION_NE
+#undef PERL_VERSION_LT
+#undef PERL_VERSION_GE
+#undef PERL_VERSION_LE
+#undef PERL_VERSION_GT
+
+/* N.B. These don't work if the patch number is 42 or 92, as those are what '*'
+ * is in ASCII and EBCDIC respectively */
+__UNDEFINED__ PERL_VERSION_EQ(j,n,p)                                        \
+              (((p) == '*') ? (   (j) == D_PPP_VERSION_MAJOR                \
+                               && (n) == D_PPP_VERSION_MINOR)               \
+                            : (D_PPP_BCDVERSION == D_PPP_JNP_TO_BCD(j,n,p)))
+__UNDEFINED__ PERL_VERSION_NE(j,n,p) (! PERL_VERSION_EQ(j,n,p))
+
+__UNDEFINED__ PERL_VERSION_LT(j,n,p)      /* p=='*' means _LT(j,n,0) */     \
+    (D_PPP_BCDVERSION < D_PPP_JNP_TO_BCD(                    (j),           \
+                                                             (n),           \
+                                         (((p) == '*') ? 0 : (p))))
+__UNDEFINED__ PERL_VERSION_GE(j,n,p) (! PERL_VERSION_LT(j,n,p))
+
+__UNDEFINED__ PERL_VERSION_LE(j,n,p)      /* p=='*' means _LT(j,n+1,0) */   \
+    (D_PPP_BCDVERSION < D_PPP_JNP_TO_BCD(                          (j),     \
+                                         (((p) == '*') ? ((n)+1) : (n)),    \
+                                         (((p) == '*') ?   0     : (p))))
+__UNDEFINED__ PERL_VERSION_GT(j,n,p) (! PERL_VERSION_LE(j,n,p))
