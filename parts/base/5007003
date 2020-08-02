@@ -5,7 +5,6 @@ ckWARN4                        # U
 ckWARN4_d                      # U
 custom_op_desc                 # U
 custom_op_name                 # U
-cx_dup                         # E (Perl_cx_dup)
 deb                            # U
 deb_nocontext                  # U
 debstack                       # U
@@ -24,6 +23,11 @@ my_fork                        # U
 my_socketpair                  # U
 OP_DESC                        # U
 OP_NAME                        # U
+pack_cat                       # U
+packWARN                       # U
+packWARN2                      # U
+packWARN3                      # U
+packWARN4                      # U
 perl_destruct                  # E (perl_destruct)
 PERL_EXIT_DESTRUCT_END         # E
 PerlIO_clearerr                # U (PerlIO_clearerr)
@@ -77,8 +81,6 @@ SvUNLOCK                       # U
 unpack_str                     # U
 uvchr_to_utf8_flags            # U
 vdeb                           # U
-dMY_CXT_SV                     # M added by devel/scanprov
-packWARN                       # M added by devel/scanprov
 _pMY_CXT                       # M added by devel/scanprov
 pMY_CXT_                       # M added by devel/scanprov
 apply_attrs_my                 # F added by devel/scanprov

@@ -26,16 +26,14 @@ CvDEPTH                        # T
 CvGV                           # T
 CvSTASH                        # T
 cv_undef                       # T
-cxinc                          # T
 dMARK                          # T
 do_close                       # T
 do_join                        # T
 do_open                        # T
 dORIGMARK                      # T
-do_sprintf                     # T
-dounwind                       # T
 dowantarray                    # T
 dSP                            # T
+dTARGET                        # T
 dTHX                           # T
 dXSARGS                        # T
 ENTER                          # T
@@ -43,21 +41,21 @@ EXTEND                         # T
 filter_add                     # T
 filter_del                     # T
 filter_read                    # T
-free_tmps                      # T
 FREETMPS                       # T
 G_ARRAY                        # T
 G_DISCARD                      # T
 G_EVAL                         # T
 GIMME                          # T
+G_KEEPERR                      # T
 G_NOARGS                       # T
 gp_free                        # T
 gp_ref                         # T
 G_SCALAR                       # T
 GV_ADD                         # T
 GV_ADDMULTI                    # T
+GV_ADDWARN                     # T
 GvAV                           # T
 gv_AVadd                       # T
-gv_check                       # T
 GvCV                           # T
 gv_efullname                   # T
 gv_efullname3                  # T
@@ -104,6 +102,7 @@ hv_store_ent                   # T
 hv_undef                       # T
 ibcmp                          # T
 instr                          # T
+INTMAX_C                       # T
 INTSIZE                        # T
 isALNUM                        # T
 isALPHA                        # T
@@ -123,7 +122,6 @@ mg_free                        # T
 mg_get                         # T
 mg_magical                     # T
 mg_set                         # T
-moreswitches                   # T
 Move                           # T
 my_exit                        # T
 my_pclose                      # T
@@ -216,6 +214,7 @@ PERL_SYS_TERM                  # T
 PERL_UCHAR_MAX                 # T
 PERL_UCHAR_MIN                 # T
 PERL_UINT_MAX                  # T
+PERL_UINT_MIN                  # T
 PERL_ULONG_MAX                 # T
 PERL_ULONG_MIN                 # T
 PERL_UQUAD_MAX                 # T
@@ -244,23 +243,23 @@ rninstr                        # T
 Safefree                       # T
 save_aptr                      # T
 save_ary                       # T
-save_clearsv                   # T
-save_delete                    # T
-save_freepv                    # T
-save_freesv                    # T
+SAVEDELETE                     # T
+SAVEFREEPV                     # T
+SAVEFREESV                     # T
 save_hash                      # T
 save_hptr                      # T
-save_I32                       # T
-save_int                       # T
+SAVEI32                        # T
+SAVEINT                        # T
 save_item                      # T
+SAVEIV                         # T
 save_list                      # T
-save_long                      # T
+SAVELONG                       # T
 save_nogv                      # T
-save_pptr                      # T
+SAVEPPTR                       # T
 savepv                         # T
 savepvn                        # T
 save_scalar                    # T
-save_sptr                      # T
+SAVESPTR                       # T
 savestack_grow                 # T
 save_svref                     # T
 SAVETMPS                       # T
@@ -269,7 +268,6 @@ SITELIB                        # T
 SP                             # T
 SPAGAIN                        # T
 ST                             # T
-stack_grow                     # T
 STARTPERL                      # T
 STDCHAR                        # T
 strEQ                          # T
@@ -280,12 +278,9 @@ strLT                          # T
 strNE                          # T
 strnEQ                         # T
 strnNE                         # T
-sv_2bool                       # T
 sv_2cv                         # T
 sv_2io                         # T
-sv_2iv                         # T
 sv_2mortal                     # T
-sv_2pv                         # T
 sv_backoff                     # T
 sv_bless                       # T
 sv_catpv                       # T
@@ -302,7 +297,6 @@ SvEND                          # T
 sv_eq                          # T
 sv_free                        # T
 sv_gets                        # T
-sv_grow                        # T
 SvGROW                         # T
 sv_inc                         # T
 sv_insert                      # T
@@ -323,7 +317,6 @@ SvLEN_set                      # T
 sv_magic                       # T
 sv_mortalcopy                  # T
 sv_newmortal                   # T
-sv_newref                      # T
 SvNIOK                         # T
 SvNIOK_off                     # T
 SvNIOKp                        # T
@@ -334,6 +327,7 @@ SvNOK_only                     # T
 SvNOKp                         # T
 SvOK                           # T
 SvOOK                          # T
+SvOOK_off                      # T
 SvPOK                          # T
 SvPOK_off                      # T
 SvPOK_on                       # T
@@ -341,7 +335,6 @@ SvPOK_only                     # T
 SvPOKp                         # T
 SvPV                           # T
 SvPV_force                     # T
-sv_pvn_force                   # T
 SvPV_set                       # T
 SvPVX                          # T
 SvPVx                          # T
@@ -393,10 +386,10 @@ sv_unref                       # T
 sv_upgrade                     # T
 SvUPGRADE                      # T
 sv_usepvn                      # T
-taint_env                      # T
-taint_proper                   # T
+TARG                           # T
 toLOWER                        # T
 toUPPER                        # T
+UINTMAX_C                      # T
 unsharepvn                     # T
 whichsig                       # T
 XPUSHi                         # T
@@ -423,7 +416,6 @@ THIS                           # X added by devel/scanprov
 dXSI32                         # M added by devel/scanprov
 items                          # M added by devel/scanprov
 ix                             # M added by devel/scanprov
-PERL_UINT_MIN                  # M added by devel/scanprov
 STMT_END                       # M added by devel/scanprov
 STMT_START                     # M added by devel/scanprov
 StructCopy                     # M added by devel/scanprov
@@ -433,8 +425,11 @@ apply                          # F added by devel/scanprov
 bind_match                     # F added by devel/scanprov
 boot_core_UNIVERSAL            # F added by devel/scanprov
 cando                          # F added by devel/scanprov
+cast_ulong                     # F added by devel/scanprov
 checkcomma                     # F added by devel/scanprov
 check_uni                      # F added by devel/scanprov
+cx_dump                        # F added by devel/scanprov
+cxinc                          # F added by devel/scanprov
 do_chomp                       # F added by devel/scanprov
 do_eof                         # F added by devel/scanprov
 do_exec                        # F added by devel/scanprov
@@ -449,8 +444,10 @@ do_readline                    # F added by devel/scanprov
 do_seek                        # F added by devel/scanprov
 do_semop                       # F added by devel/scanprov
 do_shmio                       # F added by devel/scanprov
+do_sprintf                     # F added by devel/scanprov
 do_tell                        # F added by devel/scanprov
 do_trans                       # F added by devel/scanprov
+dounwind                       # F added by devel/scanprov
 do_vecset                      # F added by devel/scanprov
 do_vop                         # F added by devel/scanprov
 dump_mstats                    # F added by devel/scanprov
@@ -459,7 +456,9 @@ force_ident                    # F added by devel/scanprov
 force_list                     # F added by devel/scanprov
 force_next                     # F added by devel/scanprov
 force_word                     # F added by devel/scanprov
+free_tmps                      # F added by devel/scanprov
 gen_constant_list              # F added by devel/scanprov
+gv_check                       # F added by devel/scanprov
 ingroup                        # F added by devel/scanprov
 intuit_more                    # F added by devel/scanprov
 invert                         # F added by devel/scanprov
@@ -498,6 +497,7 @@ magic_setvec                   # F added by devel/scanprov
 magic_wipepack                 # F added by devel/scanprov
 mem_collxfrm                   # F added by devel/scanprov
 modkids                        # F added by devel/scanprov
+moreswitches                   # F added by devel/scanprov
 my_chsize                      # F added by devel/scanprov
 my_unexec                      # F added by devel/scanprov
 nextargv                       # F added by devel/scanprov
@@ -517,8 +517,18 @@ pmruntime                      # F added by devel/scanprov
 pmtrans                        # F added by devel/scanprov
 ref                            # F added by devel/scanprov
 refkids                        # F added by devel/scanprov
+regdump                        # F added by devel/scanprov
+regnext                        # F added by devel/scanprov
 regprop                        # F added by devel/scanprov
 same_dirent                    # F added by devel/scanprov
+save_clearsv                   # F added by devel/scanprov
+save_delete                    # F added by devel/scanprov
+save_destructor                # F added by devel/scanprov
+save_I32                       # F added by devel/scanprov
+save_int                       # F added by devel/scanprov
+save_long                      # F added by devel/scanprov
+save_pptr                      # F added by devel/scanprov
+save_sptr                      # F added by devel/scanprov
 sawparens                      # F added by devel/scanprov
 scalar                         # F added by devel/scanprov
 scalarkids                     # F added by devel/scanprov
@@ -529,16 +539,22 @@ scan_formline                  # F added by devel/scanprov
 scan_heredoc                   # F added by devel/scanprov
 scan_ident                     # F added by devel/scanprov
 scan_inputsymbol               # F added by devel/scanprov
+scan_num                       # F added by devel/scanprov
 scan_pat                       # F added by devel/scanprov
 scan_str                       # F added by devel/scanprov
 scan_subst                     # F added by devel/scanprov
 scan_trans                     # F added by devel/scanprov
 scan_word                      # F added by devel/scanprov
 sighandler                     # F added by devel/scanprov
+stack_grow                     # F added by devel/scanprov
 sv_add_arena                   # F added by devel/scanprov
 sv_clean_all                   # F added by devel/scanprov
 sv_clean_objs                  # F added by devel/scanprov
 sv_free_arenas                 # F added by devel/scanprov
+sv_grow                        # F added by devel/scanprov
+sv_newref                      # F added by devel/scanprov
+taint_env                      # F added by devel/scanprov
+taint_proper                   # F added by devel/scanprov
 unlnk                          # F added by devel/scanprov
 utilize                        # F added by devel/scanprov
 wait4pid                       # F added by devel/scanprov

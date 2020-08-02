@@ -22,20 +22,12 @@ ptr_table_new                  # U
 ptr_table_split                # U
 ptr_table_store                # U
 re_compile                     # U
-regfree_internal               # U
-reg_named_buff_all             # U
-reg_named_buff_exists          # U
-reg_named_buff_fetch           # U
-reg_named_buff_firstkey        # U
-reg_named_buff_nextkey         # U
-reg_named_buff_scalar          # U
 savesharedpvn                  # U
 scan_vstring                   # E (Perl_scan_vstring)
 SVfARG                         # U
 SvRX                           # U
 SvRXOK                         # U
 upg_version                    # E (Perl_upg_version)
-GV_NOADD_MASK                  # M added by devel/scanprov
 SV_COW_SHARED_HASH_KEYS        # M added by devel/scanprov
 boot_core_mro                  # F added by devel/scanprov
 find_and_forget_pmops          # F added by devel/scanprov
@@ -47,16 +39,23 @@ Perl_emulate_cop_io            # F added by devel/scanprov
 Perl_get_db_sub                # F added by devel/scanprov
 Perl_get_re_arg                # F added by devel/scanprov
 Perl_mro_meta_init             # F added by devel/scanprov
-Perl_my_cxt_index              # F added by devel/scanprov
 Perl_op_refcnt_dec             # F added by devel/scanprov
 Perl_op_refcnt_inc             # F added by devel/scanprov
 Perl_softref2xv                # F added by devel/scanprov
 process_special_blocks         # F added by devel/scanprov
 reg_check_named_buff_matched   # F added by devel/scanprov
 regdump_extflags               # F added by devel/scanprov
+regdupe_internal               # F added by devel/scanprov
+regfree_internal               # F added by devel/scanprov
 reghop4                        # F added by devel/scanprov
 reg_named_buff                 # F added by devel/scanprov
+reg_named_buff_all             # F added by devel/scanprov
+reg_named_buff_exists          # F added by devel/scanprov
+reg_named_buff_fetch           # F added by devel/scanprov
+reg_named_buff_firstkey        # F added by devel/scanprov
 reg_named_buff_iter            # F added by devel/scanprov
+reg_named_buff_nextkey         # F added by devel/scanprov
+reg_named_buff_scalar          # F added by devel/scanprov
 reg_numbered_buff_fetch        # F added by devel/scanprov
 reg_numbered_buff_length       # F added by devel/scanprov
 reg_numbered_buff_store        # F added by devel/scanprov

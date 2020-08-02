@@ -1,11 +1,11 @@
 5.027008
-cx_popgiven                    # U
-cx_popwhen                     # U
-cx_pushgiven                   # U
-cx_pushwhen                    # U
 newWHENOP                      # U
 WARN_EXPERIMENTAL__SCRIPT_RUN  # E
 category_name                  # F added by devel/scanprov
+cx_popgiven                    # F added by devel/scanprov
+cx_popwhen                     # F added by devel/scanprov
+cx_pushgiven                   # F added by devel/scanprov
+cx_pushwhen                    # F added by devel/scanprov
 destroy_matcher                # F added by devel/scanprov
 dopoptogivenfor                # F added by devel/scanprov
 dopoptowhen                    # F added by devel/scanprov

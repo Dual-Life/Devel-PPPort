@@ -1,6 +1,5 @@
 5.007001
 bytes_from_utf8                # U
-despatch_signals               # U
 do_openn                       # U
 gv_handler                     # U
 isALNUM_LC_uvchr               # U
@@ -23,8 +22,8 @@ PerlIO_binmode                 # U
 PerlIO_debug                   # U
 POPpbytex                      # E
 printf_nocontext               # U
-save_mortalizesv               # U
-scan_num                       # A
+PTR2ul                         # U
+SAVEMORTALIZESV                # U
 sv_force_normal_flags          # U
 SV_IMMEDIATE_UNREF             # E
 sv_setref_uv                   # U
@@ -40,7 +39,7 @@ utf8n_to_uvchr                 # U
 utf8_to_uvchr                  # U
 uvchr_to_utf8                  # U
 UVXf                           # E
-PTR2ul                         # M added by devel/scanprov
+despatch_signals               # F added by devel/scanprov
 expect_number                  # F added by devel/scanprov
 magic_freeovrld                # F added by devel/scanprov
 Perl_start_glob                # F added by devel/scanprov

@@ -1,5 +1,4 @@
 5.031005
-gimme_V                        # U
 isALPHANUMERIC_utf8            # A
 isALPHA_utf8                   # A
 isASCII_utf8                   # A
@@ -21,3 +20,4 @@ toFOLD_utf8                    # A
 toLOWER_utf8                   # A
 toTITLE_utf8                   # A
 toUPPER_utf8                   # A
+gimme_V                        # F added by devel/scanprov
