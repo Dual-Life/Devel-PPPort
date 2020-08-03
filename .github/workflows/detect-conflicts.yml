@@ -1,0 +1,13 @@
+on:
+  push:
+    branches:
+      - master
+jobs:
+  conflicts:
+    runs-on: ubuntu-latest
+    if: ( github.event.pull_request.head.repo.full_name == 'Dual-Life/Devel-PPPort' || github.repository == 'Dual-Life/Devel-PPPort' )
+    steps:
+      - uses: mschilde/auto-label-merge-conflicts@master
+        with:
+          CONFLICT_LABEL_NAME: "hasConflicts"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
