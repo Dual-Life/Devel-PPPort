@@ -1,7 +1,10 @@
+name: detect-conflicts
+
 on:
   push:
     branches:
       - master
+
 jobs:
   conflicts:
     runs-on: ubuntu-latest
