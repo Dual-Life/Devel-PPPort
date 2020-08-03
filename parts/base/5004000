@@ -36,23 +36,20 @@ PUSHu                          # E
 rsignal                        # E
 rsignal_state                  # E
 save_gp                        # E
-save_I16                       # E
+SAVEI16                        # E
+SAVESTACK_POS                  # E
 share_hek                      # E
 SHORTSIZE                      # E
 start_subparse                 # E (Perl_start_subparse)
-sv_2uv                         # U
 sv_cmp_locale                  # U
 sv_derived_from                # E
 SvSetMagicSV                   # E
 SvSetMagicSV_nosteal           # E
 SvSetSV_nosteal                # E
 sv_setuv                       # E
-sv_taint                       # U
-sv_tainted                     # E
 SvTAINTED                      # E
 SvTAINTED_off                  # E
 SvTAINTED_on                   # E
-sv_untaint                     # E
 SvUV                           # E
 SvUVX                          # E
 SvUVx                          # E
@@ -61,6 +58,7 @@ sv_vcatpvfn                    # E
 sv_vsetpvfn                    # E
 toLOWER_LC                     # E
 XPUSHu                         # E
+sv_2uv                         # M added by devel/scanprov
 do_sysseek                     # F added by devel/scanprov
 magic_getdefelem               # F added by devel/scanprov
 magic_setcollxfrm              # F added by devel/scanprov
@@ -70,7 +68,12 @@ rsignal_save                   # F added by devel/scanprov
 rxres_free                     # F added by devel/scanprov
 rxres_restore                  # F added by devel/scanprov
 rxres_save                     # F added by devel/scanprov
+save_I16                       # F added by devel/scanprov
+save_iv                        # F added by devel/scanprov
 sub_crush_depth                # F added by devel/scanprov
+sv_pvn                         # F added by devel/scanprov
+sv_tainted                     # F added by devel/scanprov
+sv_untaint                     # F added by devel/scanprov
 unshare_hek                    # F added by devel/scanprov
 vivify_defelem                 # F added by devel/scanprov
 vivify_ref                     # F added by devel/scanprov

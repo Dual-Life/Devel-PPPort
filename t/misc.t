@@ -34,9 +34,9 @@ BEGIN {
     require 'inctools';
   }
 
-  if (26826) {
+  if (26827) {
     load();
-    plan(tests => 26826);
+    plan(tests => 26827);
   }
 }
 
@@ -496,4 +496,5 @@ for $name (keys %case_changing) {
 
 is(&Devel::PPPort::av_top_index([1,2,3]), 2);
 is(&Devel::PPPort::av_tindex([1,2,3,4]), 3);
+is(&Devel::PPPort::av_count([1,2,3,4]), 4);
 

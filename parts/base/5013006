@@ -4,6 +4,7 @@ ck_entersub_args_proto         # U
 ck_entersub_args_proto_or_list # U
 cv_get_call_checker            # E
 cv_set_call_checker            # E
+gv_fetchpvn                    # U
 isALNUMC_A                     # U
 isALNUMC_L1                    # U
 isALPHA_A                      # U
@@ -54,7 +55,6 @@ RV2CVOPCV_MARK_EARLY           # E
 RV2CVOPCV_RETURN_NAME_GV       # E
 savesharedpvs                  # U
 savesharedsvpv                 # U
-sv_2bool_flags                 # U
 sv_catpv_flags                 # U
 sv_catpv_nomg                  # U
 sv_catpvs_flags                # U
@@ -69,3 +69,4 @@ sv_setref_pvs                  # U
 SvTRUE_nomg                    # U
 mro_package_moved              # F added by devel/scanprov
 Perl_populate_isa              # F added by devel/scanprov
+sv_2bool_flags                 # F added by devel/scanprov

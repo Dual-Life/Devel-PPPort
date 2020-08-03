@@ -161,9 +161,15 @@ won't be available or work.
 
 =head2 --api-info=I<name>
 
-Show portability information for API elements matching I<name>.
+Show portability information for elements matching I<name>.
 If I<name> is surrounded by slashes, it is interpreted as a regular
 expression.
+
+Normally, only API elements are shown, but if there are no matching API
+elements but there are some other matching elements, those are shown.  This
+allows you to conveniently find when functions internal to the core
+implementation were added; only people working on the core are likely to find
+this last part useful.
 
 =head1 DESCRIPTION
 
@@ -301,7 +307,7 @@ before sending a bug report.
 
 If F<ppport.h> was generated using the latest version of
 C<Devel::PPPort> and is causing failure of this module, please
-send a bug report to L<perlbug@perl.org|mailto:perlbug@perl.org>.
+file a bug report at L<<https://github.com/Dual-Life/Devel-PPPort/issues>
 
 Please include the following information:
 

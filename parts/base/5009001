@@ -9,3 +9,4 @@ SvUV_nomg                      # U
 hv_delete_common               # F added by devel/scanprov
 magic_scalarpack               # F added by devel/scanprov
 num_overflow                   # F added by devel/scanprov
+Perl_hv_assert                 # F added by devel/scanprov

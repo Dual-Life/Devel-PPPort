@@ -10,6 +10,10 @@ do_aspawn                      # F added by devel/scanprov
 do_spawn                       # F added by devel/scanprov
 do_spawn_nowait                # F added by devel/scanprov
 hv_notallowed                  # F added by devel/scanprov
+reentrant_free                 # F added by devel/scanprov
+reentrant_init                 # F added by devel/scanprov
+reentrant_retry                # F added by devel/scanprov
+reentrant_size                 # F added by devel/scanprov
 save_hek_flags                 # F added by devel/scanprov
 share_hek_flags                # F added by devel/scanprov
 to_byte_substr                 # F added by devel/scanprov

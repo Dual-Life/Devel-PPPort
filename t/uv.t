@@ -52,7 +52,7 @@ Devel::PPPort->bootstrap;
 
 package main;
 
-BEGIN { require warnings if "$]" > '5.006' }
+BEGIN { require warnings if ivers($]) > ivers('5.006') }
 
 is(&Devel::PPPort::sv_setuv(42), 42);
 is(&Devel::PPPort::newSVuv(123), 123);

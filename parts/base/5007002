@@ -53,13 +53,16 @@ PERL_MAGIC_tiedelem            # E
 PERL_MAGIC_tiedscalar          # E
 PERL_MAGIC_uvar                # E
 PERL_MAGIC_vec                 # E
+PERL_UNUSED_DECL               # E
+PERL_UNUSED_VAR                # U
 realloc                        # U
-sv_2pv_flags                   # U
 sv_catpvn_flags                # U
 sv_catpvn_nomg                 # U
 sv_catsv_flags                 # U
 sv_catsv_nomg                  # U
 SV_GMAGIC                      # E
+SvPV_flags                     # U
+SvPV_force_flags               # U
 SvPV_force_nomg                # U
 sv_pvn_force_flags             # U
 SvPV_nomg                      # U
@@ -67,10 +70,7 @@ sv_setsv_flags                 # U
 sv_setsv_nomg                  # U
 sv_utf8_upgrade_flags          # U
 sv_utf8_upgrade_nomg           # U
-PERL_UNUSED_DECL               # M added by devel/scanprov
-PERL_UNUSED_VAR                # M added by devel/scanprov
-SvPV_flags                     # M added by devel/scanprov
-SvPV_force_flags               # M added by devel/scanprov
+sv_2pv_flags                   # M added by devel/scanprov
 boot_core_PerlIO               # F added by devel/scanprov
 closest_cop                    # F added by devel/scanprov
 deb_curcv                      # F added by devel/scanprov
