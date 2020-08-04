@@ -309,21 +309,20 @@ sub find_first_mentions
     #                  'UTF8_MAXBYTES' => 1
     #                },
 
-    for my $v (keys %v) {
+    for my $version (keys %v) {
 
         # Things listed in blead (the most recent file) are special.  They are
         # there by default because we haven't found them anywhere, so they
         # don't really exist as far as we can determine, so shouldn't be
         # listed as existing.
-        next if $v > $perls_ref->[0]->{file};
+        next if $version > $perls_ref->[0]->{file};
 
-        # @new becomes the symbols for version $v not already in the file for
-        # $v
+        # @new becomes the symbols for $version not already in the file for it
         my @new = sort symbol_order grep { !exists $base_ref->{$_} }
-                                                                keys %{$v{$v}};
+                                                                keys %{$v{$version}};
         @new or next; # Nothing new, skip writing
 
-        my $file = $v;
+        my $file = $version;
         $file =~ s/\.//g;
         $file = "$base_dir/$file";
         -e $file or die "non-existent: $file\n";
