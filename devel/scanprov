@@ -103,15 +103,25 @@ if ($write) {
     # exist all the way back.  Add them now to avoid throwing later things
     # off.
     print "-- $file --\n";
-    open F, ">>$file" or die "$file: $!\n";
+    open my $fh, "+<$file" or die "$file: $!\n";
+    my @lines = <$fh>;
+    my $count = @lines;
     for (qw(RETVAL CALL THIS)) { # These are also in hard_to_test_for(),
                                  # so can't be in blead, as they are skipped
                                  # in testing, so no real need to check that
                                  # they aren't dups.
+        my $line = format_output_line($_, 'X');
+        next if grep { /$line/ } @lines;
         print "Adding $_ to $file\n";
-        print F format_output_line($_, 'X');
+        push @lines, $line;
     }
-    close F;
+    if ($count != @lines) {
+        @lines = sort symbol_order @lines;
+        truncate $fh, 0;
+        seek $fh, 0, 0;
+        print $fh @lines;
+    }
+    close $fh;
 
     # Now we're going to add the hard to test symbols.  The hash has been
     # manually populated and commited, with the version number ppport supports
@@ -143,15 +153,24 @@ if ($write) {
     foreach my $version (keys %add_by_version) {
         my $file = "$todo_dir/" . int_parse_version($version);
         print "-- Adding known exceptions to $file --\n";
-        my $need_version_line = ! -e $file;
-        open F, ">>$file" or die "$file: $!\n";
-        print F format_version_line($version) . "\n" if $need_version_line;
-        foreach my $symbol (sort symbol_order @{$add_by_version{$version}})
-        {
-            print "adding $symbol\n";
-            print F format_output_line($symbol, 'X');
+        open my $fh, "+<$file" or die "$file: $!\n";
+        my @lines = <$fh>;
+        my $count = @lines;
+        push @lines, format_version_line($version) . "\n" unless @lines;
+        foreach my $symbol (@{$add_by_version{$version}}) {
+            my $line = format_output_line($symbol, 'X');
+            unless (grep { /$line/ } @lines) {;
+                print "adding $symbol\n";
+                push @lines, $line unless grep { /$line/ } @lines;
+            }
         }
-        close F;
+        if (@lines != $count) {
+            @lines = sort symbol_order @lines;
+            truncate $fh, 0;
+            seek $fh, 0, 0;
+            print $fh @lines;
+        }
+        close $fh;
     }
 }
 
@@ -309,11 +328,23 @@ sub find_first_mentions
         $file = "$base_dir/$file";
         -e $file or die "non-existent: $file\n";
         print "-- $file --\n";
-        $write and (open F, ">>$file" or die "$file: $!\n");
-        for (@new) {
-            print "adding $_\n";
-            $write and print F format_output_line($_, $code);
+        if ($write) {
+            open my $fh, "+<", $file or die "$file: $!\n";
+            my @lines = <$fh>;
+            my $count = @lines;
+            for my $new (@new) {
+                my $line = format_output_line($new, $code);
+                next if grep { /$line/ } @lines;
+                print "adding $new\n";
+                push @lines, $line;
+            }
+            if (@lines != $count) {
+                @lines = sort symbol_order @lines;
+                truncate $fh, 0;
+                seek $fh, 0, 0;
+                print $fh @lines;
+            }
+            close $fh;
         }
-        $write and close F;
     }
 }
