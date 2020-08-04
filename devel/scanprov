@@ -6,6 +6,9 @@
 #              Thus the purpose of this file has been expanded beyond what its
 #              name says.
 #
+#  Besides the normal options, 'mode=clean' is understood as 'write', but
+#  first remove any scanprov lines added in previous runs of this.
+#
 #  The lines added have a code to signify they are added by us:
 #   M means it is a macro
 #   X means it is a known exceptional item
@@ -46,7 +49,9 @@ our %opt = (
 
 GetOptions(\%opt, qw( install=s mode=s blead=s debug=i debug-start=s)) or die;
 
-my $write = $opt{mode} eq 'write';
+my $clean = $opt{mode} eq 'clean';
+my $write = $clean || $opt{mode} eq 'write';
+my $debug = $opt{debug};
 
 # Get the list of known macros.  Functions are calculated separately below
 my %embed = map { $_->{flags}{m} ? ( $_->{name} => 1 ) : () }
@@ -63,11 +68,33 @@ push @provided, keys %$hard_to_test_ref;
 my $base_dir = 'parts/base';
 my $todo_dir = 'parts/todo';
 
+# The identifying text placed in every entry by this program
+my $id_text = "added by $0";
+
 if ($write) {
 
-    # Get the list of files, which are returned sorted, and so the min version
-    # is in the 0th element
+    # Get the list of files
     my @files = all_files_in_dir($base_dir);
+
+    # If asked to, first strip out the results of previous incarnations of
+    # this script
+    if ($clean) {
+        print "Cleaning previous $0 runs\n";
+        foreach my $file (@files) {
+            open my $fh, "+<$file" or die "$file: $!\n";
+            my @lines = <$fh>;
+            my $orig_count = @lines;
+            @lines = grep { $_ !~ /$id_text/ } @lines;
+            next if @lines == $orig_count;  # No need to write if unchanged.
+            truncate $fh, 0;
+            seek $fh, 0, 0;
+            print $fh @lines;
+            close $fh or die "$file: $!\n";
+        }
+    }
+
+    # The file list is returned sorted, and so the min version is in the 0th
+    # element
     my $file =  $files[0];
     my $min_perl = $file;
     $min_perl =~ s,.*/,,;    # The name is the integer of __MIN_PERL__
@@ -176,7 +203,7 @@ sub format_output_line
     my $sym = shift;
     my $code = shift;
 
-    return sprintf "%-30s # $code added by $0\n", $sym;
+    return sprintf "%-30s # $code $id_text\n", $sym;
 }
 
 sub find_first_mentions
