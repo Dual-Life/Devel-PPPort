@@ -146,7 +146,7 @@ if ($write) {
         my $need_version_line = ! -e $file;
         open F, ">>$file" or die "$file: $!\n";
         print F format_version_line($version) . "\n" if $need_version_line;
-        foreach my $symbol (sort dictionary_order @{$add_by_version{$version}})
+        foreach my $symbol (sort symbol_order @{$add_by_version{$version}})
         {
             print "adding $symbol\n";
             print F format_output_line($symbol, 'X');
@@ -197,6 +197,17 @@ find_first_mentions($perls_ref,
                     0,          # Don't strip comments
                    'F'
                    );
+
+sub symbol_order    # Sort based on first word on line
+{
+    my $stripped_a = $a =~ s/ ^ \s* //rx;
+    $stripped_a =~ s/ \s.* //x;
+
+    my $stripped_b = $b =~ s/ ^ \s* //rx;
+    $stripped_b =~ s/ \s.* //x;
+
+    return dictionary_order($stripped_a, $stripped_b);
+}
 
 sub format_output_line
 {
@@ -289,7 +300,7 @@ sub find_first_mentions
 
         # @new becomes the symbols for version $v not already in the file for
         # $v
-        my @new = sort dictionary_order grep { !exists $base_ref->{$_} }
+        my @new = sort symbol_order grep { !exists $base_ref->{$_} }
                                                                 keys %{$v{$v}};
         @new or next; # Nothing new, skip writing
 
