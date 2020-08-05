@@ -25,6 +25,8 @@ PERL_PATCHLEVEL_H_IMPLICIT
 
 =implementation
 
+#define D_PPP_RELEASE_DATE __RELEASE_INFO__
+
 #if ! defined(PERL_REVISION) && ! defined(PERL_VERSION_MAJOR)
 #  if   !   defined(__PATCHLEVEL_H_INCLUDED__)                                  \
      && ! ( defined(PATCHLEVEL) && defined(SUBVERSION))
@@ -72,18 +74,18 @@ PERL_PATCHLEVEL_H_IMPLICIT
 #  error Devel::PPPort works only on Perl 5, Perl 7, ...
 #elif D_PPP_MAJOR != 5
     /* Perl 7 and above: the old forms are deprecated, set up so that they
-     * assume Perl 5, and will make this look like 5.200.200.
+     * assume Perl 5, and will make this look like 5.201.201.
      *
-     * 200 is used so will be well above anything that would come from a 5
+     * 201 is used so will be well above anything that would come from a 5
      * series if we unexpectedly have to continue it, but still gives plenty of
-     * room, 201-255, of numbers that will fit into a byte in case there is
+     * room, up to 255, of numbers that will fit into a byte in case there is
      * something else unforeseen */
 #  undef  PERL_REVISION
 #  undef  PERL_VERSION
 #  undef  PERL_SUBVERSION
 #  define D_PPP_REVISION      5
-#  define D_PPP_VERSION     200
-#  define D_PPP_SUBVERSION  200
+#  define D_PPP_VERSION     201
+#  define D_PPP_SUBVERSION  201
 #  if   (defined(__clang__)     /* _Pragma here doesn't work with gcc */  \
      && (   (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L)    \
          || defined(_STDC_C99)                                            \
