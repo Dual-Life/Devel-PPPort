@@ -1,7 +1,6 @@
 5.005000
 debop                          # U
 debprofdump                    # U
-DOUBLESIZE                     # E
 fbm_compile                    # E (Perl_fbm_compile)
 fbm_instr                      # E (Perl_fbm_instr)
 get_op_descs                   # U
@@ -14,6 +13,5 @@ new_stackinfo                  # E
 PL_curpad                      # E
 PL_in_my_stash                 # E
 PL_modglobal                   # E
-PTRSIZE                        # E
 sv_peek                        # U
 sv_pvn_nomg                    # U

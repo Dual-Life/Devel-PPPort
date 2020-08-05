@@ -22,19 +22,17 @@ av_top_index                   # T
 av_undef                       # T
 av_unshift                     # T
 ax                             # T
-BIN                            # T
 BOM_UTF8                       # T
 boolSV                         # T
-BYTEORDER                      # T
 call_argv                      # T
 call_method                    # T
 call_pv                        # T
 call_sv                        # T
 C_ARRAY_END                    # T
 C_ARRAY_LENGTH                 # T
-CASTFLAGS                      # T
 cBOOL                          # T
 ckWARN                         # T
+CLASS                          # X added by devel/scanprov
 CopFILE                        # T
 CopFILEAV                      # T
 CopFILEGV                      # T
@@ -47,8 +45,7 @@ CopSTASHPV                     # T
 CopSTASH_set                   # T
 Copy                           # T
 CopyD                          # T
-CPPMINUS                       # T
-CPPSTDIN                       # T
+CPERLscope                     # X added by devel/scanprov
 croak                          # T
 croak_memory_wrap              # T
 croak_nocontext                # T
@@ -86,12 +83,15 @@ dUNDERBAR                      # T
 dVAR                           # T
 dXCPT                          # T
 dXSARGS                        # T
+dXSI32                         # X added by devel/scanprov
 dXSTARG                        # T
+END_EXTERN_C                   # X added by devel/scanprov
 ENTER                          # T
 ERRSV                          # T
 eval_pv                        # T
 eval_sv                        # T
 EXTEND                         # T
+EXTERN_C                       # X added by devel/scanprov
 filter_add                     # T
 filter_del                     # T
 filter_read                    # T
@@ -183,7 +183,6 @@ IN_PERL_COMPILETIME            # T
 instr                          # T
 INT2PTR                        # T
 INTMAX_C                       # T
-INTSIZE                        # T
 isALNUM                        # T
 isALNUM_A                      # T
 isALNUMC                       # T
@@ -255,15 +254,15 @@ isXDIGIT                       # T
 isXDIGIT_A                     # T
 isXDIGIT_L1                    # T
 isXDIGIT_LC                    # T
+items                          # X added by devel/scanprov
 IVdf                           # T
 IVSIZE                         # T
-IVTYPE                         # T
+ix                             # X added by devel/scanprov
 LATIN1_TO_NATIVE               # T
 LEAVE                          # T
 leave_scope                    # T
 LIKELY                         # T
 load_module                    # T
-LONGSIZE                       # T
 looks_like_number              # T
 MARK                           # T
 memCHRs                        # T
@@ -381,7 +380,6 @@ OpMORESIB_set                  # T
 OPpENTERSUB_AMPER              # T
 OpSIBLING                      # T
 ORIGMARK                       # T
-OSNAME                         # T
 packWARN                       # T
 pad_alloc                      # T
 PERL_ABS                       # T
@@ -479,7 +477,6 @@ PERL_SCAN_ALLOW_UNDERSCORES    # T
 PERL_SCAN_DISALLOW_PREFIX      # T
 PERL_SCAN_GREATER_THAN_UV_MAX  # T
 PERL_SCAN_SILENT_ILLDIGIT      # T
-Perl_setlocale                 # T
 PERL_SHORT_MAX                 # T
 PERL_SHORT_MIN                 # T
 PERL_SIGNALS_UNSAFE_FLAG       # T
@@ -499,15 +496,14 @@ PERL_UNUSED_RESULT             # T
 PERL_UNUSED_VAR                # T
 PERL_UQUAD_MAX                 # T
 PERL_UQUAD_MIN                 # T
+PERL_USE_GCC_BRACE_GROUPS      # X added by devel/scanprov
 PERL_USHORT_MAX                # T
 PERL_USHORT_MIN                # T
 PERL_VERSION                   # T
-PERL_VERSION_EQ                # T
 PERL_VERSION_GE                # T
 PERL_VERSION_GT                # T
 PERL_VERSION_LE                # T
 PERL_VERSION_LT                # T
-PERL_VERSION_NE                # T
 PL_bufend                      # T
 PL_bufptr                      # T
 PL_compiling                   # T
@@ -526,6 +522,7 @@ PL_dowarn                      # T
 PL_errgv                       # T
 PL_error_count                 # T
 PL_expect                      # T
+PL_hexdigit                    # X added by devel/scanprov
 PL_hints                       # T
 PL_in_my                       # T
 PL_laststatval                 # T
@@ -566,13 +563,14 @@ POPs                           # T
 pop_scope                      # T
 pregexec                       # T
 pregfree                       # T
-PRIVLIB                        # T
 pTHX                           # T
+pTHX_                          # X added by devel/scanprov
 PTR2IV                         # T
 PTR2nat                        # T
 PTR2NV                         # T
 PTR2ul                         # T
 PTR2UV                         # T
+PTRV                           # X added by devel/scanprov
 PUSHi                          # T
 PUSHMARK                       # T
 PUSHmortal                     # T
@@ -585,11 +583,11 @@ PUTBACK                        # T
 pv_display                     # T
 pv_escape                      # T
 pv_pretty                      # T
-RANDBITS                       # T
 Renew                          # T
 Renewc                         # T
 repeatcpy                      # T
 REPLACEMENT_CHARACTER_UTF8     # T
+RETVAL                         # X added by devel/scanprov
 rninstr                        # T
 Safefree                       # T
 save_aptr                      # T
@@ -618,13 +616,13 @@ SAVETMPS                       # T
 scan_hex                       # T
 scan_oct                       # T
 setdefout                      # T
-SITELIB                        # T
 SP                             # T
 SPAGAIN                        # T
 ST                             # T
-STARTPERL                      # T
+START_EXTERN_C                 # X added by devel/scanprov
 start_subparse                 # T
-STDCHAR                        # T
+STMT_END                       # X added by devel/scanprov
+STMT_START                     # X added by devel/scanprov
 strEQ                          # T
 strGE                          # T
 strGT                          # T
@@ -633,6 +631,8 @@ strLT                          # T
 strNE                          # T
 strnEQ                         # T
 strnNE                         # T
+StructCopy                     # X added by devel/scanprov
+STR_WITH_LEN                   # X added by devel/scanprov
 sv_2cv                         # T
 sv_2io                         # T
 sv_2mortal                     # T
@@ -817,6 +817,7 @@ SvTRUE                         # T
 SvTRUE_nomg                    # T
 SvTRUEx                        # T
 SvTYPE                         # T
+svtype                         # X added by devel/scanprov
 sv_unmagic                     # T
 sv_unmagicext                  # T
 sv_unref                       # T
@@ -837,6 +838,7 @@ SvVSTRING_mg                   # T
 switch_to_global_locale        # T
 sync_locale                    # T
 TARG                           # T
+THIS                           # X added by devel/scanprov
 toLOWER                        # T
 toUPPER                        # T
 UINTMAX_C                      # T
@@ -918,7 +920,9 @@ XPUSHn                         # T
 XPUSHp                         # T
 XPUSHs                         # T
 XPUSHu                         # T
+XS                             # X added by devel/scanprov
 XSprePUSH                      # T
+XSPROTO                        # X added by devel/scanprov
 XSRETURN                       # T
 XSRETURN_EMPTY                 # T
 XSRETURN_IV                    # T
@@ -939,24 +943,3 @@ XS_VERSION                     # T
 XS_VERSION_BOOTCHECK           # T
 Zero                           # T
 ZeroD                          # T
-CLASS                          # X added by devel/scanprov
-CPERLscope                     # X added by devel/scanprov
-dXSI32                         # X added by devel/scanprov
-END_EXTERN_C                   # X added by devel/scanprov
-EXTERN_C                       # X added by devel/scanprov
-items                          # X added by devel/scanprov
-ix                             # X added by devel/scanprov
-PERL_USE_GCC_BRACE_GROUPS      # X added by devel/scanprov
-PL_hexdigit                    # X added by devel/scanprov
-pTHX_                          # X added by devel/scanprov
-PTRV                           # X added by devel/scanprov
-RETVAL                         # X added by devel/scanprov
-START_EXTERN_C                 # X added by devel/scanprov
-STMT_END                       # X added by devel/scanprov
-STMT_START                     # X added by devel/scanprov
-StructCopy                     # X added by devel/scanprov
-STR_WITH_LEN                   # X added by devel/scanprov
-svtype                         # X added by devel/scanprov
-THIS                           # X added by devel/scanprov
-XS                             # X added by devel/scanprov
-XSPROTO                        # X added by devel/scanprov

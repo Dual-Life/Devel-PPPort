@@ -16,6 +16,7 @@ MULTICALL                      # E
 newGIVENOP                     # U
 newSVhek                       # U
 pad_compname_type              # U
+PERLIO_FUNCS_DECL              # X added by devel/scanprov
 PERL_MAGIC_arylen_p            # E
 PERL_MAGIC_rhash               # E
 PERL_MAGIC_symtab              # E
@@ -24,4 +25,3 @@ savepvs                        # U
 sortsv_flags                   # U
 SvPV_shrink_to_cur             # U
 vverify                        # U
-PERLIO_FUNCS_DECL              # X added by devel/scanprov
