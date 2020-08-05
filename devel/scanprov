@@ -10,16 +10,24 @@
 #  first remove any scanprov lines added in previous runs of this.
 #
 #  The lines added have a code to signify they are added by us:
-#   M means it is a macro
-#   X means it is a known exceptional item
 #   F means it is a function in embed.fnc that the normal routines didn't find
+#   K means it is a macro in config.h, hence is provided, and documented
+#   M means it is a provided by D:P macro
+#   X means it is a known exceptional item
 #
 #  The regeneration routines do not know the prototypes for the macros scanned
 #  for, which is gotten from documentation in the source.  (If they were
 #  documented, they would be put in parts/apidoc.fnc, and test cases generated
-#  for them in mktodo.pl).  Therefore these are all undocumented.  It would be
-#  best if people would add document to them in the perl source, and then this
-#  portion of this function would be minimized.
+#  for them in mktodo.pl).  Therefore these are all undocumented, except for
+#  things from config.h which are all documented there, and many of which are
+#  just defined or not defined, and hence can't be tested.  Thus looking for
+#  them here is the most convenient option, which is why it's done here.
+#
+#  It would be best if people would add documentation to them in the perl
+#  source, and then this portion of this function would be minimized.
+#
+#  On Linux nm and other uses by D:P, these are the remaining unused capital
+#  flags: HJLOQYZ
 #
 ################################################################################
 #
@@ -243,6 +251,9 @@ sub find_first_mentions
     my $strip_comments = shift;
     my $code           = shift; # Mark entries as having this type
 
+    use feature 'state';
+    state $first_perl = 1;
+
     $hdrs = [ $hdrs ] unless ref $hdrs;
 
     my %remaining;
@@ -263,20 +274,67 @@ sub find_first_mentions
 
         # %sym's keys are every single thing that looks like an identifier
         # (beginning with a non-digit \w, followed by \w*) that occurs in any
-        # header, regardless of where (outside of comments).
+        # header, regardless of where (outside of comments).  For macros, it
+        # can't end in an underscore, nor be like 'AbCd', which are marks for
+        # internal.
         my %sym;
 
         local $/ = undef;
         while (<<>>) {  # Read in the whole next file as one string.
 
+            my $is_config_h = $ARGV =~ m! / config\.h $ !x;
+
+            next if $code eq 'M' && $is_config_h;
+
             my $contents = $_;
+
+            # Strip initial '/*' in config.h /*#define... lines.  This just
+            # means the item isn't available on the platform this program is
+            # being run on.
+            $contents =~ s! ^ /\* \s* (?=\#\s*define\s) !!mx if $is_config_h;
 
             # Strip comments, from perl faq
             if ($strip_comments) {
                 $contents =~ s#/\*[^*]*\*+([^/*][^*]*\*+)*/|("(\\.|[^"\\])*"|'(\\.|[^'\\])*'|.[^/"'\\]*)#defined $2 ? $2 : ""#gse;
             }
 
-            $sym{$_}++ for /(\b[^\W\d]\w*)/g;
+            # For macros, we look for #defines
+            if ($code eq 'M') {
+                my %defines;
+
+                while ($contents =~ m/ ^ \s* \# \s* define \s+
+
+                                       # A symbol not ending in underscore
+                                       ( [A-Za-z][_A-Za-z0-9]*[A-Za-z0-9] )
+                                     /mxg)
+                {
+                    my $this_define = $1;
+
+                    # Names like AbCd are internal
+                    next if $this_define =~ /[[:upper:]][[:lower:]][[:upper:]][[:lower:]]/;
+
+                    $defines{$this_define}++;
+                }
+                $sym{$_}++ for keys %defines;
+
+                # For functions, etc we get all the symbols for the latest
+                # perl passed in, but for macros, it is just the ones for the
+                # known documented ones, and we have to find the rest.  This
+                # allows us to keep the logic for that in just one place:
+                # here.
+                if ($first_perl) {
+                    foreach my $define (keys %defines) {
+
+                        # Don't override input 'M' symbols, or duplicates.
+                        next if defined $remaining{$define};
+                        $remaining{$define} = 'K';
+                    }
+                }
+            }
+            else {  # Look for potential function names; remember comments
+                    # have been stripped off.
+                $sym{$_}++ for /(\b[^\W\d]\w*)/g;
+            }
         }
 
         # %remaining is narrowed to include only those identifier-like things
@@ -296,6 +354,7 @@ sub find_first_mentions
             $v{$p->{todo}}{$symbol} = delete $remaining{$symbol};
         }
 
+        $first_perl = 0;
     }
 
     # After all releases, assume that anything still defined came into
