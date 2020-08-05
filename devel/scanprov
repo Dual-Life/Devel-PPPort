@@ -1,10 +1,10 @@
 #!/usr/bin/perl -w
+$|=1;
 ################################################################################
 #
-#  scanprov -- scan Perl headers for provided macros, and add known
-#              exceptions, and functions we weren't able to otherwise find.
-#              Thus the purpose of this file has been expanded beyond what its
-#              name says.
+#  scanprov -- scan Perl headers for macros, and add known exceptions, and
+#              functions we weren't able to otherwise find.  Thus the purpose
+#              of this file has been expanded beyond what its name says.
 #
 #  Besides the normal options, 'mode=clean' is understood as 'write', but
 #  first remove any scanprov lines added in previous runs of this.
@@ -14,6 +14,7 @@
 #   K means it is a macro in config.h, hence is provided, and documented
 #   M means it is a provided by D:P macro
 #   X means it is a known exceptional item
+#   Z means it is an unprovided macro without documentation
 #
 #  The regeneration routines do not know the prototypes for the macros scanned
 #  for, which is gotten from documentation in the source.  (If they were
@@ -23,11 +24,17 @@
 #  just defined or not defined, and hence can't be tested.  Thus looking for
 #  them here is the most convenient option, which is why it's done here.
 #
+#  The scope of this program has also expanded to look in almost all header
+#  files for almost all macros that aren't documented nor provided.  This
+#  allows ppport.h --api-info=/foo/ to return when a given element actually
+#  came into existence, which can be a time saver for developers of the perl
+#  core.
+#
 #  It would be best if people would add documentation to them in the perl
 #  source, and then this portion of this function would be minimized.
 #
 #  On Linux nm and other uses by D:P, these are the remaining unused capital
-#  flags: HJLOQYZ
+#  flags: HJLOQY
 #
 ################################################################################
 #
@@ -282,9 +289,10 @@ sub find_first_mentions
         local $/ = undef;
         while (<<>>) {  # Read in the whole next file as one string.
 
-            my $is_config_h = $ARGV =~ m! / config\.h $ !x;
+            # This would override function definitions with macro ones
+            next if $code eq 'M' && $ARGV =~ m! / embed\.h $ !x;
 
-            next if $code eq 'M' && $is_config_h;
+            my $is_config_h = $ARGV =~ m! / config\.h $ !x;
 
             my $contents = $_;
 
@@ -310,6 +318,10 @@ sub find_first_mentions
                 {
                     my $this_define = $1;
 
+                    # These are internal and not of external interest, so just
+                    # noise if we were to index them
+                    next if $this_define =~ / ^ PERL_ARGS_ASSERT /x;
+
                     # Names like AbCd are internal
                     next if $this_define =~ /[[:upper:]][[:lower:]][[:upper:]][[:lower:]]/;
 
@@ -323,11 +335,17 @@ sub find_first_mentions
                 # allows us to keep the logic for that in just one place:
                 # here.
                 if ($first_perl) {
+
+                    # config.h symbols are documented; the rest aren't, so use
+                    # different flags so downstream processing knows which are
+                    # which.
+                    my $new_code = ($is_config_h) ? 'K' : 'Z';
+
                     foreach my $define (keys %defines) {
 
                         # Don't override input 'M' symbols, or duplicates.
                         next if defined $remaining{$define};
-                        $remaining{$define} = 'K';
+                        $remaining{$define} = $new_code;
                     }
                 }
             }
