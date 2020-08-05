@@ -269,9 +269,11 @@ sub find_first_mentions
         local $/ = undef;
         while (<<>>) {  # Read in the whole next file as one string.
 
+            my $contents = $_;
+
             # Strip comments, from perl faq
             if ($strip_comments) {
-                s#/\*[^*]*\*+([^/*][^*]*\*+)*/|("(\\.|[^"\\])*"|'(\\.|[^'\\])*'|.[^/"'\\]*)#defined $2 ? $2 : ""#gse;
+                $contents =~ s#/\*[^*]*\*+([^/*][^*]*\*+)*/|("(\\.|[^"\\])*"|'(\\.|[^'\\])*'|.[^/"'\\]*)#defined $2 ? $2 : ""#gse;
             }
 
             $sym{$_}++ for /(\b[^\W\d]\w*)/g;
