@@ -292,7 +292,9 @@ if (exists $opt{'api-info'}) {
         {
             $with_or= " with or";
         }
-        print "\nSupported at least since perl-",
+
+        my $Supported = ($API{$f}{undocumented}) ? 'Available' : 'Supported';
+        print "\n$Supported at least since perl-",
               format_version($base), ",$with_or without $ppport.";
         if ($API{$f}{unverified}) {
             print "\nThis information is based on inspection of the source code",
