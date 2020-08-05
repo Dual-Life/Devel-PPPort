@@ -170,3 +170,4 @@ print $out <<EOF;
 EOF
 print $out sort sort_api_lines @entries;
 close $out or die "Close failed: $!";
+print "$outfile regenerated\n";

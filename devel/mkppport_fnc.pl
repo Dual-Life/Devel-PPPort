@@ -171,5 +171,6 @@ EOF
 
 print OUT join "\n", @out;
 print OUT "\n";
+print "$out regenerated\n";
 
 close OUT;
