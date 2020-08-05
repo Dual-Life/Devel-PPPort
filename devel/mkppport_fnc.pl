@@ -96,7 +96,7 @@ foreach my $element (@embeds) {
     my $entry = "$flags|$element->{'ret'}|$name";
     if ($flags !~ /n/) {
         $entry .= '|';
-        $entry .= join '|', map { join' ', @$_ } $element->{'args'}->@*
+        $entry .= join '|', map { join ' ', @$_ } $element->{'args'}->@*
     }
     push @out, $entry;
 }
