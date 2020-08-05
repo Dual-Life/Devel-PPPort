@@ -267,7 +267,7 @@ sub find_first_mentions
         # (beginning with a non-digit \w, followed by \w*) that occurs in all
         # the headers, regardless of where (outside of comments).
         local $/ = undef;
-        while (<>) {  # Read in the next file
+        while (<<>>) {  # Read in the next file
 
             # Strip comments, from perl faq
             if ($strip_comments) {
