@@ -1,3 +1,14 @@
+*.swp
+*.bak
+*~
+*.old
+*.tar.gz
+*.tar
+*.ERR
+*.orig
+*.rej
+cover_db/
+TODO
 /blib/
 /Makefile
 /Makefile.old

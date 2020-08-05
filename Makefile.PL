@@ -147,6 +147,8 @@ sub MY::postamble
   my $post = shift->SUPER::postamble(@_);
   $post .= <<'POSTAMBLE';
 
+.PHONY: purge_all regen_pm regen_xs regen_tests regen_h regen_release_date
+
 purge_all: realclean
 	@$(RM_F) PPPort.pm t/*.t
 
@@ -162,7 +164,10 @@ regen_tests:
 regen_h:
 	$(PERL) -I$(INST_ARCHLIB) -I$(INST_LIB) -I$(PERL_ARCHLIB) -I$(PERL_LIB) ppport_h.PL
 
-regen: regen_pm regen_xs regen_tests regen_h
+regen_release_date:
+	$(PERL) -I$(INST_ARCHLIB) -I$(INST_LIB) -I$(PERL_ARCHLIB) -I$(PERL_LIB) devel/update_release_date.pl
+
+regen: regen_pm regen_xs regen_tests regen_h regen_release_date
 
 POSTAMBLE
   return $post;
@@ -234,7 +239,7 @@ sub MY::dist_core
   my $rule;
   foreach $rule ( @rules ) {
     if ( $rule =~ m{^\s*^dist\s+:}m ) {
-        $rule =~ s{:}{: PPPort.pm manifest}; # make sure we update PPPort.pm
+        $rule =~ s{:}{: PPPort.pm manifest regen}; # make sure we update PPPort.pm
         $rule .= qq[\t].q[$(NOECHO) $(ECHO) "Warning: Please check '__MAX_PERL__' value in PPPort_pm.PL"].qq[\n];
         # checking that the tarball has no Pax Header - avoid false positives by using [P]axHEader
         $rule .= qq[\t].q[$(NOECHO) zgrep -a -e '[P]axHeader' $(DISTVNAME).tar$(SUFFIX) && ( $(ECHO) "ERROR: Pax Header detected in tarball"; rm -f $(DISTVNAME).tar$(SUFFIX) ) ||:].qq[\n];
