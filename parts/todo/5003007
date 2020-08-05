@@ -939,24 +939,24 @@ XS_VERSION                     # T
 XS_VERSION_BOOTCHECK           # T
 Zero                           # T
 ZeroD                          # T
+PTRV                           # X added by devel/scanprov
+END_EXTERN_C                   # X added by devel/scanprov
+STR_WITH_LEN                   # X added by devel/scanprov
+STMT_END                       # X added by devel/scanprov
+PERL_USE_GCC_BRACE_GROUPS      # X added by devel/scanprov
+pTHX_                          # X added by devel/scanprov
+svtype                         # X added by devel/scanprov
+ix                             # X added by devel/scanprov
+STMT_START                     # X added by devel/scanprov
+EXTERN_C                       # X added by devel/scanprov
+PL_hexdigit                    # X added by devel/scanprov
+START_EXTERN_C                 # X added by devel/scanprov
 CLASS                          # X added by devel/scanprov
+XS                             # X added by devel/scanprov
+RETVAL                         # X added by devel/scanprov
+StructCopy                     # X added by devel/scanprov
+XSPROTO                        # X added by devel/scanprov
+items                          # X added by devel/scanprov
+THIS                           # X added by devel/scanprov
 CPERLscope                     # X added by devel/scanprov
 dXSI32                         # X added by devel/scanprov
-END_EXTERN_C                   # X added by devel/scanprov
-EXTERN_C                       # X added by devel/scanprov
-items                          # X added by devel/scanprov
-ix                             # X added by devel/scanprov
-PERL_USE_GCC_BRACE_GROUPS      # X added by devel/scanprov
-PL_hexdigit                    # X added by devel/scanprov
-pTHX_                          # X added by devel/scanprov
-PTRV                           # X added by devel/scanprov
-RETVAL                         # X added by devel/scanprov
-START_EXTERN_C                 # X added by devel/scanprov
-STMT_END                       # X added by devel/scanprov
-STMT_START                     # X added by devel/scanprov
-StructCopy                     # X added by devel/scanprov
-STR_WITH_LEN                   # X added by devel/scanprov
-svtype                         # X added by devel/scanprov
-THIS                           # X added by devel/scanprov
-XS                             # X added by devel/scanprov
-XSPROTO                        # X added by devel/scanprov

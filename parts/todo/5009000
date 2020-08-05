@@ -15,5 +15,5 @@ SVs_PADSTALE                   # E
 vcmp                           # U
 vnumify                        # U
 vstringify                     # U
-_pMY_CXT                       # X added by devel/scanprov
 pMY_CXT_                       # X added by devel/scanprov
+_pMY_CXT                       # X added by devel/scanprov
