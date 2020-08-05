@@ -15,7 +15,6 @@
 Amnhd||_aMY_CXT
 Amnhd||aMY_CXT
 Amnhd||aMY_CXT_
-Amnd||ARCHNAME
 Amd|void|__ASSERT_|bool expr
 Amnhd||aTHX
 Amnhd||aTHX_
@@ -27,17 +26,14 @@ Amxud|void|BhkENABLE|BHK *hk|which
 mxud|void *|BhkENTRY|BHK *hk|which
 Amxud|void|BhkENTRY_set|BHK *hk|which|void *ptr
 mxd|U32|BhkFLAGS|BHK *hk
-Amnd||BIN
 AmnUd|const char *|BOM_UTF8
 Amd|SV *|boolSV|bool b
-Amnd||BYTEORDER
 mxud|void|CALL_BLOCK_HOOKS|which|arg
 Amnhd||CALL_CHECKER_REQUIRE_GV
 Amd|void *|C_ARRAY_END|void *a
 Amd|STRLEN|C_ARRAY_LENGTH|void *a
-Amnd||CASTFLAGS
+Amd|char *|CAT2|number x|number y
 Amd|bool|cBOOL|bool expr
-Amnd||CHARBITS
 Amd|bool|ckWARN|U32 w
 Amd|bool|ckWARN2|U32 w1|U32 w2
 Amhd|bool|ckWARN2_d|U32 w1|U32 w2
@@ -87,10 +83,6 @@ Amd|bool|CopSTASH_set|COP * c|const HV * hv
 Amd|void|Copy|void* src|void* dest|int nitems|type
 Amd|void *|CopyD|void* src|void* dest|int nitems|type
 AmDd|void|CPERLscope|void x
-Amnd||CPPLAST
-Amnd||CPPMINUS
-Amnd||CPPRUN
-Amnd||CPPSTDIN
 Amnhd||CV_NAME_NOTQUAL
 Amxd|PADLIST *|CvPADLIST|CV *cv
 Amd|HV*|CvSTASH|CV* cv
@@ -110,12 +102,8 @@ Amnhd||dMY_CXT
 Amnsd||dMY_CXT_SV
 Amnsd||dNOOP
 Amnsd||dORIGMARK
-Amnd||DOUBLEINFBYTES
-Amnd||DOUBLEKIND
-Amnd||DOUBLEMANTBITS
-Amnd||DOUBLENANBYTES
-Amnd||DOUBLESIZE
 Amd|bool|DO_UTF8|SV* sv
+Amd||Drand01|double x
 mnd|void|dSAVEDERRNO
 mnd|void|dSAVE_ERRNO
 Amnsd||dSP
@@ -135,8 +123,13 @@ Amsd||ENTER_with_name|"name"
 Amnd|SV *|ERRSV
 Amd|void|EXTEND|SP|SSize_t nitems
 AmnUud|void|EXTERN_C
+Amd||FILE_base|FILE * f
+Amd|Size_t|FILE_bufsiz
+Amd|Size_t|FILE_cnt|FILE * f
+Amd||FILE_ptr|FILE * f
 Amnsd||FREETMPS
 AmnUhd||G_ARRAY
+Amd|char *|Gconvert|NV x|Size_t n|bool t|char * b
 AmnUhd||G_DISCARD
 Amd|CV *|get_cvs|"string"|I32 flags
 AmnUhd||G_EVAL
@@ -192,12 +185,6 @@ Amd|STRLEN|HvNAMELEN|HV *stash
 Amhd|char*|HvNAMELEN_get|HV* stash
 Amd|unsigned char|HvNAMEUTF8|HV *stash
 Amd|SV**|hv_stores|HV* tb|"key"|SV* val
-Amnd||I16SIZE
-Amnd||I16TYPE
-Amnd||I32SIZE
-Amnd||I32TYPE
-Amnd||I8SIZE
-Amnd||I8TYPE
 Amnd|bool|IN_LOCALE
 Amnd|bool|IN_LOCALE_COMPILETIME
 Amnd|bool|IN_LOCALE_RUNTIME
@@ -205,7 +192,6 @@ Amnd|bool|IN_PERL_COMPILETIME
 Amnd|bool|IN_PERL_RUNTIME
 Amhd|void *|INT2PTR|type|int value
 Amd||INTMAX_C|number
-Amnd||INTSIZE
 Amhd|bool|isALNUM|int ch
 Amhd|bool|isALNUM_A|int ch
 Amhd|bool|isALNUMC|int ch
@@ -382,8 +368,6 @@ Amhd|bool|isXDIGIT_utf8_safe|U8 * s|U8 * end
 Amhd|bool|isXDIGIT_uvchr|int ch
 Amnd|I32|items
 Amnhd||IVdf
-Amnd||IVSIZE
-Amnd||IVTYPE
 Amnd|I32|ix
 Amd|U8|LATIN1_TO_NATIVE|U8 ch
 Amnsd||LEAVE
@@ -393,11 +377,6 @@ Amxd|void|lex_stuff_pvs|"pv"|U32 flags
 Amnhd||LEX_STUFF_UTF8
 AmUd|bool|LIKELY|const bool expr
 Amd|OP*|LINKLIST|OP *o
-Amnd||LONGDBLINFBYTES
-Amnd||LONGDBLMANTBITS
-Amnd||LONGDBLNANBYTES
-Amnd||LONGSIZE
-Amnd||LSEEKSIZE
 mnUd||LVRET
 AmnUd||MARK
 Amd|bool|memCHRs|"list"|char c
@@ -451,9 +430,6 @@ Cmhd|void *|NUM2PTR|type|int value
 Amnhd||NVef
 Amnhd||NVff
 Amnhd||NVgf
-Amnd||NVMANTBITS
-Amnd||NVSIZE
-Amnd||NVTYPE
 Amd|U32|OP_CLASS|OP *o
 Amd|const char *|OP_DESC|OP *o
 Amnhd||OPf_KIDS
@@ -468,8 +444,6 @@ Amd|OP*|OpSIBLING|OP *o
 Amd|bool|OP_TYPE_IS|OP *o|Optype type
 Amd|bool|OP_TYPE_IS_OR_WAS|OP *o|Optype type
 AmnUd||ORIGMARK
-Amnd||OSNAME
-Amnd||OSVERS
 Amd|U32|packWARN|U32 w1
 Amhd|bool|packWARN2|U32 w1|U32 w2
 Amhd|bool|packWARN3|U32 w1|U32 w2|U32 w3
@@ -647,12 +621,12 @@ AmnuUd|bool|PERL_USE_GCC_BRACE_GROUPS
 AmnUhd||PERL_USHORT_MAX
 AmnUhd||PERL_USHORT_MIN
 AmDnUd|U8|PERL_VERSION
-AmRd|bool|PERL_VERSION_EQ|const int r|const int v|const int s
-AmRhd|bool|PERL_VERSION_GE|const int r|const int v|const int s
-AmRhd|bool|PERL_VERSION_GT|const int r|const int v|const int s
-AmRhd|bool|PERL_VERSION_LE|const int r|const int v|const int s
-AmRhd|bool|PERL_VERSION_LT|const int r|const int v|const int s
-AmRhd|bool|PERL_VERSION_NE|const int r|const int v|const int s
+AmRd|bool|PERL_VERSION_EQ|const U8 major|const U8 minor|const U8 patch
+AmRhd|bool|PERL_VERSION_GE|const U8 major|const U8 minor|const U8 patch
+AmRhd|bool|PERL_VERSION_GT|const U8 major|const U8 minor|const U8 patch
+AmRhd|bool|PERL_VERSION_LE|const U8 major|const U8 minor|const U8 patch
+AmRhd|bool|PERL_VERSION_LT|const U8 major|const U8 minor|const U8 patch
+AmRhd|bool|PERL_VERSION_NE|const U8 major|const U8 minor|const U8 patch
 AmnUd|Perl_check_t *|PL_check
 AmnxUd|PAD *|PL_comppad
 AmnxUd|PADNAMELIST *|PL_comppad_name
@@ -706,7 +680,6 @@ Amnd|char*|POPpx
 Amnd|SV*|POPs
 Amnd|UV|POPu
 Amnd|long|POPul
-Amnd||PRIVLIB
 Amnhd||pTHX
 Amnhd||pTHX_
 Amhd|IV|PTR2IV|void *
@@ -714,7 +687,6 @@ Amhd|IV|PTR2nat|void *
 Amhd|NV|PTR2NV|void *
 Amhd|unsigned long|PTR2ul|void *
 Amhd|UV|PTR2UV|void *
-Amnd||PTRSIZE
 AmhuUd|type|PTRV
 Amd|void|PUSHi|IV iv
 Amd|void|PUSHMARK|SP
@@ -725,7 +697,6 @@ Amd|void|PUSHp|char* str|STRLEN len
 Amd|void|PUSHs|SV* sv
 Amd|void|PUSHu|UV uv
 Amnsd||PUTBACK
-Amnd||RANDBITS
 Amd|U8|READ_XDIGIT|char str*
 md|SV *|refcounted_he_fetch_pvs|const struct refcounted_he *chain|"key"|U32 flags
 md|struct refcounted_he *|refcounted_he_new_pvs|struct refcounted_he *parent|"key"|SV *value|U32 flags
@@ -763,16 +734,15 @@ Amad|char*|savesharedpvs|"literal string"
 Amhd||SAVESPTR|SV * s
 Amhd||SAVESTACK_POS
 Amnsd||SAVETMPS
+Amd||seedDrand01|Rand_seed_t	 x
 md|void|SETERRNO|int errcode|int vmserrcode
-Amnd||SHORTSIZE
-Amnd||SITELIB
+Amd||Siglongjmp|jmp_buf env|int val
+Amd|int|Sigsetjmp|jmp_buf env|int savesigs
 AmnUd||SP
 Amnsd||SPAGAIN
 Amd|SV*|ST|int ix
 AmnUud|void|START_EXTERN_C
 Amnhd||START_MY_CXT
-Amnd||STARTPERL
-Amnd||STDCHAR
 AmnUhud|void|STMT_END
 AmnUud|void|STMT_START
 Amd|void|STORE_LC_NUMERIC_FORCE_TO_UNDERLYING
@@ -781,6 +751,7 @@ Amd|void|STORE_LC_NUMERIC_SET_TO_NEEDED_IN|bool in_lc_numeric
 Amd|bool|strEQ|char* s1|char* s2
 Amd|bool|strGE|char* s1|char* s2
 Amd|bool|strGT|char* s1|char* s2
+Amd|char *|STRINGIFY|number x
 Amd|bool|strLE|char* s1|char* s2
 Amd|bool|strLT|char* s1|char* s2
 Amd|bool|strNE|char* s1|char* s2
@@ -986,12 +957,6 @@ Amd|U8|toUPPER|int ch
 Amd|UV|toUPPER_utf8|U8* p|U8* e|U8* s|STRLEN* lenp
 Amd|UV|toUPPER_utf8_safe|U8* p|U8* e|U8* s|STRLEN* lenp
 Amd|UV|toUPPER_uvchr|UV cp|U8* s|STRLEN* lenp
-Amnd||U16SIZE
-Amnd||U16TYPE
-Amnd||U32SIZE
-Amnd||U32TYPE
-Amnd||U8SIZE
-Amnd||U8TYPE
 Amd||UINTMAX_C|number
 AmnUd||UNDERBAR
 AmnUd|UV|UNICODE_REPLACEMENT
@@ -1025,10 +990,7 @@ Amnhd||UTF8_WARN_SURROGATE
 Amd|bool|UVCHR_IS_INVARIANT|UV cp
 Amd|STRLEN|UVCHR_SKIP|UV cp
 Amnhd||UVof
-Amnd||UVSIZE
-Amnd||UVTYPE
 Amnhd||UVuf
-Amnd||UVXf
 Amnhd||UVxf
 Amnhd||WARN_ALL
 Amnhd||WARN_AMBIGUOUS

@@ -32,7 +32,6 @@ unless ($PERLROOT) {
 die "'$PERLROOT' is invalid, or you haven't successfully run 'make' in it"
                                                 unless -e "$PERLROOT/warnings.h";
     
-my $config= "$PERLROOT/config_h.SH";
 my %seen;
 
 # Find the files in MANIFEST that are core, but not embed.fnc, nor .t's
@@ -124,33 +123,9 @@ for (@files) {
     }
 }
 
-# The entries in config_h.SH are also (documented) macros that are
-# accessible to XS code, and ppport.h backports some of them.  We
-# use only the unconditionally compiled parameterless ones (as
-# that"s all that"s backported so far, and we don"t have to know
-# the types of the parameters).
-open(my $c, "<", $config) or die "$config: $!";
-my $if_depth = 0;   # We don"t use the ones within #if statements
-                    # The #ifndef that guards the whole file is not
-                    # noticed by the code below
-while (<$c>) {
-    $if_depth ++ if / ^ \# [[:blank:]]* (ifdef | if\ defined ) /x;
-    $if_depth -- if $if_depth > 0 && / ^ \# [[:blank:]]* endif /x;
-    next unless $if_depth <= 0;
-
-    # We are only interested in #defines with no parameters
-    next unless /^ \# [[:blank:]]* define [[:blank:]]+
-                        ( [A-Za-z][A-Za-z0-9]* )
-                        [[:blank:]]
-                /x;
-    next if $seen{$1}; # Ignore duplicates
-    push @entries, "Amnd||$1\n";
-    $seen{$1}++;
-}
-close $c or die "Close failed: $!";
-
-open my $out, ">", "parts/apidoc.fnc"
-                        or die "Can't open 'parts/apidoc.fnc' for writing: $!";
+my $outfile = "parts/apidoc.fnc";
+open my $out, ">", $outfile
+                        or die "Can't open '$outfile' for writing: $!";
 require "./parts/inc/inctools";
 print $out <<EOF;
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
