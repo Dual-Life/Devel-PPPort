@@ -299,7 +299,8 @@ sub trim_arg        # Splits the argument into type and name, returning the
   s/^\s+//; s/\s+$//;             # No leading, trailing spacd
   s/\s+/ /g;                      # Collapse multiple space into one
 
-  return ($_, $name);
+  return ($_, $name) if defined $name;
+  return $_;
 }
 
 sub parse_embed
