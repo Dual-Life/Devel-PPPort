@@ -138,21 +138,28 @@ for (@provided) {
   }
 }
 
-my @perl_api;
+# atoomic claims NEED not explained
+# See if PR got all his comments
+my %perl_api;
 for (@provided) {
   next if /^Perl_(.*)/ && exists $embed{$1};
   next if exists $embed{$_};
-  push @perl_api, $_;
+  $perl_api{$_} = 1;
   check(2, "No API definition for provided element $_ found.");
 }
 
-# At this point @perl_api is the list of things we provide that weren't found
-# in the .fnc files.
-my @prototype_unknown = @perl_api;
+# At this point the keys of %perl_api give the list of things we provide that
+# weren't found in the .fnc files.
+my @prototype_unknown = keys %perl_api;
 
 # Add in the .fnc file definitions.
-push @perl_api, keys %embed;
-@perl_api = sort dictionary_order @perl_api;
+$perl_api{$_} = 1 for keys %embed;
+
+# Finally, scanprov has found macros of various types
+my @scanprov_found_macros = grep { $raw_base{$_}{code} =~ /[KMZ]/ } keys %raw_base;
+$perl_api{$_} = 1 for @scanprov_found_macros;
+
+my @perl_api = sort dictionary_order keys %perl_api;
 
 for (@perl_api) {   # $_ is the item name
   if (exists $provides{$_} && !exists $raw_base{$_}) {
@@ -175,18 +182,19 @@ for (@perl_api) {   # $_ is the item name
   $e = $embed{$_} if exists $embed{$_};
   my $is_documented = 0;
   my $is_accessible = 0;
+  my $has_thread = 1;
   if (defined $e) {
     if (exists $e->{flags}{'p'}) {    # Has 'Perl_' prefix
       my $args = $e->{args};
       $line .= 'v' if @$args && $args->[-1][0] eq '...';
     }
     $line .= 'o' if exists $e->{ppport_fnc};
-    $line .= 'n' if exists $e->{flags}{'T'};  # No thread context parameter
     $line .= 'd' if exists $e->{flags}{'D'};  # deprecated
     $line .= 'x' if exists $e->{flags}{'x'};  # experimental
     $line .= 'c' if        exists $e->{flags}{'C'}      # core-only
                    || (    exists $e->{flags}{'X'}
                        && (exists $e->{flags}{'E'} || ! exists $e->{flags}{'m'}));
+    $has_thread = 0 if exists $e->{flags}{'T'};  # No thread context parameter
     $is_accessible = 1 if exists $e->{flags}{'A'}
                        || exists $e->{flags}{'C'}
                        || (     exists $e->{flags}{'X'}
@@ -195,14 +203,24 @@ for (@perl_api) {   # $_ is the item name
     $is_documented = 1 if exists $e->{flags}{'d'};
   }
 
-  # scanprov adds the M and F flags.  The M is for provided macros; F for
-  # functions we didn't find in testing (usually because they are hidden
-  # behind ifdefs, like PERL_GLOBAL_STRUCT_PRIVATE).  None of them were
-  # verified
+  # scanprov adds several flags:
+  #     F is for functions we didn't find in testing (usually because they are
+  #       hidden behind ifdefs, like USE_THREADS if built on unthreaded perls,
+  #       or vice-versa.
+  #     K for config.h #defines.  These are considered provided and are
+  #       documented in config.h (mnemonic: K is like c in config)
+  #     M for provided, undocumented macros.  If they were documented, they
+  #       would have been found before scanprov was run.
+  #     Z for macros that aren't documented or provided.  (mnemonic:
+  #       'Zecret').  Some of these may be hidden behind an #ifdef PERL_CORE.
+  # None of these were verified by compilation
   if (exists $raw_base{$_}{code}) {
-    $line .= 'V' if $raw_base{$_}{code} =~ /[MFX]/;
-    $is_accessible = 1 if $raw_base{$_}{code} =~ /M/;
+    $line .= 'V' if $raw_base{$_}{code} =~ /[FKMXZ]/;
+    $is_accessible = 1 if $raw_base{$_}{code} =~ /[KM]/;
+    $is_documented = 1 if $raw_base{$_}{code} =~ /K/;
+    $has_thread = 0    if $raw_base{$_}{code} =~ /K/;
   }
+  $line .= 'n' unless $has_thread;
   $line .= 'i' unless $is_accessible;
   $line .= 'u' unless $is_documented;
 
