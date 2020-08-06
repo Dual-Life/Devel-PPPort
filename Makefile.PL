@@ -11,6 +11,11 @@
 #  This program is free software; you can redistribute it and/or
 #  modify it under the same terms as Perl itself.
 #
+# CAUTION! that this runs on 5.003.  That means there are certain restrictions
+# apply.  The most likely gotchas are in the HACKERS file under "How to
+# backport something".  Under the tests paragraph, there is a list of things
+# to avoid.
+#
 ################################################################################
 
 require 5.003;
