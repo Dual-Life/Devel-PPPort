@@ -243,7 +243,7 @@ for (@perl_api) {   # $_ is the item name
   $_ = $line;
 }
 
-$data =~ s/^([\t ]*)__PERL_API__(\s*?)$/
+$data =~ s/^([\t ]*)__ALL_ELEMENTS__(\s*?)$/
            join "\n", map "$1$_", sort dictionary_order @perl_api
           /gem;
 

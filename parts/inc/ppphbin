@@ -92,7 +92,7 @@ my %API = map { /^(\w+)\|([^|]*)\|([^|]*)\|(\w*)$/
                       (index($4, 'V') >= 0 ? ( unverified => 1  ) : ()),
                     } )
                 : die "invalid spec: $_" } qw(
-__PERL_API__
+__ALL_ELEMENTS__
 );
 
 if (exists $opt{'list-unsupported'}) {
