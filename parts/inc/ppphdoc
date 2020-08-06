@@ -54,7 +54,8 @@ ppport.h - Perl/Pollution/Portability version __VERSION__
                               from ppport.h
 
   --list-provided             list provided API
-  --list-unsupported          list unsupported API
+  --list-unsupported          list API that isn't supported all the way
+                              back
   --api-info=name             show Perl API portability information
 
 =head1 COMPATIBILITY
@@ -155,9 +156,10 @@ if it has dependencies, and if there are hints or warnings for it.
 
 =head2 --list-unsupported
 
-Lists the API elements that are known not to be supported by
-F<ppport.h> and below which version of Perl they probably
-won't be available or work.
+Lists the API elements that are known not to be FULLY supported by F<ppport.h>,
+and below which version of Perl they probably won't be available or work.
+By FULLY, we mean that support isn't provided all the way back to the first
+version of Perl that F<ppport.h> supports at all.
 
 =head2 --api-info=I<name>
 
