@@ -21,7 +21,7 @@
 #
 # The reason that an item isn't in those two files is that it is an
 # undocumented macro.  (If it's not a macro, it has to be in embed.fnc, and if
-# it's documented, mkapidoc.sh would find it and place it in apidoc.fnc.)
+# it's documented, mkapidoc.pl would find it and place it in apidoc.fnc.)
 #
 # And, the reason we can't generate tests for undocumented macros is we don't
 # readily know the types of the parameters, which we need to get a C program
