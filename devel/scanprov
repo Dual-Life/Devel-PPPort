@@ -96,7 +96,7 @@ if ($write) {
     if ($clean) {
         print "Cleaning previous $0 runs\n";
         foreach my $file (@files) {
-            open my $fh, "+<$file" or die "$file: $!\n";
+            open my $fh, "+<", $file or die "$file: $!\n";
             my @lines = <$fh>;
             my $orig_count = @lines;
             @lines = grep { $_ !~ /$id_text/ } @lines;
@@ -118,7 +118,7 @@ if ($write) {
     # exist all the way back.  Add them now to avoid throwing later things
     # off.
     print "-- $file --\n";
-    open my $fh, "+<$file" or die "$file: $!\n";
+    open my $fh, "+<", $file or die "$file: $!\n";
     my @lines = <$fh>;
     my $count = @lines;
     for (qw(RETVAL CALL THIS)) { # These are also in hard_to_test_for(),
@@ -168,7 +168,7 @@ if ($write) {
     foreach my $version (keys %add_by_version) {
         my $file = "$todo_dir/" . int_parse_version($version);
         print "-- Adding known exceptions to $file --\n";
-        open my $fh, "+<$file" or die "$file: $!\n";
+        open my $fh, "+<", $file or die "$file: $!\n";
         my @lines = <$fh>;
         my $count = @lines;
         push @lines, format_version_line($version) . "\n" unless @lines;
