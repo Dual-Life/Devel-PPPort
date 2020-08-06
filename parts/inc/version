@@ -25,7 +25,7 @@ PERL_PATCHLEVEL_H_IMPLICIT
 
 =implementation
 
-#define D_PPP_RELEASE_DATE 1596664190; /* 2020-08-05 */
+#define D_PPP_RELEASE_DATE 1596672000 /* 2020-08-05 */
 
 #if ! defined(PERL_REVISION) && ! defined(PERL_VERSION_MAJOR)
 #  if   !   defined(__PATCHLEVEL_H_INCLUDED__)                                  \
