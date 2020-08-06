@@ -104,7 +104,9 @@ if (exists $opt{'list-unsupported'}) {
     next if $API{$f}{experimental};
     next unless $API{$f}{todo};
     next if int_parse_version($API{$f}{todo}) <= $int_min_perl;
-    print "$f ", '.'x(40-length($f)), " ", format_version($API{$f}{todo}), "\n";
+    my $repeat = 40 - length($f);
+    $repeat = 0 if $repeat < 0;
+    print "$f ", '.'x $repeat, " ", format_version($API{$f}{todo}), "\n";
   }
   exit 0;
 }

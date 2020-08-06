@@ -723,7 +723,7 @@ my @o = ppport(qw(--list-unsupported));
 my %p;
 my $fail = 0;
 for (@o) {
-  my($name, $ver) = /^(\w+)\s*\.+\s*([\d._]+)$/ or $fail++;
+  my($name, $ver) = /^(\w+)\s*\.*\s*([\d._]+)$/ or $fail++;
   { exists $p{$name} and $fail++; }
   $p{$name} = $ver;
 }
