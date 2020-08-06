@@ -85,7 +85,7 @@ my %raw_base = %{&parse_todo('parts/base')};
 # determine
 my %raw_todo = %{&parse_todo('parts/todo')};
 
-# Invert so each key is the 7 digit version number, and it's value is an array
+# Invert so each key is the 7 digit version number, and its value is an array
 # of all symbols within it, like:
 #          '5005003' => [
 #                         'POPpx',
