@@ -224,7 +224,8 @@ sub MY::dist_basics
 
   my $updated = '';
   my @rules = split( m{^\s*$}m, $original );
-  foreach my $rule ( @rules ) {
+  my $rule;
+  foreach $rule ( @rules ) {
     if ( $rule =~ m{^\s*^manifest\s+:}m ) {
       $rule =~ s{^(\s*^manifest\s+:.*)}{$1 $t_01_test}m; # make sure we regenerate tests
     }
