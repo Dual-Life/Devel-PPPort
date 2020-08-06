@@ -27,21 +27,24 @@ sub run {
     die "Cannot find $f: $!" unless -e $file_to_patch;
 
     my $content;
+    open( my $fh, '+<', $file_to_patch ) or die "$f: $!\n";
     {
         local $/;
-        open( my $fh, '<', $file_to_patch );
         $content = <$fh>;
     }
+    die qq[No content for file $f\n] unless $content;
 
     $content =~
       s{^(\#\s*define\s+D_PPP_RELEASE_DATE)\b.*$}{$1 $today /* $human_ts */}m
       or die "Cannot find D_PPP_RELEASE_DATE pattern in file $f";
 
     {
-        local $/;
-        open( my $fh, '>', $file_to_patch );
+        truncate $fh, 0;
+        seek $fh, 0, 0;
         print {$fh} $content;
     }
+
+    close($fh);
 
     print qq[$f patched with D_PPP_RELEASE_DATE\n];
 
