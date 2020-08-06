@@ -11,6 +11,11 @@
 #  This program is free software; you can redistribute it and/or
 #  modify it under the same terms as Perl itself.
 #
+# CAUTION! that this runs on 5.003.  That means there are certain restrictions
+# apply.  The most likely gotchas are in the HACKERS file under "How to
+# backport something".  Under the tests paragraph, there is a list of things
+# to avoid.
+#
 ################################################################################
 
 require 5.003;
@@ -219,7 +224,8 @@ sub MY::dist_basics
 
   my $updated = '';
   my @rules = split( m{^\s*$}m, $original );
-  foreach my $rule ( @rules ) {
+  my $rule;
+  foreach $rule ( @rules ) {
     if ( $rule =~ m{^\s*^manifest\s+:}m ) {
       $rule =~ s{^(\s*^manifest\s+:.*)}{$1 $t_01_test}m; # make sure we regenerate tests
     }

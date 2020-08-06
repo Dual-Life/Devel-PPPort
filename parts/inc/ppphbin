@@ -92,7 +92,7 @@ my %API = map { /^(\w+)\|([^|]*)\|([^|]*)\|(\w*)$/
                       (index($4, 'V') >= 0 ? ( unverified => 1  ) : ()),
                     } )
                 : die "invalid spec: $_" } qw(
-__PERL_API__
+__ALL_ELEMENTS__
 );
 
 if (exists $opt{'list-unsupported'}) {
@@ -104,7 +104,9 @@ if (exists $opt{'list-unsupported'}) {
     next if $API{$f}{experimental};
     next unless $API{$f}{todo};
     next if int_parse_version($API{$f}{todo}) <= $int_min_perl;
-    print "$f ", '.'x(40-length($f)), " ", format_version($API{$f}{todo}), "\n";
+    my $repeat = 40 - length($f);
+    $repeat = 0 if $repeat < 0;
+    print "$f ", '.'x $repeat, " ", format_version($API{$f}{todo}), "\n";
   }
   exit 0;
 }
@@ -292,7 +294,9 @@ if (exists $opt{'api-info'}) {
         {
             $with_or= " with or";
         }
-        print "\nSupported at least since perl-",
+
+        my $Supported = ($API{$f}{undocumented}) ? 'Available' : 'Supported';
+        print "\n$Supported at least since perl-",
               format_version($base), ",$with_or without $ppport.";
         if ($API{$f}{unverified}) {
             print "\nThis information is based on inspection of the source code",

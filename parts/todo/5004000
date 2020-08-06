@@ -1,5 +1,4 @@
 5.004000
-ARCHNAME                       # E
 block_end                      # E (Perl_block_end)
 block_gimme                    # U
 block_start                    # E (Perl_block_start)
@@ -44,7 +43,6 @@ save_gp                        # U
 SAVEI16                        # U
 SAVESTACK_POS                  # U
 share_hek                      # E
-SHORTSIZE                      # E
 sv_catpvf                      # U
 sv_catpvf_mg                   # U
 sv_cmp_locale                  # U
