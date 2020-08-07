@@ -54,6 +54,8 @@ jobs:
         run: perl Makefile.PL
       - name: make regen
         run: make regen
+      - name: revert timestamp update
+        run: "git checkout parts/inc/version ||:"
       - name: diff
         run: git diff --quiet
       - name: make
