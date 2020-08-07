@@ -115,10 +115,10 @@ while (<F>) {
     while (defined (my $line = shift @implementation)) {
         #my $type;
         my $var;
-        if ($line =~ /^ __UNDEFINED__ \s+ (\w+) \s /x) {
+        if ($line =~ /^ \s* __UNDEFINED__ \s+ (\w+) \s /x) {
             $var = $1;
         }
-        elsif ($line =~ /^ __NEED_VAR__ \s+ (\w+) \s+ (\w+) /x) {
+        elsif ($line =~ /^ \s* __NEED_VAR__ \s+ (\w+) \s+ (\w+) /x) {
            #$type = $1;     # Another mechanism to create a variable
             $var = $2;
         }

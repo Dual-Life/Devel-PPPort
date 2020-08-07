@@ -30,7 +30,11 @@ CprT|void|croak_memory_wrap|
 Amn|void|dTHXR
 Amn|void|dXSTARG
 Cdhm|char *|HvNAME_get|HV * stash
+Amn|void|IV_MAX
+Amn|void|IV_MIN
 Amn|void|IVSIZE
+Amn|void|IVTYPE
+Amn|void|LONGSIZE
 CpR|SV *|newSVsv_flags|SV * const old|I32 flags
 Cdhm|void *|NUM2PTR|type|int value
 Amn|void|NVTYPE
@@ -91,6 +95,8 @@ p|STRLEN|sv_len_utf8_nomg|SV * const sv
 Am|void|sv_magic_portable|NN SV* sv|NULLOK SV* obj|int how|NULLOK const char* name|I32 namlen
 Amn|void|SV_MUTABLE_RETURN
 bCDdp|UV|sv_uv|SV * sv
+Amn|void|UV_MAX
+Amn|void|UV_MIN
 Amn|void|UVSIZE
 Amn|void|UVTYPE
 Amn|void|UVXf
