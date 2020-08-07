@@ -228,6 +228,7 @@ croak_xs_usage(const CV *const cv, const char *const params)
         croak("Usage: CODE(0x%" UVxf ")(%s)", PTR2UV(cv), params);
     }
 }
+#undef  croak_xs_usage
 #endif
 #endif
 
