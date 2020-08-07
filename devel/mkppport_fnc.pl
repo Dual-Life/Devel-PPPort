@@ -134,7 +134,7 @@ while (<F>) {
     }
 }
 
-push @out, map { "Amn|void|$_" } @no_parameters;
+push @out, map { "AmnT|void|$_" } @no_parameters;
 
 @out = sort sort_api_lines @out;
 
