@@ -1,6 +1,6 @@
 Revision history for Devel-PPPort
 
- 3.58_01 - 2020-08-06
+ 3.59 - 2020-08-10
 
  * Add PERL_VERSION_* compare macros
  * Stop versioning generated test files
