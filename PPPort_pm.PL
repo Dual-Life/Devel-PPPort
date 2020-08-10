@@ -522,7 +522,7 @@ __DATA__
 #
 #  This file was automatically generated from the definition files in the
 #  parts/inc/ subdirectory by PPPort_pm.PL. To learn more about how all this
-#  works, please read the F<HACKERS> file that came with this distribution.
+#  works, please read the L<HACKERS> file that came with this distribution.
 #
 ################################################################################
 #
@@ -607,10 +607,10 @@ It is important to use the most recent version of F<ppport.h>.  You do need to
 test before shipping a newer version than you already had.  One possible
 failure is that someone had to convert a backported element from a macro into
 a function, and actual functions must be enabled with a NEED macro to minimize
-the possibility of namespace pollution.  See F<HACKERS> for details.  The
+the possibility of namespace pollution.  See L<HACKERS> for details.  The
 developers of C<Devel::PPPort> want to hear if there are other problems that
 arise from using a later F<ppport.h>.  Use
-L<<https://github.com/Dual-Life/Devel-PPPort/issues> to report any.
+L<https://github.com/Dual-Life/Devel-PPPort/issues> to report any.
 
 =head2 Running ppport.h
 
