@@ -136,13 +136,13 @@ version.  The recommended way to do this is like:
  if (ivers($]) < ivers(5.6)) {           # No quotes needed
     skip "reason", $count;
  }
- elsif (if (ivers($]) > ivers("5.5.4") { # Quotes needed for double-
-                                         # dotted versions prior to 5.6.0
+ elsif (if (ivers($]) > ivers("5.5.4") {
+     # Quotes needed for double-dotted versions prior to 5.6.0
     skip "other reason", $count;
  }
  else {
     do_the_test
-}
+ }
 
 C<ivers()> is a function automatically made available to all F<.t> files.  It
 converts any reasonble expression of a version number into an integer, which
