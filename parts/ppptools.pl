@@ -82,7 +82,7 @@ sub expand_version
   my($r, $v, $s) = parse_version($ver);
   $r =~ / ^ [57] $ /x  or die "only Perl revisions [57] are supported\n";
   my $bcdver = sprintf "0x%d%03d%03d", $r, $v, $s;
-  return "(D_PPP_BCDVERSION $op $bcdver)";
+  return "(PERL_BCDVERSION $op $bcdver)";
 }
 
 sub parse_partspec
