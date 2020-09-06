@@ -1068,7 +1068,7 @@ __UNDEFINED__ LIKELY(x) (x)
 __UNDEFINED__ UNLIKELY(x) (x)
 
 #ifndef MUTABLE_PTR
-#if defined(__GNUC__) && !defined(PERL_GCC_BRACE_GROUPS_FORBIDDEN)
+#if defined(PERL_USE_GCC_BRACE_GROUPS)
 #  define MUTABLE_PTR(p) ({ void *_p = (p); _p; })
 #else
 #  define MUTABLE_PTR(p) ((void *) (p))
