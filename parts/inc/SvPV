@@ -144,6 +144,11 @@ __UNDEFINED__  SvPV_nolen(sv) \
 __UNDEFINED__  SvPV_nolen_const(sv) \
                  ((SvFLAGS(sv) & (SVf_POK)) == SVf_POK \
                   ? SvPVX_const(sv) : sv_2pv_flags(sv, D_PPP_SVPV_NOLEN_LP_ARG, SV_GMAGIC|SV_CONST_RETURN))
+#  if defined(PERL_USE_GCC_BRACE_GROUPS)
+__UNDEFINED__  SvPVx_nolen_const(sv) ({SV *sV_ = (sv); SvPV_nolen_const(sV_); })
+#  else
+__UNDEFINED__  SvPVx_nolen_const(sv)  (PL_Sv = sv, SvPV_nolen_const(PL_Sv))
+#  endif
 
 __UNDEFINED__  SvPV_nomg(sv, lp) SvPV_flags(sv, lp, 0)
 __UNDEFINED__  SvPV_nomg_const(sv, lp) SvPV_flags_const(sv, lp, 0)
