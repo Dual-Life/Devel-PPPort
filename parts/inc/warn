@@ -77,22 +77,25 @@ __UNDEFINED__  packWARN(a)              (a)
 #  endif
 #endif
 
+__UNDEFINED__ vwarner(err, pat, argsp)                      \
+        STMT_START {    SV *sv;                             \
+                        PERL_UNUSED_ARG(err);               \
+                        sv = vnewSVpvf(pat, argsp);         \
+                        sv_2mortal(sv);                     \
+                        warn("%s", SvPV_nolen(sv));         \
+        } STMT_END
+
+
 #if { VERSION >= 5.004 } && !defined(warner)
 #  if { NEED warner }
 
 void
 warner(U32 err, const char *pat, ...)
 {
-  SV *sv;
   va_list args;
-
-  PERL_UNUSED_ARG(err);
-
   va_start(args, pat);
-  sv = vnewSVpvf(pat, &args);
+  vwarner(err, pat, &args);
   va_end(args);
-  sv_2mortal(sv);
-  warn("%s", SvPV_nolen(sv));
 }
 
 #    define warner  Perl_warner
