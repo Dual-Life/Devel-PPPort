@@ -67,7 +67,10 @@ __UNDEFINED__  WARN_UTF8                44
 __UNDEFINED__  WARN_VOID                45
 __UNDEFINED__  WARN_ASSERTIONS          46
 
-__UNDEFINED__  packWARN(a)              (a)
+__UNDEFINED__  packWARN(a)         (a)
+__UNDEFINED__  packWARN2(a,b)      (packWARN(a)      << 8 | (b))
+__UNDEFINED__  packWARN3(a,b,c)    (packWARN2(a,b)   << 8 | (c))
+__UNDEFINED__  packWARN4(a,b,c,d)  (packWARN3(a,b,c) << 8 | (d))
 
 #ifndef ckWARN
 #  ifdef G_WARN_ON
