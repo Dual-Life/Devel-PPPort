@@ -78,7 +78,7 @@ __UNDEFINED__  packWARN(a)              (a)
 #endif
 
 #if { VERSION >= 5.004 } && !defined(warner)
-#if { NEED warner }
+#  if { NEED warner }
 
 void
 warner(U32 err, const char *pat, ...)
@@ -95,11 +95,11 @@ warner(U32 err, const char *pat, ...)
   warn("%s", SvPV_nolen(sv));
 }
 
-#define warner  Perl_warner
+#    define warner  Perl_warner
 
-#define Perl_warner_nocontext  Perl_warner
+#    define Perl_warner_nocontext  Perl_warner
 
-#endif
+#  endif
 #endif
 
 =xsinit
