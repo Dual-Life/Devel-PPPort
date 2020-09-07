@@ -15,7 +15,9 @@ __UNDEFINED__
 ckWARN
 ckWARN_d
 warner
+ck_warner
 Perl_warner
+Perl_ck_warner
 Perl_warner_nocontext
 
 =implementation
@@ -125,9 +127,36 @@ warner(U32 err, const char *pat, ...)
 #  endif
 #endif
 
+#if { VERSION >= 5.004 } && !defined(ck_warner)
+#  if { NEED ck_warner }
+
+void
+ck_warner(pTHX_ U32 err, const char *pat, ...)
+{
+    va_list args;
+
+    if (   ! ckWARN((err      ) & 0xFF)
+        && ! ckWARN((err >>  8) & 0xFF)
+        && ! ckWARN((err >> 16) & 0xFF)
+        && ! ckWARN((err >> 24) & 0xFF))
+    {
+        return;
+    }
+
+    va_start(args, pat);
+    vwarner(err, pat, &args);
+    va_end(args);
+}
+
+#    define ck_warner  Perl_ck_warner
+
+#  endif
+#endif
+
 =xsinit
 
 #define NEED_warner
+#define NEED_ck_warner
 
 =xsubs
 
@@ -146,6 +175,13 @@ Perl_warner()
 #endif
 
 void
+Perl_ck_warner()
+        CODE:
+#if { VERSION >= 5.004 }
+                Perl_ck_warner(aTHX_ packWARN(WARN_MISC), "Perl_ck_warner %s:%d", "bar", 42);
+#endif
+
+void
 Perl_warner_nocontext()
         CODE:
 #if { VERSION >= 5.004 }
@@ -160,7 +196,7 @@ ckWARN()
                   Perl_warner_nocontext(packWARN(WARN_MISC), "ckWARN %s:%d", "bar", 42);
 #endif
 
-=tests plan => 5
+=tests plan => 7
 
 $^W = 0;
 
@@ -184,8 +220,15 @@ $warning = '';
 Devel::PPPort::ckWARN();
 is($warning, '');
 
+Devel::PPPort::Perl_ck_warner();
+ok($warning eq '');
+
 $^W = 1;
 
 $warning = '';
 Devel::PPPort::ckWARN();
 ok(ivers($]) >= ivers("5.004") ? $warning =~ /^ckWARN bar:42/ : $warning eq '');
+
+$warning = '';
+Devel::PPPort::Perl_ck_warner();
+ok(ivers($]) >= ivers("5.004") ? $warning =~ /^Perl_ck_warner bar:42/ : $warning eq '');
