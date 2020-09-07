@@ -80,6 +80,11 @@ __UNDEFINED__  packWARN4(a,b,c,d)  (packWARN3(a,b,c) << 8 | (d))
 #  endif
 #endif
 
+__UNDEFINED__ ckWARN2(a,b)      (ckWARN(a) || ckWARN(b))
+__UNDEFINED__ ckWARN3(a,b,c)    (ckWARN(c) || ckWARN2(a,b))
+__UNDEFINED__ ckWARN4(a,b,c,d)  (ckWARN(d) || ckWARN3(a,b,c))
+
+
 __UNDEFINED__ vwarner(err, pat, argsp)                      \
         STMT_START {    SV *sv;                             \
                         PERL_UNUSED_ARG(err);               \
