@@ -21,6 +21,7 @@ mess
 warn_nocontext
 
 croak_nocontext
+PERL_ARGS_ASSERT_CROAK_XS_USAGE
 
 croak_no_modify
 Perl_croak_no_modify
