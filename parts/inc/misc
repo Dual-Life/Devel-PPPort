@@ -302,7 +302,7 @@ __UNDEFINED__  dITEMS          I32 items = SP - MARK
 __UNDEFINED__  dXSTARG         SV * targ = sv_newmortal()
 
 __UNDEFINED__  dAXMARK         I32 ax = POPMARK; \
-                               SV ** const mark = PL_stack_base + ax++
+                               register SV ** const mark = PL_stack_base + ax++
 
 
 __UNDEFINED__  XSprePUSH       (sp = PL_stack_base + ax - 1)
