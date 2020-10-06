@@ -1,7 +1,6 @@
 =provides
 
 __UNDEFINED__
-Perl_setlocale
 LOCK_NUMERIC_STANDARD
 UNLOCK_NUMERIC_STANDARD
 
@@ -69,98 +68,6 @@ __UNDEFINED__  switch_to_global_locale()
 
 __UNDEFINED__ sync_locale() 1
 
-/* Warning: Perl_setlocale
- * This function will compile and run in even the earliest perls supported by
- * PPPort, but there were significant locale-related bugs that may prevent its
- * proper operation until v5.22.  The final bugs to be fixed in the releases
- * leading up to that one involved setting and querying the locale for
- * LC_NUMERIC. */
-
-#if { VERSION < 5.27.2 }
-#  if { NEED Perl_setlocale }
-
-const char *
-Perl_setlocale(const int category, const char * locale)
-{
-    CV * setlocale;
-    dTHX;
-
-#    ifdef D_PPP_usechar
-
-    char * locale_afterwards;
-    dSP;
-
-#    else
-
-    SV * locale_afterwards;
-    dXSARGS;
-
-#    endif
-
-    load_module(PERL_LOADMOD_NOIMPORT, newSVpvs("POSIX"), NULL);
-    setlocale = get_cv("POSIX::setlocale", 0);
-    assert(setlocale);
-
-#    if defined(PUSHSTACKi) && defined(PERLSI_REQUIRE) && defined(POPSTACK)
-
-    PUSHSTACKi(PERLSI_REQUIRE);
-
-#    endif
-
-    ENTER ;
-    SAVETMPS;
-
-    PUSHMARK(SP) ;
-    mXPUSHi(category);
-    mXPUSHp(locale, strlen(locale));
-    PUTBACK;
-    call_sv(MUTABLE_SV(setlocale), G_SCALAR);
-
-    SPAGAIN ;
-
-#    ifdef D_PPP_usechar
-
-    locale_afterwards = POPp;
-
-#    else
-
-    locale_afterwards = POPs;
-    SvREFCNT_inc_simple_void_NN(locale_afterwards);
-
-#    endif
-
-    PUTBACK ;
-    FREETMPS ;
-    LEAVE ;
-
-#    if defined(PUSHSTACKi) && defined(PERLSI_REQUIRE) && defined(POPSTACK)
-
-    POPSTACK;
-
-#    endif
-#    ifdef D_PPP_usechar
-
-    return(locale_afterwards);
-
-#    else
-
-    if (! SvPOK(locale_afterwards)) {
-        XSRETURN_UNDEF;
-    }
-
-    return(savepv(SvPVX_const(locale_afterwards)));
-
-#    endif
-
-}
-
-#  endif
-#endif
-
-=xsinit
-
-#define NEED_Perl_setlocale
-
 =xsubs
 
 bool
@@ -170,22 +77,8 @@ sync_locale()
         OUTPUT:
             RETVAL
 
-char *
-Perl_setlocale(locale = 0)
-	char *    locale
-    PREINIT:
-	char *		retval;
-    CODE:
-        /*const in input not valid in 5.7.0 */
-	retval = (char *) Perl_setlocale(LC_ALL, locale);
-        if (! retval) {
-            XSRETURN_UNDEF;
-        }
-        RETVAL = retval;
-    OUTPUT:
-	RETVAL
 
-=tests plan => 2
+=tests plan => 1
 
 use Config;
 
@@ -199,5 +92,3 @@ if ($Config{usethreads}) {
 else {
     ok(&Devel::PPPort::sync_locale(), "sync_locale returns TRUE");
 }
-
-is(&Devel::PPPort::Perl_setlocale("C"), "C", "setlocale returns 'C' when setting to 'C'");
