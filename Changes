@@ -1,6 +1,6 @@
 Revision history for Devel-PPPort
 
-3.60_01 - 2020-09-30
+3.60_02 - 2020-10-07
 * Fix scanprov
 * Define PERL_ARGS_ASSERT_CROAK_XS_USAGE when setting croak_xs_usage
 * Backport ck_warner, ck_warner_d, ckWARN_d, ckWARN_2, ckWARN_3, ckWARN_4, ckWARN2_d, ckWARN3_d, ckWARN4_d
@@ -10,8 +10,8 @@ Revision history for Devel-PPPort
 * Backport MUTABLE_AV, MUTABLE_CV, MUTABLE_GV, MUTABLE_HV, MUTABLE_IO
 * Backport vwarner
 * Use PERL_USE_GCC_BRACE_GROUPS
-* Backport Perl_setlocale
 * Remove C `register` declaration
+* Implement return value for newCONSTSUB()
 
  3.60 - 2020-08-11
  * Restore PERL_BCDVERSION helper which is used on CPAN
