@@ -321,24 +321,24 @@ for $f (@f) {   # Loop through all the tests to add
     $ret = $ignorerv{$f->{'name'}} ? '(void) ' : "rval = ";
   }
 
-  my $aTHX_args   = "";
-  my $aTHX_prefix = "";
+  my $THX_prefix = "";
+  my $THX_suffix = "";
 
   # Add parens to functions that take an argument list, even if empty
   unless ($f->{'flags'}{'n'}) {
-    $aTHX_args = "($aTHX$args)";
+    $THX_suffix = "($aTHX$args)";
     $args = "($args)";
   }
 
   # Single trailing underscore in name means is a comma operator
   if ($f->{'name'} =~ /[^_]_$/) {
-    $aTHX_args .= ' 1';
+    $THX_suffix .= ' 1';
     $args .= ' 1';
   }
 
   # Single leading underscore in a few names means is a comma operator
   if ($f->{'name'} =~ /^ _[ adp] (?: THX | MY_CXT ) /x) {
-    $aTHX_prefix = '1 ';
+    $THX_prefix = '1 ';
     $prefix = '1 ';
   }
 
@@ -366,7 +366,7 @@ EOT
   }
 
   my $final = $varargs
-              ? "$aTHX_prefix$Perl_$f->{'name'}$aTHX_args"
+              ? "$THX_prefix$Perl_$f->{'name'}$THX_suffix"
               : "$prefix$f->{'name'}$args";
 
   # If there is a '#if' associated with this, add that
@@ -406,7 +406,7 @@ END
 #ifdef $f->{'name'}
     $ret$final;
 #else
-    $ret$aTHX_prefix$Perl_$f->{'name'}$aTHX_args;
+    $ret$THX_prefix$Perl_$f->{'name'}$THX_suffix;
 #endif
   }
 }
