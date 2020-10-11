@@ -557,14 +557,22 @@ sub get_apicheck_symbol_map
 
     # Get the list of macros that had parameter issues.  These are marked as
     # A, for absolute in nm terms
-    my %sym = map { /error: macro "(\w+)" (?:requires|passed) \d+ argument/ ? ($1 => 'A') : () }
-              @{$r->{stderr}};
+    my $absolute_err = 'A';
+    my %sym = map { /error: macro "(\w+)" (?:requires|passed) \d+ argument/
+                    ? ($1 => $absolute_err)
+                    : ()
+                  } @{$r->{stderr}};
 
     # Display these, and add them to the global %todo.
     if (keys %sym) {
       for my $s (sort dictionary_order keys %sym) {
-        display_sym('new', $s, $sym{$s});
+        if (defined $todo{$s} && $todo{$s} eq $absolute_err) {
+            # Otherwise could loop
+            die "cannot run make apicheck.i ($r->{didnotrun} / $r->{status}):\n".
+                join('', @{$r->{stdout}})."\n---\n".join('', @{$r->{stderr}});
+        }
         $todo{$s} = $sym{$s};
+        display_sym('new', $s, $sym{$s});
       }
 
       # And rewrite the todo file, including these new symbols.
