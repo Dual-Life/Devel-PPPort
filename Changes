@@ -1,6 +1,10 @@
 Revision history for Devel-PPPort
 
-3.60_02 - 2020-10-07
+3.62 - 2020-10-16
+  * Restore missing PPPort.pm
+  * Fix metaCPAN indexing
+
+3.61 - 2020-10-07
   * Fix scanprov
   * Define PERL_ARGS_ASSERT_CROAK_XS_USAGE when setting croak_xs_usage
   * Backport ck_warner, ck_warner_d, ckWARN_d, ckWARN_2, ckWARN_3, ckWARN_4, ckWARN2_d, ckWARN3_d, ckWARN4_d
