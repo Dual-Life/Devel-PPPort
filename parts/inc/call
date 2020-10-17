@@ -128,9 +128,9 @@ vload_module(U32 flags, SV *name, SV *ver, va_list *args)
 
     OP * const modname = newSVOP(OP_CONST, 0, name);
     /* 5.005 has a somewhat hacky force_normal that doesn't croak on
-       SvREADONLY() if PL_compling is true. Current perls take care in
+       SvREADONLY() if PL_compiling is true. Current perls take care in
        ck_require() to correctly turn off SvREADONLY before calling
-       force_normal_flags(). This seems a better fix than fudging PL_compling
+       force_normal_flags(). This seems a better fix than fudging PL_compiling
      */
     SvREADONLY_off(((SVOP*)modname)->op_sv);
     modname->op_private |= OPpCONST_BARE;
