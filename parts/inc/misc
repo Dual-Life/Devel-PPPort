@@ -33,6 +33,8 @@ STMT_START
 SvRX
 WIDEST_UTYPE
 XSRETURN
+NOT_REACHED
+ASSUME
 
 =implementation
 
@@ -48,6 +50,42 @@ __UNDEFINED__ HEf_SVKEY   -2
 __UNDEFINED__ __ASSERT_(statement)  assert(statement),
 #else
 __UNDEFINED__ __ASSERT_(statement)
+#endif
+
+__UNDEFINED__  __has_builtin(x) 0
+
+#if __has_builtin(__builtin_unreachable)
+#  define D_PPP_HAS_BUILTIN_UNREACHABLE
+#elif (defined(__GNUC__) && (   __GNUC__ > 4                              \
+                             || __GNUC__ == 4 && __GNUC_MINOR__ >= 5))
+#  define D_PPP_HAS_BUILTIN_UNREACHABLE
+#endif
+
+#ifndef ASSUME
+#  ifdef DEBUGGING
+#    define ASSUME(x) assert(x)
+#  elif defined(_MSC_VER)
+#    define ASSUME(x) __assume(x)
+#  elif defined(__ARMCC_VERSION)
+#    define ASSUME(x) __promise(x)
+#  elif defined(D_PPP_HAS_BUILTIN_UNREACHABLE)
+#    define ASSUME(x) ((x) ? (void) 0 : __builtin_unreachable())
+#  else
+#    define ASSUME(x) assert(x)
+#  endif
+#endif
+
+#ifndef NOT_REACHED
+#  ifdef D_PPP_HAS_BUILTIN_UNREACHABLE
+#    define NOT_REACHED                                                     \
+        STMT_START {                                                        \
+            ASSUME(!"UNREACHABLE"); __builtin_unreachable();                \
+        } STMT_END
+#  elif ! defined(__GNUC__) && (defined(__sun) || defined(__hpux))
+#    define NOT_REACHED
+#  else
+#    define NOT_REACHED  ASSUME(!"UNREACHABLE")
+#  endif
 #endif
 
 #ifndef WIDEST_UTYPE
