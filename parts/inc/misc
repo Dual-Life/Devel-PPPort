@@ -562,10 +562,10 @@ __UNDEFINED__ isUPPER(c)    (        (c) >= 'A' && (c) <= 'Z'                   
 
 __UNDEFINED__ isASCII(c)        ((WIDEST_UTYPE) (c) <= 127)
 __UNDEFINED__ isCNTRL(c)        ((WIDEST_UTYPE) (c) < ' ' || (c) == 127)
-__UNDEFINED__ isCNTRL_L1(c)     (isCNTRL(c) || (   (WIDEST_UTYPE) (c) <= 0x9F  \
-                                                && (WIDEST_UTYPE) (c) >= 0x80))
-__UNDEFINED__ isLOWER(c)        ((c) >= 'a' && (c) <= 'z')
-__UNDEFINED__ isUPPER(c)        ((c) <= 'Z' && (c) >= 'A')
+__UNDEFINED__ isCNTRL_L1(c)     (   (WIDEST_UTYPE) (c) < ' '                \
+                                 || inRANGE((c), 0x7F, 0x9F))
+__UNDEFINED__ isLOWER(c)        inRANGE((c), 'a', 'z')
+__UNDEFINED__ isUPPER(c)        inRANGE((c), 'A', 'Z')
 
 #endif /* Below are definitions common to EBCDIC and ASCII */
 
@@ -644,8 +644,8 @@ __UNDEFINED__ isWORDCHAR(c)     (isALPHANUMERIC(c) || (c) == '_')
 __UNDEFINED__ isWORDCHAR_L1(c)  (isIDFIRST_L1(c) || isDIGIT(c))
 __UNDEFINED__ isWORDCHAR_LC(c)  (isIDFIRST_LC(c) || isDIGIT_LC(c))
 __UNDEFINED__ isXDIGIT(c)       (   isDIGIT(c)                                 \
-                                 || ((c) >= 'a' && (c) <= 'f')                 \
-                                 || ((c) >= 'A' && (c) <= 'F'))
+                                 || inRANGE((c), 'a', 'f')                     \
+                                 || inRANGE((c), 'A', 'F'))
 __UNDEFINED__ isXDIGIT_L1(c)    isXDIGIT(c)
 __UNDEFINED__ isXDIGIT_LC(c)    isxdigit(c)
 
