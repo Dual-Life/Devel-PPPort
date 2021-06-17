@@ -397,8 +397,8 @@ __UNDEFINED__ UNI_TO_NATIVE(c) (c)
 #ifdef EBCDIC
 
 /* This is the first version where these macros are fully correct on EBCDIC
- * platforms.  Relying on * the C library functions, as earlier releases did,
- * causes problems with * locales */
+ * platforms.  Relying on the C library functions, as earlier releases did,
+ * causes problems with locales */
 # if { VERSION < 5.22.0 }
 #  undef isALNUM
 #  undef isALNUM_A
