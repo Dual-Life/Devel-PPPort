@@ -171,7 +171,7 @@ print OUT <<EOF;
 
 EOF
 
-print OUT join "\n", @out;
+print OUT map { "$_\n" } sort sort_api_lines @out;
 print OUT "\n";
 print "$out regenerated\n";
 
