@@ -264,10 +264,11 @@ retry:
       # btw being the count of occurrences in the element).
       for my $m (keys %{$symmap->{$u}}) {
 
-        # pthread_getspecific() is undefined.  khw doesn't know why.  But we
-        # have a bunch of things depending on it, so it doesn't work unless we
-        # ignore this apparently spurious issue.
-        next if $u eq 'pthread_getspecific';
+        # pthread_[gs]etspecific() are undefined.  khw doesn't know why; these
+        # are Posix functions.  But we have a bunch of things depending on
+        # them, so it doesn't work unless we ignore this apparently spurious
+        # issue.
+        next if $u =~ / ^ pthread_[gs]etspecific $ /x;
 
         if (!$seen{$m}++) {
           my $pl = $m;
