@@ -54,6 +54,8 @@ if ($opt{todo}) {
 # Pass this through the Make, to apicheck.pl
 $ENV{'DPPP_ARGUMENTS'} = "--todo-dir=$opt{'todo-dir'} --todo=$todo_version";
 
+my $test_name_re =   qr/ \b DPPP_test_ (?: \d _ )? (\w+) \b /x;
+
 print "\n", ident_str(), "\n\n";
 
 my $fullperl = `which $opt{perl}`;
@@ -210,7 +212,7 @@ retry:
   # 'E' (for error) entry.   If the function (possibly prefixed by '[Pp]erl')
   # is in %sym, it is added to @already_in_sym.  Otherwise, @new.
   for my $l (@{$r->{stderr}}) {
-    if ($l =~ /_DPPP_test_(\w+)/) {
+    if ($l =~ $test_name_re) {
       if (!$seen{$1}++) {
         my @s = grep { exists $sym{$_} } $1, "Perl_$1", "perl_$1";
         if (@s) {
@@ -427,7 +429,7 @@ if ($opt{final}) {
         join('', @{$r->{stdout}})."\n---\n".join('', @{$r->{stderr}});
 
     my $symbols = read_sym(file => $opt{shlib}, options => [qw( --defined-only )]);
-    my @stuff = map { /_DPPP_test_(.*)/ } keys %$symbols;
+    my @stuff = map { $_ =~ $test_name_re } keys %$symbols;
     %todo = map { $_ => 'T' } @stuff;
 
     print STDERR __LINE__, ": write at ", Dumper $file, $version, \%todo
@@ -654,11 +656,11 @@ sub get_apicheck_symbol_map
     print STDERR __LINE__, ": apicheck.i ", $_ if $opt{debug} > 5;
     next if /^#/;
 
-    # We only care about lines within one of our _DPPP_test_ functions.  If
+    # We only care about lines within one of our DPPP_test_ functions.  If
     # we're in one, $cur is set to the name of the current one.
     if (! defined $cur) {   # Not within such a function; see if this starts
                             # one
-      /_DPPP_test_(\w+)/ and $cur = $1;
+      $_ =~ $test_name_re and $cur = $1;
     }
     else {
 

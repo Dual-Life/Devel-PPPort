@@ -391,7 +391,7 @@ EOT
   $f->{'ppport_fnc'} and print OUT "#ifndef DPPP_APICHECK_NO_PPPORT_H\n";
 
   print OUT <<END;
-void _DPPP_test_$f->{'name'} (void)
+void DPPP_test_$f->{'name'} (void)
 {
   dXSARGS;
 $stack
