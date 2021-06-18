@@ -24,6 +24,7 @@
 use warnings;
 use strict;
 use File::Find;
+use re '/aa';
 
 my $PERLROOT = $ARGV[0];
 unless ($PERLROOT) {
@@ -33,7 +34,8 @@ unless ($PERLROOT) {
 
 die "'$PERLROOT' is invalid, or you haven't successfully run 'make' in it"
                                                 unless -e "$PERLROOT/warnings.h";
-    
+my $maindir = '.';
+
 my %seen;
 
 # Find the files in MANIFEST that are core, but not embed.fnc, nor .t's
@@ -47,7 +49,7 @@ while (<$m>) {                      # In embed.fnc,
     s/\t.*//;
     push @files, "$PERLROOT/$_";
 }
-close $m;
+close $m or die "Can't close $m: $!";
 
 # Examine the SEE ALSO section of perlapi which should contain links to all
 # the pods with apidoc entries in them.  Add them to the MANIFEST list.
@@ -68,7 +70,7 @@ while (<$a>) {
     while (<$a>) {
         # The lines look like:
         # F<config.h>, L<perlintern>, L<perlapio>, L<perlcall>, L<perlclib>,
-        last if / ^ = /x;
+        last if /^=/;
         my @tags = split /, \s* | \s+ /x;  # Allow comma- or just space-separated
         foreach my $tag (@tags) {
             if ($tag =~ / ^ F< (.*) > $ /x) {
@@ -88,10 +90,12 @@ while (<$a>) {
 
 # Look through all the files that potentially have apidoc entries
 my @entries;
-for (@files) {
+# These may be associated with embed.fnc, in which case we do nothing;
+# otherwise, we output them to apidoc.fnc, potentially modified.
+for my $file (@files) {
 
-    s/ \t .* //x;
-    open my $f, '<', "$_" or die "Can't open $_: $!";
+    $file =~ s/ \t .* //x;      # Trim all but first column
+    open my $f, '<', "$file" or die "Can't open $file: $!";
 
     my $line;
     while (defined ($line = <$f>)) {
@@ -125,10 +129,10 @@ for (@files) {
     }
 }
 
-my $outfile = "parts/apidoc.fnc";
+my $outfile = "$maindir/parts/apidoc.fnc";
 open my $out, ">", $outfile
                         or die "Can't open '$outfile' for writing: $!";
-require "./parts/inc/inctools";
+require "$maindir/parts/inc/inctools";
 print $out <<EOF;
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :
