@@ -42,6 +42,8 @@ __UNDEFINED__ Perl_eval_pv   perl_eval_pv
 #endif
 #endif
 
+__UNDEFINED__ G_LIST         G_ARRAY    /* Replace */
+
 __UNDEFINED__ PERL_LOADMOD_DENY         0x1
 __UNDEFINED__ PERL_LOADMOD_NOIMPORT     0x2
 __UNDEFINED__ PERL_LOADMOD_IMPORT_OPS   0x4
