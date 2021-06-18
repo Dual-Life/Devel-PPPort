@@ -66,19 +66,73 @@ regen_Makefile();
 
 # List of functions that are never considered undefined.  Add to as necessary
 my %stdsym = map { ($_ => 1) } qw (
-  strlen
-  snprintf
-  strcmp
-  memcpy
-  strncmp
-  memmove
-  memcmp
-  tolower
+  acos
+  acosl
+  acosq
+  asin
+  asinl
+  asinq
+  atan
+  atan2
+  atan2l
+  atan2q
+  atanl
+  atanq
+  ceil
+  ceill
+  ceilq
+  cos
+  cosh
+  coshl
+  coshq
+  cosl
+  cosq
   exit
+  exp
+  expl
+  expq
+  floor
+  floorl
+  floorq
+  fmod
+  fmodl
+  fmodq
+  log
+  log10
+  log10l
+  log10q
+  logl
+  logq
+  memcmp
+  memcpy
+  memmove
   memset
-  vsnprintf
+  pow
+  powl
+  powq
   siglongjmp
+  sin
+  sinh
+  sinhl
+  sinhq
+  sinl
+  sinq
+  snprintf
   sprintf
+  sqrt
+  sqrtl
+  sqrtq
+  strcmp
+  strlen
+  strncmp
+  tan
+  tanh
+  tanhl
+  tanhq
+  tanl
+  tanq
+  tolower
+  vsnprintf
 );
 
 # Initialize %sym so that the keys are all the Text symbols for this perl,
