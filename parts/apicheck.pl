@@ -247,6 +247,7 @@ for $f (@f) {   # Loop through all the tests to add
 
   # Don't test unorthodox things that we aren't set up to do
   $f->{'flags'}{'u'} and next;
+  $f->{'flags'}{'y'} and next;
 
   $ignore{$unique} = 1; # ignore duplicates
 
