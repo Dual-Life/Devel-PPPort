@@ -229,6 +229,10 @@ for my $file (@files) {
         # indicates it is documented in the source
         $flags .= 'd' unless $flags =~ /d/;
 
+        # We currently don't handle typedefs, nor this special case
+        next if $flags =~ /y/;
+        next if $name eq 'JMPENV_PUSH';
+
         my $entry = "$flags|$ret_type|$name";
         $entry .= "|$args" if $args ne "";
         $apidoc{$name}{entry} = $entry;
