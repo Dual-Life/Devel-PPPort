@@ -159,6 +159,21 @@ print OUT <<HEAD;
 
 #include "EXTERN.h"
 #include "perl.h"
+HEAD
+
+# These may not have gotten #included, and don't exist in all versions
+my $hdr;
+for $hdr (qw(time64 perliol malloc_ctl perl_inc_macro patchlevel)) {
+    my $dir;
+    for $dir (@INC) {
+        if (-e "$dir/CORE/$hdr.h") {
+            print OUT "#include \"$hdr.h\"\n";
+            last;
+        }
+    }
+}
+
+print OUT <<HEAD;
 
 #define NO_XSLOCKS
 #include "XSUB.h"
