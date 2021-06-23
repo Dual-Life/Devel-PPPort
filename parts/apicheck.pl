@@ -324,8 +324,13 @@ for $f (@f) {   # Loop through all the tests to add
   my $args = join ', ', @arg;
   my $prefix = "";
 
+  my $rvt = $f->{'ret'};
+
+  # Replace generic 'type'
+  $rvt = 'int' if defined $rvt && $rvt eq 'type';
+
   # Failure to specify a return type in the apidoc line means void
-  my $rvt = $f->{'ret'} || 'void';
+  $rvt = 'void' unless $rvt;;
 
   my $ret;
   if ($void{$rvt}) {    # Certain return types are instead considered void
