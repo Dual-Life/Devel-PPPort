@@ -94,10 +94,8 @@ NATIVE_TO_UTF                  # Z added by devel/scanprov
 NEED_VA_COPY                   # K added by devel/scanprov
 newSVpvn_share                 # U
 OPpMAYBE_LVSUB                 # Z added by devel/scanprov
-PerlIO_apply_layers            # U
 PerlIOArg                      # Z added by devel/scanprov
 PerlIOBase                     # Z added by devel/scanprov
-PerlIO_binmode                 # U
 PerlIO_debug                   # U
 PERLIO_F_APPEND                # E
 PERLIO_F_CANREAD               # E

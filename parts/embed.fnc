@@ -633,6 +633,7 @@ p	|void	|av_extend_guts	|NULLOK AV *av|SSize_t key \
 				|NN SSize_t *maxp \
 				|NN SV ***allocp|NN SV ***arrayp
 ApdR	|SV**	|av_fetch	|NN AV *av|SSize_t key|I32 lval
+CipdR	|SV**	|av_fetch_simple|NN AV *av|SSize_t key|I32 lval
 Apd	|void	|av_fill	|NN AV *av|SSize_t fill
 ApdR	|SSize_t|av_len		|NN AV *av
 ApdR	|AV*	|av_make	|SSize_t size|NN SV **strp
@@ -645,6 +646,7 @@ Apd	|void	|av_push	|NN AV *av|NN SV *val
 EXp	|void	|av_reify	|NN AV *av
 ApdR	|SV*	|av_shift	|NN AV *av
 Apd	|SV**	|av_store	|NN AV *av|SSize_t key|NULLOK SV *val
+Cipd	|SV**	|av_store_simple|NN AV *av|SSize_t key|NULLOK SV *val
 AmdR	|SSize_t|av_top_index	|NN AV *av
 AidRp	|Size_t	|av_count	|NN AV *av
 AmdR	|SSize_t|av_tindex	|NN AV *av
@@ -1139,6 +1141,14 @@ ATdmoR	|bool	|is_utf8_invariant_string|NN const U8* const s		    \
 ATidRp	|bool	|is_utf8_invariant_string_loc|NN const U8* const s	    \
 		|STRLEN len						    \
 		|NULLOK const U8 ** ep
+CTiRp	|unsigned|single_1bit_pos32|U32 word
+CTiRp	|unsigned|lsbit_pos32|U32 word
+CTiRp	|unsigned|msbit_pos32|U32 word
+#ifdef U64TYPE	/* HAS_QUAD undefined outside of core */
+CTiRp	|unsigned|single_1bit_pos64|U64 word
+CTiRp	|unsigned|lsbit_pos64|U64 word
+CTiRp	|unsigned|msbit_pos64|U64 word
+#endif
 #ifndef EBCDIC
 CTiRp	|unsigned int|variant_byte_number|PERL_UINTMAX_T word
 #endif

@@ -15,8 +15,6 @@ isPUNCT_LC_uvchr               # U
 isSPACE_LC_uvchr               # U
 isUPPER_LC_uvchr               # U
 my_popen_list                  # U
-PerlIO_apply_layers            # U
-PerlIO_binmode                 # U
 PerlIO_debug                   # U
 PERLIO_F_APPEND                # E
 PERLIO_F_CANREAD               # E

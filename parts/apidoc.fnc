@@ -534,8 +534,8 @@ AmTd|NV|Perl_frexp|NV x|int *exp
 Amhd|void|PERL_HASH|U32 hash|char *key|STRLEN klen
 AmnUd||PERL_INT_MAX
 AmnUd||PERL_INT_MIN
-Amhd|int|PerlIO_apply_layers|PerlIO *f|const char *mode|const char *layers
-Amhd|int|PerlIO_binmode|PerlIO *f|int ptype|int imode|const char *layers
+:Amhd|int|PerlIO_apply_layers|PerlIO *f|const char *mode|const char *layers
+:Amhd|int|PerlIO_binmode|PerlIO *f|int ptype|int imode|const char *layers
 ATmhd|int|PerlIO_canset_cnt|PerlIO *f
 Amhd|void|PerlIO_debug|const char *fmt|...
 ATmhd|FILE  *|PerlIO_exportFILE|PerlIO *f|const char *mode
@@ -1020,7 +1020,8 @@ Amd|bool|SvVOK|SV* sv
 Amd|MAGIC*|SvVSTRING_mg|SV * sv
 Amnsd||TARG
 Amnud|type|THIS
-Amd|U8|toFOLD|U8 ch
+Amd|UV|toFOLD|UV cp
+Amd|UV|toFOLD_A|UV cp
 Amd|UV|toFOLD_utf8|U8* p|U8* e|U8* s|STRLEN* lenp
 Amd|UV|toFOLD_utf8_safe|U8* p|U8* e|U8* s|STRLEN* lenp
 Amd|UV|toFOLD_uvchr|UV cp|U8* s|STRLEN* lenp
@@ -1032,11 +1033,13 @@ Amd|UV|toLOWER_LC|UV cp
 Amd|UV|toLOWER_utf8|U8* p|U8* e|U8* s|STRLEN* lenp
 Amd|UV|toLOWER_utf8_safe|U8* p|U8* e|U8* s|STRLEN* lenp
 Amd|UV|toLOWER_uvchr|UV cp|U8* s|STRLEN* lenp
-Amd|U8|toTITLE|U8 ch
+Amd|UV|toTITLE|UV cp
+Amd|UV|toTITLE_A|UV cp
 Amd|UV|toTITLE_utf8|U8* p|U8* e|U8* s|STRLEN* lenp
 Amd|UV|toTITLE_utf8_safe|U8* p|U8* e|U8* s|STRLEN* lenp
 Amd|UV|toTITLE_uvchr|UV cp|U8* s|STRLEN* lenp
-Amd|U8|toUPPER|int ch
+Amd|UV|toUPPER|UV cp
+Amd|UV|toUPPER_A|UV cp
 Amd|UV|toUPPER_utf8|U8* p|U8* e|U8* s|STRLEN* lenp
 Amd|UV|toUPPER_utf8_safe|U8* p|U8* e|U8* s|STRLEN* lenp
 Amd|UV|toUPPER_uvchr|UV cp|U8* s|STRLEN* lenp
@@ -1137,7 +1140,6 @@ Amnhd||WARN_EXPERIMENTAL__SMARTMATCH
 Amnhd||WARN_EXPERIMENTAL__TRY
 Amnhd||WARN_EXPERIMENTAL__UNIPROP_WILDCARDS
 Amnhd||WARN_EXPERIMENTAL__VLB
-Amnhd||WARN_EXPERIMENTAL__WIN32_PERLIO
 Amnhd||WARN_GLOB
 Amnhd||WARN_ILLEGALPROTO
 Amnhd||WARN_IMPRECISION
