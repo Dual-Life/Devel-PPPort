@@ -203,7 +203,7 @@ static double VARarg3;
 typedef void yy_parser;
 #endif
 
-/* Handle both 5.x.y and 7.x.y and up
+/* Handle both 5.x.y and 7.x.y and up */
 #ifndef PERL_VERSION_MAJOR
 #  define PERL_VERSION_MAJOR PERL_REVISION
 #endif
