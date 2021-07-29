@@ -235,8 +235,10 @@ my $f;
 # Loop through all the tests to add
 for $f (sort { dictionary_order($a->{'name'}, $b->{'name'}) } @f) {
 
+    my $short_form = $f->{'name'};
+
   # Just the name isn't unique;  We also need the #if or #else condition
-  my $unique = "$f->{'name'}$sep$f->{'cond'}";
+  my $unique = "$short_form$sep$f->{'cond'}";
   $ignore{$unique} and next;
 
   # only public API members, except those in ppport.fnc are there because we
@@ -280,11 +282,11 @@ for $f (sort { dictionary_order($a->{'name'}, $b->{'name'}) } @f) {
                               (?: \s* \b const \b \s* )? # opt. const
                               ( (?: \[ [^\]]* \] )* )    # opt. dimension(s)=> $d
                             $/x
-                     or die "$0 - cannot parse argument: [$a] in $f->{'name'}\n";
+                     or die "$0 - cannot parse argument: [$a] in $short_form\n";
 
     # Replace a special argument name by something that will compile.
     if (exists $amap{$n}) {
-      die "$f->{'name'} had type $n, which should have been the whole type"
+      die "$short_form had type $n, which should have been the whole type"
                                                                     if $p or $d;
       push @arg, $amap{$n};
       next;
@@ -316,9 +318,9 @@ for $f (sort { dictionary_order($a->{'name'}, $b->{'name'}) } @f) {
 
   # If this function is on the list of things that need declarations, add
   # them.
-  if ($stack{$f->{'name'}}) {
+  if ($stack{$short_form}) {
     my $s = '';
-    for (@{$stack{$f->{'name'}}}) {
+    for (@{$stack{$short_form}}) {
       $s .= "  $_\n";
     }
     $stack = "$s$stack";
@@ -337,11 +339,11 @@ for $f (sort { dictionary_order($a->{'name'}, $b->{'name'}) } @f) {
 
   my $ret;
   if ($void{$rvt}) {    # Certain return types are instead considered void
-    $ret = $castvoid{$f->{'name'}} ? '(void) ' : '';
+    $ret = $castvoid{$short_form} ? '(void) ' : '';
   }
   else {
     $stack .= "  $rvt rval;\n";
-    $ret = $ignorerv{$f->{'name'}} ? '(void) ' : "rval = ";
+    $ret = $ignorerv{$short_form} ? '(void) ' : "rval = ";
   }
 
   my $THX_prefix = "";
@@ -354,13 +356,13 @@ for $f (sort { dictionary_order($a->{'name'}, $b->{'name'}) } @f) {
   }
 
   # Single trailing underscore in name means is a comma operator
-  if ($f->{'name'} =~ /[^_]_$/) {
+  if ($short_form =~ /[^_]_$/) {
     $THX_suffix .= ' 1';
     $args .= ' 1';
   }
 
   # Single leading underscore in a few names means is a comma operator
-  if ($f->{'name'} =~ /^ _[ adp] (?: THX | MY_CXT ) /x) {
+  if ($short_form =~ /^ _[ adp] (?: THX | MY_CXT ) /x) {
     $THX_prefix = '1 ';
     $prefix = '1 ';
   }
@@ -370,15 +372,15 @@ for $f (sort { dictionary_order($a->{'name'}, $b->{'name'}) } @f) {
 /******************************************************************************
 *
 
-*  $f->{'name'}  $script_args{'--todo-dir'}  $script_args{'--todo'}
+*  $short_form  $script_args{'--todo-dir'}  $script_args{'--todo'}
 *
 ******************************************************************************/
 
 HEAD
 
   # #ifdef out if marked as todo (not known in) this version
-  if (exists $todo{$f->{'name'}}) {
-    my($rev, $ver,$sub) = parse_version($todo{$f->{'name'}}{'version'});
+  if (exists $todo{$short_form}) {
+    my($rev, $ver,$sub) = parse_version($todo{$short_form}{'version'});
     print OUT <<EOT;
 #if       PERL_VERSION_MAJOR > $rev                         \\
    || (   PERL_VERSION_MAJOR == $rev                        \\
@@ -389,8 +391,8 @@ EOT
   }
 
   my $final = $varargs
-              ? "$THX_prefix$Perl_$f->{'name'}$THX_suffix"
-              : "$prefix$f->{'name'}$args";
+              ? "$THX_prefix$Perl_$short_form$THX_suffix"
+              : "$prefix$short_form$args";
 
   # If there is a '#if' associated with this, add that
   $f->{'cond'} and print OUT "#if $f->{'cond'}\n";
@@ -399,7 +401,7 @@ EOT
   $f->{'ppport_fnc'} and print OUT "#ifndef DPPP_APICHECK_NO_PPPORT_H\n";
 
   print OUT <<END;
-void DPPP_test_$f->{'name'} (void)
+void DPPP_test_$short_form (void)
 {
   dXSARGS;
 $stack
@@ -411,7 +413,7 @@ END
   if ($f->{'flags'}{'M'}) {
       print OUT <<END;
 
-    $ret$prefix$f->{'name'}$args;
+    $ret$prefix$short_form$args;
   }
 }
 END
@@ -420,16 +422,16 @@ END
   else {
     print OUT <<END;
 
-#ifdef $f->{'name'}
-    $ret$prefix$f->{'name'}$args;
+#ifdef $short_form
+    $ret$prefix$short_form$args;
 #endif
   }
 
   {
-#ifdef $f->{'name'}
+#ifdef $short_form
     $ret$final;
 #else
-    $ret$THX_prefix$Perl_$f->{'name'}$THX_suffix;
+    $ret$THX_prefix$Perl_$short_form$THX_suffix;
 #endif
   }
 }
@@ -439,7 +441,7 @@ END
 
   $f->{'ppport_fnc'} and print OUT "#endif\n";
   $f->{'cond'} and print OUT "#endif\n";
-  exists $todo{$f->{'name'}} and print OUT "#endif\n";
+  exists $todo{$short_form} and print OUT "#endif\n";
 
   print OUT "\n";
 }
