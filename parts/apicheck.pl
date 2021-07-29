@@ -262,6 +262,8 @@ for $f (sort { dictionary_order($a->{'name'}, $b->{'name'}) } @f) {
     my $Tflag = $f->{'flags'}{'T'};
     $Tflag = 0 unless defined $Tflag;
 
+    die 'M flag without p makes no sense' if $f->{'flags'}{'M'} && ! $pflag;
+
     my $long_form_required = $f->{'flags'}{'o'} || $f->{'flags'}{'f'};
 
   my $stack = '';
