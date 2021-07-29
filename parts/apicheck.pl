@@ -373,12 +373,13 @@ for $f (sort { dictionary_order($a->{'name'}, $b->{'name'}) } @f) {
     $prefix = '1 ';
   }
 
+    my $tested_fcn = $short_form;
 
   print OUT <<HEAD;
 /******************************************************************************
 *
 
- *  $short_form  $script_args{'--todo-dir'} for testing $script_args{'--todo'}
+ *  $tested_fcn  $script_args{'--todo-dir'} for testing $script_args{'--todo'}
 *
 ******************************************************************************/
 
@@ -387,8 +388,8 @@ HEAD
     my($rev, $ver,$sub);
 
   # #ifdef out if marked as todo (not known in) this version
-  if (exists $todo{$short_form}) {
-        ($rev, $ver,$sub) = parse_version($todo{$short_form}{'version'});
+    if (exists $todo{$tested_fcn}) {
+        ($rev, $ver,$sub) = parse_version($todo{$tested_fcn}{'version'});
     print OUT <<EOT;
 #if       PERL_VERSION_MAJOR > $rev                         \\
    || (   PERL_VERSION_MAJOR == $rev                        \\
@@ -409,7 +410,7 @@ EOT
   $f->{'ppport_fnc'} and print OUT "#ifndef DPPP_APICHECK_NO_PPPORT_H\n";
 
   print OUT <<END;
-void DPPP_test_$short_form (void)
+void DPPP_test_$tested_fcn (void)
 {
   dXSARGS;
 $stack
@@ -449,9 +450,8 @@ END
 
     $f->{'ppport_fnc'} and print OUT "#endif  /* for ppport_fnc */\n";
     $cond and print OUT "#endif  /* for conditional compile */\n";
-    print OUT "#endif  /* disabled testing of $short_form before $rev.$ver.$sub */\n"
-                                                    if exists $todo{$short_form};
-
+    print OUT "#endif  /* disabled testing of $tested_fcn before $rev.$ver.$sub */\n"
+                                                    if exists $todo{$tested_fcn};
   print OUT "\n";
 }
 
