@@ -231,6 +231,7 @@ if (@ARGV) {
 }
 
 my $f;
+my %name_counts;
 
 # Loop through all the tests to add
 for $f (sort { dictionary_order($a->{'name'}, $b->{'name'}) } @f) {
@@ -261,7 +262,7 @@ for $f (sort { dictionary_order($a->{'name'}, $b->{'name'}) } @f) {
     my $Tflag = $f->{'flags'}{'T'};
     $Tflag = 0 unless defined $Tflag;
 
-  my $Perl_ = $f->{'flags'}{'p'} ? 'Perl_' : '';
+    my $long_form_required = $f->{'flags'}{'o'} || $f->{'flags'}{'f'};
 
   my $stack = '';
   my @arg;
@@ -411,8 +412,11 @@ EOT
   # If only to be tested when ppport.h is enabled
   $f->{'ppport_fnc'} and print OUT "#ifndef DPPP_APICHECK_NO_PPPORT_H\n";
 
+    my $test_name = "DPPP_test_";
+    $test_name .= $name_counts{$tested_fcn}++ . "_" if $cond;
+    $test_name .= $tested_fcn;
   print OUT <<END;
-void DPPP_test_$tested_fcn (void)
+void $test_name (void)
 {
   dXSARGS;
 $stack
