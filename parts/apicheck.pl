@@ -395,7 +395,7 @@ EOT
               : "$prefix$short_form$args";
 
   # If there is a '#if' associated with this, add that
-  $f->{'cond'} and print OUT "#if $f->{'cond'}\n";
+  $cond and print OUT "#if $cond\n";
 
   # If only to be tested when ppport.h is enabled
   $f->{'ppport_fnc'} and print OUT "#ifndef DPPP_APICHECK_NO_PPPORT_H\n";
@@ -440,7 +440,7 @@ END
   }
 
   $f->{'ppport_fnc'} and print OUT "#endif\n";
-  $f->{'cond'} and print OUT "#endif\n";
+  $cond and print OUT "#endif\n";
   exists $todo{$short_form} and print OUT "#endif\n";
 
   print OUT "\n";
