@@ -373,7 +373,9 @@ for $f (sort { dictionary_order($a->{'name'}, $b->{'name'}) } @f) {
     $prefix = '1 ';
   }
 
-    my $tested_fcn = $short_form;
+    my $tested_fcn = "";
+    $tested_fcn .= 'Perl_' if $pflag && $long_form_required;
+    $tested_fcn .= $short_form;
 
   print OUT <<HEAD;
 /******************************************************************************
@@ -400,7 +402,7 @@ EOT
   }
 
   my $final = $varargs
-              ? "$THX_prefix$Perl_$short_form$THX_suffix"
+              ? "$THX_prefix$tested_fcn$THX_suffix"
               : "$prefix$short_form$args";
 
   # If there is a '#if' associated with this, add that
@@ -440,7 +442,7 @@ END
 #ifdef $short_form
     $ret$final;
 #else
-    $ret$THX_prefix$Perl_$short_form$THX_suffix;
+    $ret$THX_prefix$tested_fcn$THX_suffix;
 #endif
   }
 }
