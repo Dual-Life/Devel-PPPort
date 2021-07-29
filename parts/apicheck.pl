@@ -237,9 +237,10 @@ for $f (sort { dictionary_order($a->{'name'}, $b->{'name'}) } @f) {
 
     my $short_form = $f->{'name'};
 
-  # Just the name isn't unique;  We also need the #if or #else condition
-  my $unique = "$short_form$sep$f->{'cond'}";
-  $ignore{$unique} and next;
+    # Ignore duplicates; just the name isn't unique;  We also need the #if or
+    # #else condition
+    my $cond = $f->{'cond'};
+    $ignore{"$short_form$sep$cond"}++ and next;
 
   # only public API members, except those in ppport.fnc are there because we
   # want them to be tested even if non-public.  X,M functions are supposed to
@@ -253,7 +254,6 @@ for $f (sort { dictionary_order($a->{'name'}, $b->{'name'}) } @f) {
   $f->{'flags'}{'u'} and next;
   $f->{'flags'}{'y'} and next;
 
-  $ignore{$unique} = 1; # ignore duplicates
 
   my $Perl_ = $f->{'flags'}{'p'} ? 'Perl_' : '';
 
