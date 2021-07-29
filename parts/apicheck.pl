@@ -270,11 +270,12 @@ for $f (sort { dictionary_order($a->{'name'}, $b->{'name'}) } @f) {
   my @arg;
   my $aTHX = '';
 
-  my $i = 1;
+    my $i = 1;  # Argument number
   my $ca;
   my $varargs = 0;
 
-  for $ca (@{$f->{'args'}}) {   # Loop through the function's args
+    # Loop through the function's args, building up the declarations
+    for $ca (@{$f->{'args'}}) {
     my $a = $ca->[0];           # 1th is the name, 0th is its type
     if ($a eq '...') {
       $varargs = 1;
@@ -282,7 +283,8 @@ for $f (sort { dictionary_order($a->{'name'}, $b->{'name'}) } @f) {
       last;
     }
 
-    # Split this type into its components
+        # Split this argument into its components.  The formal parameter name is
+        # discarded; we're just interested in the type and its modifiers
     my($t, $p, $d) = $a =~ /^ (  (?: " [^"]* " )      # literal string type => $t
                                | (?: \w+ (?: \s+ \w+ )* )    # name of type => $t
                               )
@@ -293,7 +295,7 @@ for $f (sort { dictionary_order($a->{'name'}, $b->{'name'}) } @f) {
                             $/x
                      or die "$0 - cannot parse argument: [$a] in $short_form\n";
 
-    # Replace a special argument name by something that will compile.
+        # Replace a special argument type by something that will compile.
     if (exists $amap{$t}) {
             if ($p or $d) {
                 die "$short_form had type '$t', which should have been the"
@@ -327,8 +329,8 @@ for $f (sort { dictionary_order($a->{'name'}, $b->{'name'}) } @f) {
     $aTHX = @arg ? 'aTHX_ ' : 'aTHX';
   }
 
-  # If this function is on the list of things that need declarations, add
-  # them.
+    # If this function is on the list of things that need extra declarations,
+    # add them.
   if ($stack{$short_form}) {
     my $s = '';
     for (@{$stack{$short_form}}) {
@@ -340,7 +342,7 @@ for $f (sort { dictionary_order($a->{'name'}, $b->{'name'}) } @f) {
   my $args = join ', ', @arg;
   my $prefix = "";
 
-  my $rvt = $f->{'ret'};
+        my $rvt = $f->{'ret'};  # Type of return value
 
   # Replace generic 'type'
   $rvt = 'int' if defined $rvt && $rvt eq 'type';
@@ -410,7 +412,7 @@ EOT
               ? "$THX_prefix$tested_fcn$THX_suffix"
               : "$prefix$short_form$args";
 
-  # If there is a '#if' associated with this, add that
+    # If there is an '#if' associated with this, add that
   $cond and print OUT "#if $cond\n";
 
   # If only to be tested when ppport.h is enabled
