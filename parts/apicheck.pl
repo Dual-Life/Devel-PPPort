@@ -295,8 +295,10 @@ for $f (sort { dictionary_order($a->{'name'}, $b->{'name'}) } @f) {
 
     # Replace a special argument name by something that will compile.
     if (exists $amap{$t}) {
-      die "$short_form had type $t, which should have been the whole type"
-                                                                    if $p or $d;
+            if ($p or $d) {
+                die "$short_form had type '$t', which should have been the"
+                  . " whole type.  Instead '$p' or '$d' was non-empty";
+            }
       push @arg, $amap{$t};
       next;
     }
