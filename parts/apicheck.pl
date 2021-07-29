@@ -274,8 +274,8 @@ for $f (sort { dictionary_order($a->{'name'}, $b->{'name'}) } @f) {
     }
 
     # Split this type into its components
-    my($n, $p, $d) = $a =~ /^ (  (?: " [^"]* " )      # literal string type => $n
-                               | (?: \w+ (?: \s+ \w+ )* )    # name of type => $n
+    my($t, $p, $d) = $a =~ /^ (  (?: " [^"]* " )      # literal string type => $t
+                               | (?: \w+ (?: \s+ \w+ )* )    # name of type => $t
                               )
                               \s*
                               ( \** )                 # optional pointer(s) => $p
@@ -285,23 +285,23 @@ for $f (sort { dictionary_order($a->{'name'}, $b->{'name'}) } @f) {
                      or die "$0 - cannot parse argument: [$a] in $short_form\n";
 
     # Replace a special argument name by something that will compile.
-    if (exists $amap{$n}) {
-      die "$short_form had type $n, which should have been the whole type"
+    if (exists $amap{$t}) {
+      die "$short_form had type $t, which should have been the whole type"
                                                                     if $p or $d;
-      push @arg, $amap{$n};
+      push @arg, $amap{$t};
       next;
     }
 
     # Certain types, like 'void', get remapped.
-    $n = $tmap{$n} || $n;
+    $t = $tmap{$t} || $t;
 
-    if ($n =~ / ^ " [^"]* " $/x) {  # Use the literal string, literally
-      push @arg, $n;
+    if ($t =~ / ^ " [^"]* " $/x) {  # Use the literal string, literally
+      push @arg, $t;
     }
     else {
       my $v = 'arg' . $i++;     # Argument number
       push @arg, $v;
-      my $no_const_n = $n;      # Get rid of any remaining 'const's
+      my $no_const_n = $t;      # Get rid of any remaining 'const's
       $no_const_n =~ s/\bconst\b// unless $p;
 
       # Declare this argument
