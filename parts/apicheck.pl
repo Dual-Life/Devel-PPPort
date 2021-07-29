@@ -372,15 +372,17 @@ for $f (sort { dictionary_order($a->{'name'}, $b->{'name'}) } @f) {
 /******************************************************************************
 *
 
-*  $short_form  $script_args{'--todo-dir'}  $script_args{'--todo'}
+ *  $short_form  $script_args{'--todo-dir'} for testing $script_args{'--todo'}
 *
 ******************************************************************************/
 
 HEAD
 
+    my($rev, $ver,$sub);
+
   # #ifdef out if marked as todo (not known in) this version
   if (exists $todo{$short_form}) {
-    my($rev, $ver,$sub) = parse_version($todo{$short_form}{'version'});
+        ($rev, $ver,$sub) = parse_version($todo{$short_form}{'version'});
     print OUT <<EOT;
 #if       PERL_VERSION_MAJOR > $rev                         \\
    || (   PERL_VERSION_MAJOR == $rev                        \\
@@ -439,9 +441,10 @@ END
 
   }
 
-  $f->{'ppport_fnc'} and print OUT "#endif\n";
-  $cond and print OUT "#endif\n";
-  exists $todo{$short_form} and print OUT "#endif\n";
+    $f->{'ppport_fnc'} and print OUT "#endif  /* for ppport_fnc */\n";
+    $cond and print OUT "#endif  /* for conditional compile */\n";
+    print OUT "#endif  /* disabled testing of $short_form before $rev.$ver.$sub */\n"
+                                                    if exists $todo{$short_form};
 
   print OUT "\n";
 }
