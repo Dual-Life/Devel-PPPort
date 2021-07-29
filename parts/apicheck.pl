@@ -348,7 +348,7 @@ for $f (sort { dictionary_order($a->{'name'}, $b->{'name'}) } @f) {
   $rvt = 'int' if defined $rvt && $rvt eq 'type';
 
   # Failure to specify a return type in the apidoc line means void
-  $rvt = 'void' unless $rvt;;
+  $rvt = 'void' unless $rvt;
 
   my $ret;
   if ($void{$rvt}) {    # Certain return types are instead considered void
