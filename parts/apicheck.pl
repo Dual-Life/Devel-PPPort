@@ -254,6 +254,12 @@ for $f (sort { dictionary_order($a->{'name'}, $b->{'name'}) } @f) {
   $f->{'flags'}{'u'} and next;
   $f->{'flags'}{'y'} and next;
 
+    my $nflag = $f->{'flags'}{'n'};
+    $nflag = 0 unless defined $nflag;
+    my $pflag = $f->{'flags'}{'p'};
+    $pflag = 0 unless defined $pflag;
+    my $Tflag = $f->{'flags'}{'T'};
+    $Tflag = 0 unless defined $Tflag;
 
   my $Perl_ = $f->{'flags'}{'p'} ? 'Perl_' : '';
 
@@ -311,7 +317,7 @@ for $f (sort { dictionary_order($a->{'name'}, $b->{'name'}) } @f) {
 
   # Declare thread context for functions and macros that might need it.
   # (Macros often fail to say they don't need it.)
-  unless ($f->{'flags'}{'T'}) {
+  unless ($Tflag) {
     $stack = "  dTHX;\n$stack";     # Harmless to declare even if not needed
     $aTHX = @arg ? 'aTHX_ ' : 'aTHX';
   }
@@ -350,7 +356,7 @@ for $f (sort { dictionary_order($a->{'name'}, $b->{'name'}) } @f) {
   my $THX_suffix = "";
 
   # Add parens to functions that take an argument list, even if empty
-  unless ($f->{'flags'}{'n'}) {
+  unless ($nflag) {
     $THX_suffix = "($aTHX$args)";
     $args = "($args)";
   }
