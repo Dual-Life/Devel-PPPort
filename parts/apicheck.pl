@@ -231,7 +231,9 @@ if (@ARGV) {
 }
 
 my $f;
-for $f (@f) {   # Loop through all the tests to add
+
+# Loop through all the tests to add
+for $f (sort { dictionary_order($a->{'name'}, $b->{'name'}) } @f) {
 
   # Just the name isn't unique;  We also need the #if or #else condition
   my $unique = "$f->{'name'}$sep$f->{'cond'}";
