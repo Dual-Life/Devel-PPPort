@@ -48,6 +48,7 @@ Amnud|char*|CLASS
 Amd|void|CLEAR_ERRSV
 Amd|const char *|CopFILE|const COP * c
 Amd|AV *|CopFILEAV|const COP * c
+Amd|AV *|CopFILEAVn|const COP * c
 Amd|GV *|CopFILEGV|const COP * c
 Amd|void|CopFILE_set|COP * c|const char * pv
 Amd|SV *|CopFILESV|const COP * c
@@ -368,7 +369,6 @@ Amd|bool|isUPPER_LC_uvchr|UV ch
 Amd|bool|isUPPER_utf8|U8 * s|U8 * end
 Amd|bool|isUPPER_utf8_safe|U8 * s|U8 * end
 Amd|bool|isUPPER_uvchr|UV ch
-Amd|STRLEN|isUTF8_CHAR_flags|const U8 *s|const U8 *e| const U32 flags
 Amd|bool|isWORDCHAR|UV ch
 Amd|bool|isWORDCHAR_A|UV ch
 Amd|bool|isWORDCHAR_L1|UV ch
@@ -534,8 +534,8 @@ AmTd|NV|Perl_frexp|NV x|int *exp
 Amhd|void|PERL_HASH|U32 hash|char *key|STRLEN klen
 AmnUd||PERL_INT_MAX
 AmnUd||PERL_INT_MIN
-:Amhd|int|PerlIO_apply_layers|PerlIO *f|const char *mode|const char *layers
-:Amhd|int|PerlIO_binmode|PerlIO *f|int ptype|int imode|const char *layers
+Amhd|int|PerlIO_apply_layers|PerlIO *f|const char *mode|const char *layers
+Amhd|int|PerlIO_binmode|PerlIO *f|int ptype|int imode|const char *layers
 ATmhd|int|PerlIO_canset_cnt|PerlIO *f
 Amhd|void|PerlIO_debug|const char *fmt|...
 ATmhd|FILE  *|PerlIO_exportFILE|PerlIO *f|const char *mode
@@ -801,6 +801,7 @@ Amad|char*|savepvs|"literal string"
 Amad|char*|savesharedpvs|"literal string"
 Amhd||SAVESPTR|SV * s
 Amhd||SAVESTACK_POS
+Amhd||SAVESTRLEN|STRLEN i
 Amnsd||SAVETMPS
 Amd|void|seedDrand01|Rand_seed_t x
 md|void|SETERRNO|int errcode|int vmserrcode
@@ -861,6 +862,7 @@ Amd|void|SvIOK_only|SV* sv
 Amd|void|SvIOK_only_UV|SV* sv
 Amd|U32|SvIOKp|SV* sv
 Amd|bool|SvIOK_UV|SV* sv
+Amd|bool|SvIsBOOL|SV* sv
 Amd|U32|SvIsCOW|SV* sv
 Amd|bool|SvIsCOW_shared_hash|SV* sv
 Amd|IV|SvIV|SV* sv
@@ -962,6 +964,8 @@ Amd|SV*|SvRV|SV* sv
 Amd|void|SvRV_set|SV* sv|SV* val
 Amd|REGEXP *|SvRX|SV *sv
 Amd|bool|SvRXOK|SV* sv
+Amd|void|sv_setbool|SV *sv|bool b
+Amd|void|sv_setbool_mg|SV *sv|bool b
 Amd|void|SvSETMAGIC|SV* sv
 Amd|void|SvSetMagicSV|SV* dsv|SV* ssv
 Amd|void|SvSetMagicSV_nosteal|SV* dsv|SV* ssv
@@ -1056,6 +1060,10 @@ Amnhd||UNICODE_DISALLOW_NONCHAR
 Amnhd||UNICODE_DISALLOW_PERL_EXTENDED
 Amnhd||UNICODE_DISALLOW_SUPER
 Amnhd||UNICODE_DISALLOW_SURROGATE
+Amd|bool|UNICODE_IS_NONCHAR|const UV uv
+Amd|bool|UNICODE_IS_REPLACEMENT|const UV uv
+Amd|bool|UNICODE_IS_SUPER|const UV uv
+Amd|bool|UNICODE_IS_SURROGATE|const UV uv
 AmnUd|UV|UNICODE_REPLACEMENT
 Amnhd||UNICODE_WARN_ABOVE_31_BIT
 Amnhd||UNICODE_WARN_ILLEGAL_C9_INTERCHANGE
@@ -1093,6 +1101,7 @@ Amnhd||UTF8_GOT_SUPER
 Amnhd||UTF8_GOT_SURROGATE
 Amd|bool|UTF8_IS_INVARIANT|char c
 Amd|bool|UTF8_IS_NONCHAR|const U8 *s|const U8 *e
+Amd|bool|UTF8_IS_REPLACEMENT|const U8 *s|const U8 *e
 Amd|bool|UTF8_IS_SUPER|const U8 *s|const U8 *e
 Amd|bool|UTF8_IS_SURROGATE|const U8 *s|const U8 *e
 AmnUd|STRLEN|UTF8_MAXBYTES
@@ -1124,9 +1133,13 @@ Amnhd||WARN_EXEC
 Amnhd||WARN_EXITING
 Amnhd||WARN_EXPERIMENTAL
 Amnhd||WARN_EXPERIMENTAL__ALPHA_ASSERTIONS
+Amnhd||WARN_EXPERIMENTAL__ARGS_ARRAY_WITH_SIGNATURES
 Amnhd||WARN_EXPERIMENTAL__BITWISE
+Amnhd||WARN_EXPERIMENTAL__BUILTIN
 Amnhd||WARN_EXPERIMENTAL__CONST_ATTR
 Amnhd||WARN_EXPERIMENTAL__DECLARED_REFS
+Amnhd||WARN_EXPERIMENTAL__DEFER
+Amnhd||WARN_EXPERIMENTAL__FOR_LIST
 Amnhd||WARN_EXPERIMENTAL__ISA
 Amnhd||WARN_EXPERIMENTAL__LEXICAL_SUBS
 Amnhd||WARN_EXPERIMENTAL__POSTDEREF
