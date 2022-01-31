@@ -1,5 +1,6 @@
 ^\.git
 ^MYMETA.*$
+^META_new.*
 ^Makefile$
 ~$
 \.old(?:\..*)?$
