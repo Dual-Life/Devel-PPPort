@@ -1,0 +1,55 @@
+version: 1.0.{build}
+
+cache:
+  - C:\ProgramData\chocolatey\cache
+  - C:\strawberry\cpan\sources
+  - C:\Perl\cpan\sources
+
+environment:
+  matrix:
+    - perl: "5.8.9.5"
+    - perl: "5.10.1.5"
+    - perl: "5.12.3.20180709"
+    - perl: "5.14.4.1"
+    - perl: "5.16.3.20170202"
+    - perl: "5.18.4.1"
+    - perl: "5.20.3.3"
+    - perl: "5.22.3.1"
+    - perl: "5.24.4.1"
+    - perl: "5.26.2.1"
+    - perl: "5.28.0.1"
+    - perl: system
+
+platform:
+  - x86
+  - x64
+
+matrix:
+  exclude:
+    - platform: x64
+      perl: "5.8.9.5"
+    - platform: x64
+      perl: "5.10.1.5"
+    - platform: x64
+      perl: system
+
+install:
+  - ren C:\MinGW MinGW_do_not_use
+  - ren "C:\\Program Files\\Git\\usr\\bin\\perl.exe" perl.exe_do_not_use
+  - if /I not %perl% == system ren C:\Perl Perl_do_not_use
+  - if /I not %perl% == system if /I %PLATFORM% == x86 (set x86=--forcex86) else (set "x86= ")
+  - if /I not %perl% == system choco config set cacheLocation C:\ProgramData\chocolatey\cache
+  - if /I not %perl% == system cinst StrawberryPerl --version %perl% %x86% --allow-empty-checksums
+  - refreshenv
+  - perl -V
+  #- cpan -T App::cpanminus
+  #- perl "-MExtUtils::MakeMaker 6.68" -e "" || cpanm --quiet --notest ExtUtils::MakeMaker@6.68
+  #- perl "-MCPAN::Meta 2.112580" -e "" || cpanm --quiet --notest CPAN::Meta@2.112580
+  #- cpanm --quiet --notest --skip-satisfied --installdeps --with-configure --with-develop --with-recommends --with-suggests .
+
+build_script:
+  - perl Makefile.PL
+  - perl -MConfig -e "system({$Config{make}} $Config{make}, @ARGV); exit((($? >> 8) | ($? & 127)) & 255)"
+
+test_script:
+  - perl -MConfig -e "system({$Config{make}} $Config{make}, @ARGV); exit((($? >> 8) | ($? & 127)) & 255)" test TEST_VERBOSE=1
