@@ -315,7 +315,7 @@ for $f (sort { dictionary_order($a->{'name'}, $b->{'name'}) } @f) {
       my $v = 'arg' . $i++;     # Argument number
       push @arg, $v;
       my $no_const_n = $t;      # Get rid of any remaining 'const's
-      $no_const_n =~ s/\bconst\b// unless $p;
+      $no_const_n =~ s/\bconst\b//g unless $p;
 
       # Declare this argument
       $stack .= "  static $no_const_n $p$v$d;\n";
@@ -342,13 +342,17 @@ for $f (sort { dictionary_order($a->{'name'}, $b->{'name'}) } @f) {
   my $args = join ', ', @arg;
   my $prefix = "";
 
-        my $rvt = $f->{'ret'};  # Type of return value
+  my $rvt = $f->{'ret'};  # Type of return value
 
   # Replace generic 'type'
   $rvt = 'int' if defined $rvt && $rvt eq 'type';
 
   # Failure to specify a return type in the apidoc line means void
   $rvt = 'void' unless $rvt;
+
+  # Remove const, as otherwise could declare something that is impossible to
+  # set.
+  $rvt =~ s/\bconst\b//g;
 
   my $ret;
   if ($void{$rvt}) {    # Certain return types are instead considered void
