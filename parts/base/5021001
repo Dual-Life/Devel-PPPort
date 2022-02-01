@@ -22,8 +22,6 @@ IN_LC_PARTIAL_RUNTIME          # Z added by devel/scanprov
 IN_LC_RUNTIME                  # Z added by devel/scanprov
 _is_cur_LC_category_utf8       # F added by devel/scanprov
 _is_in_locale_category         # F added by devel/scanprov
-is_QUOTEMETA_high_part0        # Z added by devel/scanprov
-is_QUOTEMETA_high_part1        # Z added by devel/scanprov
 isUTF8_CHAR                    # U
 markstack_grow                 # E (Perl_markstack_grow)
 my_strerror                    # F added by devel/scanprov

@@ -6,7 +6,6 @@ is_NONCHAR_utf8_safe           # Z added by devel/scanprov
 isSTRICT_UTF8_CHAR             # U
 is_SURROGATE_utf8_safe         # Z added by devel/scanprov
 isUTF8_CHAR_flags              # U
-is_utf8_cp_above_31_bits       # F added by devel/scanprov
 is_utf8_invariant_string       # U
 is_utf8_valid_partial_char     # U
 is_utf8_valid_partial_char_flags # U
