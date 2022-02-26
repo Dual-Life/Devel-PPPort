@@ -34,6 +34,7 @@ __UNDEFINED__ SV_NOSTEAL 16
     }                                                                              \
   } STMT_END
 #else
+#define sv_setsv_flags(dstr, sstr, flags)                                          \
   (                                                                                \
     (((flags) & SV_NOSTEAL) && (sstr) && (SvFLAGS((SV *)(sstr)) & SVs_TEMP)) ? (   \
       SvTEMP_off((SV *)(sstr)),                                                    \
