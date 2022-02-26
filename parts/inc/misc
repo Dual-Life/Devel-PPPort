@@ -278,7 +278,9 @@ __UNDEF_NOT_PROVIDED__  PERL_GCC_BRACE_GROUPS_FORBIDDEN
 #  endif
 #endif
 
-#if defined(__GNUC__) && !defined(PERL_GCC_BRACE_GROUPS_FORBIDDEN) && !defined(__cplusplus)
+#if  ! defined(__GNUC__) || defined(PERL_GCC_BRACE_GROUPS_FORBIDDEN) || defined(__cplusplus)
+#    undef PERL_USE_GCC_BRACE_GROUPS
+#else
 #  ifndef PERL_USE_GCC_BRACE_GROUPS
 #    define PERL_USE_GCC_BRACE_GROUPS
 #  endif
