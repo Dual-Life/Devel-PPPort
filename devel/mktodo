@@ -53,7 +53,7 @@ our %opt = (
 # ppport.h, so we get, as patched by ppport.h, what gets added when
 
 GetOptions(\%opt, qw( base check! verbose install=s blead=s blead-version=s
-                      debug=i debug-start=s)) or die;
+                      debug=i debug-start=s skip-devels)) or die;
 
 identify();
 
