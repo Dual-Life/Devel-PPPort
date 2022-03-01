@@ -59,7 +59,7 @@ __UNDEFINED__ __ASSERT_(statement)  assert(statement),
 __UNDEFINED__ __ASSERT_(statement)
 #endif
 
-__UNDEFINED__  __has_builtin(x) 0
+__UNDEF_NOT_PROVIDED__  __has_builtin(x) 0
 
 #if __has_builtin(__builtin_unreachable)
 #  define D_PPP_HAS_BUILTIN_UNREACHABLE
