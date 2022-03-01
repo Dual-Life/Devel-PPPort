@@ -206,7 +206,7 @@ retry:
     }
     else {
         print STDERR "blead compiled without warnings nor errors.\n"
-                   . "Proceeding with everything else\n";
+                   . "Proceeding with everything else\n\n";
     }
   }
 
