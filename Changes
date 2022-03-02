@@ -6,6 +6,7 @@ Revision history for Devel-PPPort
   * Fix CROAK_IF_ERROR without BRACE GROUPS
   * Refactor to use static inline function in multiple parts/inc
   * devel/regenerate: Add --skip-devels option
+  * Don't list has_builtin as being provided
 
 3.64 - 2022-02-01
   * Fix: better support for STMT_START / STMT_END definition
