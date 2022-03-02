@@ -1,5 +1,9 @@
 Revision history for Devel-PPPort
 
+3.66 - 2022-03-22
+
+  * Fix corrupted release (missing files)
+
 3.65 - 2022-03-02
 
   * Enable AppVeyor CI
