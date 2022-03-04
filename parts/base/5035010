@@ -1,4 +1,6 @@
 5.035010
+ASSERT_IS_LITERAL              # Z added by devel/scanprov
+ASSERT_IS_PTR                  # Z added by devel/scanprov
 LOOKBEHIND_END                 # Z added by devel/scanprov
 LOOKBEHIND_END_t8              # Z added by devel/scanprov
 LOOKBEHIND_END_t8_p8           # Z added by devel/scanprov
