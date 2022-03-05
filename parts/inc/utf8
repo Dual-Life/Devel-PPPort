@@ -304,7 +304,7 @@ utf8_to_uvchr_buf(pTHX_ const U8 *s, const U8 *send, STRLEN *retlen)
     }
     else
 
-#    endif  /* < 5.26 */
+#      endif  /* < 5.26 */
 
         /* Here, we are either in a release that properly detects overflow, or
          * we have checked for overflow and the next statement is executing as
@@ -317,7 +317,7 @@ utf8_to_uvchr_buf(pTHX_ const U8 *s, const U8 *send, STRLEN *retlen)
                     s, curlen, retlen,   (UTF8_ALLOW_ANYUV
                                       & ~(UTF8_ALLOW_LONG|UTF8_ALLOW_EMPTY)));
 
-#    if { VERSION >= 5.26.0 } && { VERSION < 5.28.0 }
+#      if { VERSION >= 5.26.0 } && { VERSION < 5.28.0 }
 
     /* But actually, more modern versions restrict the UV to being no more than
      * what an IV can hold, so it could still have gotten it wrong about
@@ -326,7 +326,7 @@ utf8_to_uvchr_buf(pTHX_ const U8 *s, const U8 *send, STRLEN *retlen)
         overflows = 1;
     }
 
-#    endif
+#      endif
 
     if (UNLIKELY(overflows)) {
         if (! do_warnings) {
@@ -372,7 +372,7 @@ utf8_to_uvchr_buf(pTHX_ const U8 *s, const U8 *send, STRLEN *retlen)
              * modern version of this function returns */
             ret = UNICODE_REPLACEMENT;
 
-#    if { VERSION < 5.16.0 }
+#      if { VERSION < 5.16.0 }
 
             /* Versions earlier than this don't necessarily return the proper
              * length.  It should not extend past the end of string, nor past
@@ -384,11 +384,11 @@ utf8_to_uvchr_buf(pTHX_ const U8 *s, const U8 *send, STRLEN *retlen)
                 *retlen = D_PPP_MIN(*retlen, curlen);
                 *retlen = D_PPP_MIN(*retlen, UTF8SKIP(s));
                 do {
-#      ifdef UTF8_IS_CONTINUATION
+#        ifdef UTF8_IS_CONTINUATION
                     if (! UTF8_IS_CONTINUATION(s[i]))
-#      else       /* Versions without the above don't support EBCDIC anyway */
+#        else       /* Versions without the above don't support EBCDIC anyway */
                     if (s[i] < 0x80 || s[i] > 0xBF)
-#      endif
+#        endif
                     {
                         *retlen = i;
                         break;
@@ -396,7 +396,7 @@ utf8_to_uvchr_buf(pTHX_ const U8 *s, const U8 *send, STRLEN *retlen)
                 } while (++i < *retlen);
             }
 
-#    endif
+#      endif  /* end of < 5.16.0 */
 
         }
     }
