@@ -182,10 +182,10 @@ __UNDEFINED__ REPLACEMENT_CHARACTER_UTF8  "\xDD\x72\x72\x70"
 #  error Unknown character set
 #endif
 
-#if { VERSION < 5.31.4 }
-        /* Versions prior to this accepted things that are now considered
-         * malformations, and didn't return -1 on error with warnings enabled
-         * */
+#if { VERSION < 5.35.10 }
+        /* Versions prior to 5.31.4 accepted things that are now considered
+         * malformations, and didn't return -1 on error with warnings enabled.
+         * Versions before 5.35.10 dereferenced empty input without checking */
 #  undef utf8_to_uvchr_buf
 #endif
 
@@ -228,6 +228,34 @@ __UNDEFINED__ REPLACEMENT_CHARACTER_UTF8  "\xDD\x72\x72\x70"
 UV
 utf8_to_uvchr_buf(pTHX_ const U8 *s, const U8 *send, STRLEN *retlen)
 {
+#    if { VERSION >= 5.31.4 }   /* But from above, must be < 5.35.10 */
+#      if { VERSION != 5.35.9 }
+
+    /* Versions less than 5.35.9 could dereference s on zero length, so
+     * pass it something where no harm comes from that. */
+    if (send <= s) s = send = (U8 *) "?";
+    return Perl_utf8_to_uvchr_buf_helper(aTHX_ s, send, retlen);
+
+#      else /* Below is 5.35.9, which also works on non-empty input, but
+               for empty input, can wrongly dereference, and additionally is
+               also just plain broken */
+    if (send > s) return Perl_utf8_to_uvchr_buf_helper(aTHX_ s, send, retlen);
+    if (! ckWARN_d(WARN_UTF8)) {
+        if (retlen) *retlen = 0;
+        return UNICODE_REPLACEMENT;
+    }
+    else {
+        s = send = (U8 *) "?";
+
+        /* Call just for its warning */
+        (void) Perl__utf8n_to_uvchr_msgs_helper(s, 0, NULL, 0, NULL, NULL);
+        if (retlen) *retlen = (STRLEN) -1;
+        return 0;
+    }
+
+#      endif
+#    else
+
     UV ret;
     STRLEN curlen;
     bool overflows = 0;
@@ -249,7 +277,7 @@ utf8_to_uvchr_buf(pTHX_ const U8 *s, const U8 *send, STRLEN *retlen)
         }
     }
 
-#    if { VERSION < 5.26.0 } && ! defined(EBCDIC)
+#      if { VERSION < 5.26.0 } && ! defined(EBCDIC)
 
     /* Perl did not properly detect overflow for much of its history on
      * non-EBCDIC platforms, often returning an overlong value which may or may
@@ -402,6 +430,9 @@ utf8_to_uvchr_buf(pTHX_ const U8 *s, const U8 *send, STRLEN *retlen)
     }
 
     return ret;
+
+#    endif    /* end of < 5.31.4 */
+
 }
 
 #  endif
