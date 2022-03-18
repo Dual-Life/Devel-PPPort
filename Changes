@@ -1,6 +1,6 @@
 Revision history for Devel-PPPort
 
-NEXT
+3.68 - 2022-03-18
 
  * fix newSVsv_flags: rename variable to fix C++ compilation issue
  * Update dNOOP definition for Perl < 5.27.7
