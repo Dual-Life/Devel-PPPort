@@ -294,17 +294,12 @@ __UNDEF_NOT_PROVIDED__  PERL_GCC_BRACE_GROUPS_FORBIDDEN
 #  endif
 #endif
 
-#if defined(VOIDFLAGS) && defined(PERL_USE_GCC_BRACE_GROUPS)
-__REDEFINE__ STMT_START    (void)( /* gcc supports ``({ STATEMENTS; })'' */
-__REDEFINE__ STMT_END      )
-#else
-#  if defined(VOIDFLAGS) && (VOIDFLAGS) && (defined(sun) || defined(__sun__)) && !defined(__GNUC__)
+#if defined(VOIDFLAGS) && (VOIDFLAGS) && (defined(sun) || defined(__sun__)) && !defined(__GNUC__)
 __REDEFINE__ STMT_START  if (1)
 __REDEFINE__ STMT_END    else (void)0
-#  else
+#else
 __REDEFINE__ STMT_START  do
 __REDEFINE__ STMT_END    while (0)
-#  endif
 #endif
 
 __UNDEFINED__  boolSV(b)    ((b) ? &PL_sv_yes : &PL_sv_no)
