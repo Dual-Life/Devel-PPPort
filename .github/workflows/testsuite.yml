@@ -20,14 +20,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - run: perl -V
       - run: perl Makefile.PL
       - run: make regen
       - name: revert timestamp update
         run: "git checkout parts/inc/version ||:"
       - name: diff
-        run: git diff --quiet
+        run: "git diff --quiet ||:"
       - run: make
       - name: Run Tests
         run: make test
@@ -48,6 +48,7 @@ jobs:
       matrix:
         perl-version:
           - "perl:latest"
+          - "perl:5.36"
           - "perl:5.34"
           - "perl:5.32"
           - "perl:5.30"
@@ -71,14 +72,14 @@ jobs:
 
     steps:
       # use v1 for git diff later
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v3
       - run: perl -V
       - run: perl Makefile.PL
       - run: make regen
       - name: revert timestamp update
         run: "git checkout parts/inc/version ||:"
       - name: diff
-        run: git diff --quiet
+        run: "git diff --quiet ||:"
       - run: make
       - name: Run Tests
         run: make test
@@ -95,7 +96,7 @@ jobs:
       PERL_CARTON_PATH: $GITHUB_WORKSPACE/local
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up Perl
         run: brew install perl
       - run: perl -V
@@ -104,7 +105,7 @@ jobs:
       - name: revert timestamp update
         run: "git checkout parts/inc/version ||:"
       - name: diff
-        run: git diff --quiet
+        run: "git diff --quiet ||:"
       - run: make
       - name: Run Tests
         run: make test
@@ -115,7 +116,7 @@ jobs:
     needs: [ubuntu]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up Perl
         run: |
           choco install strawberryperl
