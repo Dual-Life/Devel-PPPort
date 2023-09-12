@@ -26,8 +26,6 @@ jobs:
       - run: make regen
       - name: revert timestamp update
         run: "git checkout parts/inc/version ||:"
-      - name: diff
-        run: "git diff --quiet ||:"
       - run: make
       - name: Run Tests
         run: make test
@@ -78,8 +76,6 @@ jobs:
       - run: make regen
       - name: revert timestamp update
         run: "git checkout parts/inc/version ||:"
-      - name: diff
-        run: "git diff --quiet ||:"
       - run: make
       - name: Run Tests
         run: make test
@@ -104,8 +100,6 @@ jobs:
       - run: make regen
       - name: revert timestamp update
         run: "git checkout parts/inc/version ||:"
-      - name: diff
-        run: "git diff --quiet ||:"
       - run: make
       - name: Run Tests
         run: make test
