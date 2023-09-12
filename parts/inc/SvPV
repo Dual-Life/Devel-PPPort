@@ -85,14 +85,14 @@ __UNDEFINED__  SV_COW_SHARED_HASH_KEYS  0
 
 #if { VERSION < 5.7.2 }
 #
-/* Fix sv_2pv for Perl < 5.7.2 */
+/* Fix sv_2pv for Perl < 5.7.2 - view https://github.com/Dual-Life/Devel-PPPort/issues/231 */
 
 # ifdef sv_2pv
 #  undef sv_2pv
 # endif
 
-# if defined(__GNUC__) && !defined(PERL_GCC_BRACE_GROUPS_FORBIDDEN)
-  __UNDEFINED__ sv_2pv(sv, lp) ({ SV *_sv_2pv = (sv); STRLEN *_lp_2pv = (lp); _lp_2pv = _lp_2pv ? : &PL_na; SvPOKp(_sv_2pv) ? ((*(_lp_2pv) = SvCUR(_sv_2pv)), SvPVX(_sv_2pv)) : Perl_sv_2pv(aTHX_ _sv_2pv, (_lp_2pv)); })
+# if defined(PERL_USE_GCC_BRACE_GROUPS)
+  __UNDEFINED__ sv_2pv(sv, lp) ({ SV *_sv_2pv = (sv); STRLEN sv_2pv_dummy_; STRLEN *_lp_2pv = (lp); _lp_2pv = _lp_2pv ? : &sv_2pv_dummy_; SvPOKp(_sv_2pv) ? ((*(_lp_2pv) = SvCUR(_sv_2pv)), SvPVX(_sv_2pv)) : Perl_sv_2pv(aTHX_ _sv_2pv, (_lp_2pv)); })
 # else
   __UNDEFINED__ sv_2pv(sv, lp) (SvPOKp(sv) ? ((*((lp) ? (lp) : &PL_na) = SvCUR(sv)), SvPVX(sv)) : Perl_sv_2pv(aTHX_ (sv), (lp)))
 # endif
