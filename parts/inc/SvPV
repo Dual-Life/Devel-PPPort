@@ -104,8 +104,8 @@ __UNDEFINED__  SV_COW_SHARED_HASH_KEYS  0
 /* Define sv_2pv_flags for Perl < 5.7.2 which does not have it at all */
 
 #if defined(PERL_USE_GCC_BRACE_GROUPS)
-  __UNDEFINED__ sv_2pv_flags(sv, lp, flags) ({ SV *_sv = (sv); const I32 _flags = (flags); STRLEN *_lp = lp; _lp = _lp ? : &PL_na; (!(_flags & SV_GMAGIC) && SvGMAGICAL(_sv)) ? ({ char *_pv; SvGMAGICAL_off(_sv); _pv = sv_2pv(_sv, _lp); SvGMAGICAL_on(_sv); _pv; }) : sv_2pv(_sv, _lp); })
-  __UNDEFINED__ sv_pvn_force_flags(sv, lp, flags) ({ SV *_sv = (sv); const I32 _flags = (flags); STRLEN *_lp = lp; _lp = _lp ? : &PL_na; (!(_flags & SV_GMAGIC) && SvGMAGICAL(_sv)) ? ({ char *_pv; SvGMAGICAL_off(_sv); _pv = sv_pvn_force(_sv, _lp); SvGMAGICAL_on(_sv); _pv; }) : sv_pvn_force(_sv, _lp); })
+  __UNDEFINED__ sv_2pv_flags(sv, lp, flags) ({ SV *_sv = (sv); STRLEN sv_2pv_dummy_; const I32 _flags = (flags); STRLEN *_lp = lp; _lp = _lp ? : &sv_2pv_dummy_; (!(_flags & SV_GMAGIC) && SvGMAGICAL(_sv)) ? ({ char *_pv; SvGMAGICAL_off(_sv); _pv = sv_2pv(_sv, _lp); SvGMAGICAL_on(_sv); _pv; }) : sv_2pv(_sv, _lp); })
+  __UNDEFINED__ sv_pvn_force_flags(sv, lp, flags) ({ SV *_sv = (sv); STRLEN sv_2pv_dummy_; const I32 _flags = (flags); STRLEN *_lp = lp; _lp = _lp ? : &sv_2pv_dummy_; (!(_flags & SV_GMAGIC) && SvGMAGICAL(_sv)) ? ({ char *_pv; SvGMAGICAL_off(_sv); _pv = sv_pvn_force(_sv, _lp); SvGMAGICAL_on(_sv); _pv; }) : sv_pvn_force(_sv, _lp); })
 #else
   __UNDEFINED__ sv_2pv_flags(sv, lp, flags) ((PL_Sv = (sv)), (!((flags) & SV_GMAGIC) && SvGMAGICAL(PL_Sv)) ? (SvGMAGICAL_off(PL_Sv), (PL_Xpv = (XPV *)sv_2pv(PL_Sv, (lp) ? (lp) : &PL_na)), SvGMAGICAL_on(PL_Sv), (char *)PL_Xpv) : sv_2pv(PL_Sv, (lp) ? (lp) : &PL_na))
   __UNDEFINED__ sv_pvn_force_flags(sv, lp, flags) ((PL_Sv = (sv)), (!((flags) & SV_GMAGIC) && SvGMAGICAL(PL_Sv)) ? (SvGMAGICAL_off(PL_Sv), (PL_Xpv = (XPV *)sv_pvn_force(PL_Sv, (lp) ? (lp) : &PL_na)), SvGMAGICAL_on(PL_Sv), (char *)PL_Xpv) : sv_pvn_force(PL_Sv, (lp) ? (lp) : &PL_na))
@@ -119,8 +119,8 @@ __UNDEFINED__  SV_COW_SHARED_HASH_KEYS  0
 #  undef sv_2pv_flags
 # endif
 
-# if defined(__GNUC__) && !defined(PERL_GCC_BRACE_GROUPS_FORBIDDEN)
-  __UNDEFINED__ sv_2pv_flags(sv, lp, flags) ({ SV *_sv_2pv = (sv); const I32 _flags_2pv = (flags); STRLEN *_lp_2pv = (lp); _lp_2pv = _lp_2pv ? : &PL_na; ((!(_flags_2pv & SV_GMAGIC) || !SvGMAGICAL(_sv_2pv)) && SvPOKp(_sv_2pv)) ? ((*(_lp_2pv) = SvCUR(_sv_2pv)), SvPVX(_sv_2pv)) : Perl_sv_2pv_flags(aTHX_ _sv_2pv, (_lp_2pv), (_flags_2pv)); })
+# if defined(PERL_USE_GCC_BRACE_GROUPS)
+  __UNDEFINED__ sv_2pv_flags(sv, lp, flags) ({ SV *_sv_2pv = (sv); STRLEN sv_2pv_dummy_; const I32 _flags_2pv = (flags); STRLEN *_lp_2pv = (lp); _lp_2pv = _lp_2pv ? : &sv_2pv_dummy_; ((!(_flags_2pv & SV_GMAGIC) || !SvGMAGICAL(_sv_2pv)) && SvPOKp(_sv_2pv)) ? ((*(_lp_2pv) = SvCUR(_sv_2pv)), SvPVX(_sv_2pv)) : Perl_sv_2pv_flags(aTHX_ _sv_2pv, (_lp_2pv), (_flags_2pv)); })
 # else
   __UNDEFINED__ sv_2pv_flags(sv, lp, flags) (((!((flags) & SV_GMAGIC) || !SvGMAGICAL(sv)) && SvPOKp(sv)) ? ((*((lp) ? (lp) : &PL_na) = SvCUR(sv)), SvPVX(sv)) : Perl_sv_2pv_flags(aTHX_ (sv), (lp), (flags)))
 # endif
