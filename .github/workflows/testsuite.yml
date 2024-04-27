@@ -20,17 +20,62 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: perl -V
       - run: perl Makefile.PL
       - run: make regen
       - name: revert timestamp update
         run: "git checkout parts/inc/version ||:"
       - run: make
-      - name: Run Tests
-        run: make test
+      - run: make test
+
+  perl-versions:
+    runs-on: ubuntu-latest
+    name: List Perl versions
+    outputs:
+      perl-versions: ${{ steps.action.outputs.perl-versions }}
+    steps:
+      - id: action
+        uses: perl-actions/perl-versions@v1
+        with:
+          since-perl: v5.8
+          with-devel: true
 
   linux:
+    name: "Perl ${{ matrix.perl-version }}"
+    runs-on: ubuntu-latest
+
+    needs:
+      - ubuntu
+      - perl-versions
+
+    env:
+      PERL_USE_UNSAFE_INC: 0
+      AUTHOR_TESTING: 1
+      AUTOMATED_TESTING: 1
+      RELEASE_TESTING: 1
+      PERL_CARTON_PATH: $GITHUB_WORKSPACE/local
+
+    strategy:
+      fail-fast: false
+      matrix:
+        perl-version: ${{ fromJson (needs.perl-versions.outputs.perl-versions) }}
+
+    container:
+      image: perldocker/perl-tester:${{ matrix.perl-version }}
+
+    steps:
+      - uses: actions/checkout@v4
+      - run: perl -V
+      - run: perl Makefile.PL
+      - run: make regen
+      - name: revert timestamp update
+        run: "git checkout parts/inc/version ||:"
+      - run: make
+      - run: make test
+
+  linux-p56:
+    name: "${{ matrix.perl-version }}"
     runs-on: ubuntu-latest
     needs: [ubuntu]
 
@@ -45,22 +90,6 @@ jobs:
       fail-fast: false
       matrix:
         perl-version:
-          - "perl:latest"
-          - "perl:5.36"
-          - "perl:5.34"
-          - "perl:5.32"
-          - "perl:5.30"
-          - "perl:5.28"
-          - "perl:5.26"
-          - "perl:5.24"
-          - "perl:5.22"
-          - "perl:5.20"
-          - "perl:5.18"
-          - "perl:5.16"
-          - "perl:5.14"
-          - "perl:5.12"
-          - "perl:5.10"
-          - "perl:5.8"
           - "perldocker/perl:5.6.2"
           - "perldocker/perl:5.6.1"
           - "perldocker/perl:5.6.0"
@@ -69,7 +98,7 @@ jobs:
       image: ${{ matrix.perl-version }}
 
     steps:
-      # use v1 for git diff later
+      # cannot switch to v4 on these old images
       - uses: actions/checkout@v3
       - run: perl -V
       - run: perl Makefile.PL
@@ -77,8 +106,7 @@ jobs:
       - name: revert timestamp update
         run: "git checkout parts/inc/version ||:"
       - run: make
-      - name: Run Tests
-        run: make test
+      - run: make test
 
   macOS:
     runs-on: macOS-latest
@@ -92,7 +120,7 @@ jobs:
       PERL_CARTON_PATH: $GITHUB_WORKSPACE/local
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up Perl
         run: brew install perl
       - run: perl -V
@@ -101,8 +129,7 @@ jobs:
       - name: revert timestamp update
         run: "git checkout parts/inc/version ||:"
       - run: make
-      - name: Run Tests
-        run: make test
+      - run: make test
 
   windows:
 
@@ -110,7 +137,7 @@ jobs:
     needs: [ubuntu]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up Perl
         run: |
           choco install strawberryperl
@@ -118,5 +145,4 @@ jobs:
       - run: perl -V
       - run: perl Makefile.PL
       - run: make
-      - name: Run Tests
-        run: make test
+      - run: make test
