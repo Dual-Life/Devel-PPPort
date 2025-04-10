@@ -618,4 +618,4 @@ modify it under the same terms as Perl itself.
 
 =head1 SEE ALSO
 
-See L<Devel::PPPort> and L<HACKERS>.
+See L<Devel::PPPort> and F<HACKERS>.
